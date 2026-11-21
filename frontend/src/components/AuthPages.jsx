@@ -462,8 +462,8 @@ export function AuthGateway({
       {/* Top Navbar */}
       <header className="kaura-navbar">
         <div className="kaura-nav-brand" onClick={() => onChangeMode("landing")}>
-          <img src="/kaura-logo.png" alt="KAURA" className="kaura-nav-logo" />
-          <span className="kaura-nav-title">KAURA</span>
+          <img src="/kaura-logo.png" alt="Voice Khata" className="kaura-nav-logo" />
+          <span className="kaura-nav-title">Voice Khata</span>
         </div>
         <div className="kaura-nav-actions">
           <button
@@ -490,10 +490,10 @@ export function AuthGateway({
           <div className="kaura-hero-left">
             <h1 className="kaura-hero-heading">
               <span className="kaura-welcome">Welcome to</span>
-              <span className="kaura-brand-highlight">KAURA</span>
+              <span className="kaura-brand-highlight">Voice Khata</span>
             </h1>
             <p className="kaura-hero-tagline">
-              Where ideas turn into reality with cutting-edge technology.
+              Your voice-first kirana ledger, protected before you open the register.
             </p>
             <button
               type="button"
@@ -510,7 +510,7 @@ export function AuthGateway({
             <div className="kaura-glass-card-wrapper">
               <img
                 src="/kaura-3d-symbol.png"
-                alt="KAURA 3D Emblem"
+                alt="Voice Khata 3D Emblem"
                 className="kaura-3d-card-img"
               />
             </div>
