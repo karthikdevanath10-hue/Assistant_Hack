@@ -207,6 +207,7 @@ class KhataStore(Protocol):
         phone_enc: str | None = None,
         password_hash: str,
         preferred_language: str = "hi-IN",
+        face_id_data: str | None = None,
         created_at: str | None = None,
     ) -> dict: ...
     def update_user_last_login(self, user_id: int, last_login_at: str) -> None: ...
@@ -220,7 +221,9 @@ class KhataStore(Protocol):
         email: str | None = None,
         preferred_language: str | None = None,
         password_hash: str | None = None,
+        face_id_data: str | None = None,
     ) -> dict | None: ...
+    def list_users_with_face_id(self) -> list[dict]: ...
     def for_user(self, user_id: int, preferred_language: str = "hi-IN") -> "KhataStore": ...
 
 
@@ -918,6 +921,7 @@ class SqliteKhataStore:
         phone_enc: str | None = None,
         password_hash: str,
         preferred_language: str = "hi-IN",
+        face_id_data: str | None = None,
         created_at: str | None = None,
     ) -> dict:
         now = created_at or _utc_now_iso()
@@ -927,8 +931,8 @@ class SqliteKhataStore:
             with self._conn(write=True) as conn:
                 cur = conn.execute(
                     """
-                    INSERT INTO users (name, shop_name, phone, email, phone_enc, password_hash, preferred_language, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO users (name, shop_name, phone, email, phone_enc, password_hash, preferred_language, face_id_data, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         name.strip(),
@@ -938,6 +942,7 @@ class SqliteKhataStore:
                         phone_enc,
                         password_hash,
                         preferred_language,
+                        face_id_data,
                         now,
                     ),
                 )
@@ -969,6 +974,7 @@ class SqliteKhataStore:
         email: str | None = None,
         preferred_language: str | None = None,
         password_hash: str | None = None,
+        face_id_data: str | None = None,
     ) -> dict | None:
         updates: dict[str, str | None] = {}
         if name is not None:
@@ -992,6 +998,8 @@ class SqliteKhataStore:
             updates["preferred_language"] = preferred_language
         if password_hash is not None:
             updates["password_hash"] = password_hash
+        if face_id_data is not None:
+            updates["face_id_data"] = face_id_data
 
         if not updates:
             return self.get_user_by_id(user_id)
@@ -1001,6 +1009,13 @@ class SqliteKhataStore:
         with self._conn(write=True) as conn:
             conn.execute(f"UPDATE users SET {set_clause} WHERE id = ?", values)
         return self.get_user_by_id(user_id)
+
+    def list_users_with_face_id(self) -> list[dict]:
+        with self._conn() as conn:
+            rows = conn.execute(
+                "SELECT * FROM users WHERE face_id_data IS NOT NULL AND TRIM(face_id_data) != ''"
+            ).fetchall()
+            return [dict(r) for r in rows]
 
     def for_user(self, user_id: int, preferred_language: str = "hi-IN") -> "SqliteKhataStore":
         """Return a dedicated SQLite database file scoped strictly to user_id."""
@@ -1700,6 +1715,7 @@ class MongoKhataStore:
         phone_enc: str | None = None,
         password_hash: str,
         preferred_language: str = "hi-IN",
+        face_id_data: str | None = None,
         created_at: str | None = None,
     ) -> dict:
         clean_phone = normalize_phone(phone)
@@ -1719,6 +1735,7 @@ class MongoKhataStore:
             "phone_enc": phone_enc,
             "password_hash": password_hash,
             "preferred_language": preferred_language,
+            "face_id_data": face_id_data,
             "created_at": now,
             "last_login_at": None,
         }
@@ -1747,6 +1764,7 @@ class MongoKhataStore:
         email: str | None = None,
         preferred_language: str | None = None,
         password_hash: str | None = None,
+        face_id_data: str | None = None,
     ) -> dict | None:
         updates: dict[str, str | None] = {}
         if name is not None:
@@ -1770,6 +1788,8 @@ class MongoKhataStore:
             updates["preferred_language"] = preferred_language
         if password_hash is not None:
             updates["password_hash"] = password_hash
+        if face_id_data is not None:
+            updates["face_id_data"] = face_id_data
 
         if updates:
             self.mongo_db["users"].update_one(
@@ -1777,6 +1797,13 @@ class MongoKhataStore:
                 {"$set": updates},
             )
         return self.get_user_by_id(user_id)
+
+    def list_users_with_face_id(self) -> list[dict]:
+        cursor = self.mongo_db["users"].find(
+            {"face_id_data": {"$exists": True, "$nin": [None, ""]}},
+            {"_id": 0},
+        )
+        return [_clean_doc(d) for d in cursor]
 
     def for_user(self, user_id: int, preferred_language: str = "hi-IN") -> "MongoKhataStore":
         """Return an isolated MongoDB database (or prefixed collections if Atlas restricts DB creation) for user_id."""

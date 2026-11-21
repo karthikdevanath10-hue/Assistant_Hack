@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { ArrowLeft, Check, CheckCircle2, Globe, KeyRound, Lock, Mail, Phone, Save, Shield, ShoppingBag, Store, User } from "lucide-react";
+import { ArrowLeft, Camera, Check, CheckCircle2, Globe, KeyRound, Lock, Mail, Phone, Save, ScanFace, Shield, ShoppingBag, Store, User } from "lucide-react";
 import { api } from "../api/client";
 import { t } from "../utils/i18n";
+import { FaceScannerModal } from "./FaceScannerModal";
 
 const LANGUAGES = [
   { code: "en-IN", label: "Indian English", flag: "🇮🇳" },
@@ -31,6 +32,10 @@ export function ProfileScreen({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [hasFaceId, setHasFaceId] = useState(Boolean(currentUser?.has_face_id));
+  const [faceModalOpen, setFaceModalOpen] = useState(false);
+  const [faceEnrolling, setFaceEnrolling] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -338,6 +343,87 @@ export function ProfileScreen({
             </small>
           </div>
 
+          {/* Biometric Face ID Settings */}
+          <div style={{
+            borderTop: "1px dashed var(--border)",
+            paddingTop: 14,
+            marginTop: 4,
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 10,
+              padding: "12px 14px",
+              borderRadius: 12,
+              background: "var(--surface-alt)",
+              border: "1px solid var(--border)",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 10,
+                  background: hasFaceId ? "rgba(16, 185, 129, 0.12)" : "rgba(249, 115, 22, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: hasFaceId ? "#10b981" : "var(--accent)",
+                }}>
+                  <ScanFace size={20} />
+                </div>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: "0.88rem" }}>
+                    <span>Biometric Face ID</span>
+                    {hasFaceId ? (
+                      <span style={{
+                        fontSize: "0.7rem",
+                        padding: "2px 7px",
+                        borderRadius: 10,
+                        background: "rgba(16, 185, 129, 0.15)",
+                        color: "#059669",
+                        fontWeight: 700,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 3,
+                      }}>
+                        <CheckCircle2 size={12} /> Active
+                      </span>
+                    ) : (
+                      <span style={{
+                        fontSize: "0.7rem",
+                        padding: "2px 7px",
+                        borderRadius: 10,
+                        background: "rgba(239, 68, 68, 0.1)",
+                        color: "#dc2626",
+                        fontWeight: 600,
+                      }}>
+                        Not Registered
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ color: "var(--muted)", fontSize: "0.74rem", marginTop: 2 }}>
+                    {hasFaceId
+                      ? "Enrolled. You can sign in using camera facial recognition."
+                      : "Register your face to enable instant 1-tap camera login."}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => setFaceModalOpen(true)}
+                disabled={faceEnrolling}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+              >
+                <Camera size={14} />
+                <span>{hasFaceId ? "Re-scan Face ID" : "Register Face ID"}</span>
+              </button>
+            </div>
+          </div>
+
           {/* Collapsible Password Change Section */}
           <div style={{
             borderTop: "1px dashed var(--border)",
@@ -430,6 +516,38 @@ export function ProfileScreen({
           </div>
         </div>
       </form>
+
+      <FaceScannerModal
+        isOpen={faceModalOpen}
+        mode="register"
+        onCapture={async (data) => {
+          setFaceEnrolling(true);
+          setErrorMsg("");
+          try {
+            const payload = {
+              face_data: JSON.stringify({
+                descriptor: data.descriptor,
+                photo: data.photo,
+                timestamp: data.timestamp,
+              }),
+            };
+            await api.authRegisterFace(payload);
+            setHasFaceId(true);
+            setSuccessMsg("Biometric Face ID enrolled and updated successfully!");
+            onUpdateCurrentUser?.({
+              ...(currentUser || {}),
+              has_face_id: true,
+            });
+            setFaceModalOpen(false);
+          } catch (err) {
+            setErrorMsg(err.message || "Failed to register Face ID.");
+          } finally {
+            setFaceEnrolling(false);
+          }
+        }}
+        onClose={() => setFaceModalOpen(false)}
+        loading={faceEnrolling}
+      />
     </div>
   );
 }

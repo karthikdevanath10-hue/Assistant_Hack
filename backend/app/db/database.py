@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone_enc TEXT,
     password_hash TEXT NOT NULL,
     preferred_language TEXT NOT NULL DEFAULT 'hi-IN',
+    face_id_data TEXT,
     created_at TEXT NOT NULL,
     last_login_at TEXT
 );
@@ -126,6 +127,8 @@ class Database:
                 cols = [r["name"] for r in conn.execute("PRAGMA table_info(users)").fetchall()]
                 if "phone" not in cols:
                     conn.execute("ALTER TABLE users ADD COLUMN phone TEXT NOT NULL DEFAULT ''")
+                if "face_id_data" not in cols:
+                    conn.execute("ALTER TABLE users ADD COLUMN face_id_data TEXT")
                 users_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
                 email_info = next((r for r in conn.execute("PRAGMA table_info(users)").fetchall() if r["name"] == "email"), None)
                 if users_count == 0 and email_info and email_info["notnull"] == 1:

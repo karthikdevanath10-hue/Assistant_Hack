@@ -470,6 +470,51 @@ def test_user_signup_login_session_and_encryption(api_client, isolated_container
     assert api_client.post("/api/auth/logout").json() == {"status": "logged_out"}
 
 
+def test_face_id_registration_and_login_verification(api_client):
+    import json
+    # Synthetic 16-element normalized test face descriptor
+    face_v1 = [0.25] * 16
+    face_v1_json = json.dumps({"descriptor": face_v1})
+
+    # 1. Sign up with Face ID
+    signup = api_client.post(
+        "/api/auth/signup",
+        json={
+            "name": "Face User",
+            "shop_name": "Face Store",
+            "phone": "9876500555",
+            "password": "secret-pass-555",
+            "face_data": face_v1_json,
+        },
+    )
+    assert signup.status_code == 201
+    assert signup.json()["user"]["has_face_id"] is True
+
+    # 2. Login with matching Face ID descriptor
+    matching_candidate = [0.26] * 16  # very close cosine similarity ~0.999
+    face_login_success = api_client.post(
+        "/api/auth/face-login",
+        json={
+            "identifier": "9876500555",
+            "face_data": json.dumps({"descriptor": matching_candidate}),
+        },
+    )
+    assert face_login_success.status_code == 200
+    assert face_login_success.json()["user"]["phone"] == "9876500555"
+    assert "access_token" in face_login_success.json()
+
+    # 3. Login with mismatched Face ID descriptor should fail
+    mismatched_candidate = [-0.5, 0.8, -0.2, 0.1, -0.9, 0.3, -0.4, 0.6, -0.1, 0.2, -0.3, 0.4, -0.5, 0.6, -0.7, 0.8]
+    face_login_fail = api_client.post(
+        "/api/auth/face-login",
+        json={
+            "identifier": "9876500555",
+            "face_data": json.dumps({"descriptor": mismatched_candidate}),
+        },
+    )
+    assert face_login_fail.status_code == 401
+
+
 def test_two_accounts_have_isolated_databases_and_calculations(api_client):
     acc_a = api_client.post(
         "/api/auth/signup",

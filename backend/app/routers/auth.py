@@ -8,7 +8,16 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 
 from app.db.crypto import hash_password, verify_password
 from app.deps import AppContainer, get_container
-from app.schemas.models import AuthResponse, UserLoginRequest, UserOut, UserProfileUpdate, UserSignUpRequest
+from app.schemas.models import (
+    AuthResponse,
+    FaceLoginRequest,
+    FaceRegisterRequest,
+    UserLoginRequest,
+    UserOut,
+    UserProfileUpdate,
+    UserSignUpRequest,
+)
+from app.services.face_verifier import verify_face_match
 
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -16,6 +25,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 def _user_to_out(row: dict, container: AppContainer) -> UserOut:
     plain_phone = row.get("phone") or container.cipher.decrypt(row.get("phone_enc"))
+    has_face = bool(row.get("face_id_data") and str(row.get("face_id_data")).strip())
     return UserOut(
         id=int(row["id"]),
         name=row["name"],
@@ -23,6 +33,7 @@ def _user_to_out(row: dict, container: AppContainer) -> UserOut:
         phone=plain_phone,
         email=row.get("email"),
         preferred_language=row.get("preferred_language") or "hi-IN",
+        has_face_id=has_face,
         created_at=row["created_at"],
         last_login_at=row.get("last_login_at"),
     )
@@ -105,6 +116,7 @@ def signup_user(req: UserSignUpRequest, container: AppContainer = Depends(get_co
             phone_enc=phone_enc,
             password_hash=pw_hash,
             preferred_language=req.preferred_language,
+            face_id_data=req.face_data,
             created_at=now_iso,
         )
     except ValueError as exc:
@@ -179,6 +191,7 @@ def update_profile(
             email=req.email,
             preferred_language=req.preferred_language,
             password_hash=new_password_hash,
+            face_id_data=req.face_data,
         )
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
@@ -187,6 +200,77 @@ def update_profile(
         raise HTTPException(status_code=404, detail="User not found.")
 
     return _user_to_out(updated, container)
+
+
+@router.post("/register-face", response_model=UserOut)
+def register_face(
+    req: FaceRegisterRequest,
+    user: dict = Depends(get_current_user),
+    container: AppContainer = Depends(get_container),
+) -> UserOut:
+    uid = int(user["id"])
+    updated = container.db.update_user_profile(uid, face_id_data=req.face_data)
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return _user_to_out(updated, container)
+
+
+@router.post("/face-login", response_model=AuthResponse)
+def face_login(
+    req: FaceLoginRequest,
+    container: AppContainer = Depends(get_container),
+) -> AuthResponse:
+    candidate_face = req.face_data.strip()
+    if not candidate_face:
+        raise HTTPException(status_code=400, detail="Biometric face data is required.")
+
+    target_user: dict | None = None
+    if req.identifier and req.identifier.strip():
+        target_user = container.db.get_user_by_identifier(req.identifier.strip())
+        if not target_user:
+            raise HTTPException(status_code=401, detail="No account found with this mobile number or email.")
+        if not target_user.get("face_id_data"):
+            raise HTTPException(
+                status_code=400,
+                detail="Face ID is not registered for this account. Please sign in with your password.",
+            )
+        is_match, score = verify_face_match(target_user["face_id_data"], candidate_face)
+        if not is_match:
+            raise HTTPException(
+                status_code=401,
+                detail="Face verification failed. Please align properly or enter your password.",
+            )
+    else:
+        enrolled_users = container.db.list_users_with_face_id()
+        if not enrolled_users:
+            raise HTTPException(
+                status_code=401,
+                detail="No registered Face ID profiles found. Please enter your mobile number or password.",
+            )
+        best_user = None
+        best_score = 0.0
+        for u in enrolled_users:
+            is_match, score = verify_face_match(u.get("face_id_data"), candidate_face)
+            if is_match and score > best_score:
+                best_score = score
+                best_user = u
+        if not best_user:
+            raise HTTPException(
+                status_code=401,
+                detail="Face not recognized. Please align properly or sign in with password.",
+            )
+        target_user = best_user
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    container.db.update_user_last_login(int(target_user["id"]), now_iso)
+    target_user["last_login_at"] = now_iso
+    container.for_user(target_user)
+    token = container.cipher.sign_token({
+        "sub": int(target_user["id"]),
+        "phone": target_user.get("phone"),
+        "email": target_user.get("email"),
+    })
+    return AuthResponse(access_token=token, user=_user_to_out(target_user, container))
 
 
 @router.post("/logout")

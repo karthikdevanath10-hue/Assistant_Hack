@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Globe, LogIn, Mic, Phone, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
+import { Camera, CheckCircle2, Eye, EyeOff, Globe, LogIn, Mic, Phone, ScanFace, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
 import { validateLoginForm, validateSignUpForm } from "../utils/authHelpers";
 import { SUPPORTED_LANGUAGES } from "../utils/i18n";
+import { FaceScannerModal } from "./FaceScannerModal";
 
 function PasswordInput({ id, label, value, onChange, placeholder, autoComplete }) {
   const [visible, setVisible] = useState(false);
@@ -35,10 +36,17 @@ function PasswordInput({ id, label, value, onChange, placeholder, autoComplete }
 /**
  * Login page rendered before entering the Voice Khata workspace.
  */
-export function LoginPage({ onSubmit, onSwitchToSignUp, loading = false, error = "" }) {
+export function LoginPage({
+  onSubmit,
+  onFaceLogin,
+  onSwitchToSignUp,
+  loading = false,
+  error = "",
+}) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const [faceModalOpen, setFaceModalOpen] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -59,52 +67,87 @@ export function LoginPage({ onSubmit, onSwitchToSignUp, loading = false, error =
   const displayError = localError || error;
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit} noValidate>
-      <div className="auth-card-head">
-        <h2>Welcome back</h2>
-        <p>Sign in to open your Voice Khata dashboard and customer ledgers.</p>
-      </div>
-
-      {displayError && (
-        <div className="auth-error-banner" role="alert">
-          {displayError}
+    <>
+      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <div className="auth-card-head">
+          <h2>Welcome back</h2>
+          <p>Sign in to open your Voice Khata dashboard and customer ledgers.</p>
         </div>
-      )}
 
-      <label className="auth-field">
-        <span>Mobile Number (or Email) *</span>
-        <input
-          id="login-identifier"
-          className="text-input"
-          type="text"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
-          placeholder="Enter 10-digit mobile number or email"
-          autoComplete="username tel"
-          required
+        {displayError && (
+          <div className="auth-error-banner" role="alert">
+            {displayError}
+          </div>
+        )}
+
+        <label className="auth-field">
+          <span>Mobile Number (or Email) *</span>
+          <input
+            id="login-identifier"
+            className="text-input"
+            type="text"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="Enter 10-digit mobile number or email"
+            autoComplete="username tel"
+            required
+          />
+        </label>
+
+        <PasswordInput
+          id="login-password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          placeholder="Enter your password"
+          autoComplete="current-password"
         />
-      </label>
 
-      <PasswordInput
-        id="login-password"
-        label="Password"
-        value={password}
-        onChange={setPassword}
-        placeholder="Enter your password"
-        autoComplete="current-password"
-      />
-
-      <button className="btn btn-primary auth-submit-btn" type="submit" disabled={loading}>
-        <LogIn size={16} /> {loading ? "Signing in..." : "Sign In to Dashboard"}
-      </button>
-
-      <div className="auth-switch-row">
-        <span>New to Voice Khata?</span>
-        <button type="button" className="auth-link-btn" onClick={onSwitchToSignUp}>
-          Create an account
+        <button className="btn btn-primary auth-submit-btn" type="submit" disabled={loading}>
+          <LogIn size={16} /> {loading ? "Signing in..." : "Sign In to Dashboard"}
         </button>
-      </div>
-    </form>
+
+        {onFaceLogin && (
+          <div className="auth-biometric-section">
+            <div className="auth-divider">
+              <span>OR BIOMETRIC</span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-outline face-login-trigger-btn"
+              onClick={() => setFaceModalOpen(true)}
+              disabled={loading}
+              title="Fast passwordless login via camera face verification"
+            >
+              <ScanFace size={18} style={{ color: "var(--accent)" }} />
+              <span>Sign in with Face ID</span>
+            </button>
+          </div>
+        )}
+
+        <div className="auth-switch-row">
+          <span>New to Voice Khata?</span>
+          <button type="button" className="auth-link-btn" onClick={onSwitchToSignUp}>
+            Create an account
+          </button>
+        </div>
+      </form>
+
+      {onFaceLogin && (
+        <FaceScannerModal
+          isOpen={faceModalOpen}
+          mode="verify"
+          defaultIdentifier={identifier}
+          onVerify={async ({ identifier: idVal, faceData }) => {
+            await onFaceLogin({ identifier: idVal, faceData });
+            setFaceModalOpen(false);
+          }}
+          onClose={() => setFaceModalOpen(false)}
+          loading={loading}
+          error={error}
+        />
+      )}
+    </>
   );
 }
 
@@ -126,6 +169,8 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const [enrolledFace, setEnrolledFace] = useState(null);
+  const [faceModalOpen, setFaceModalOpen] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -142,135 +187,215 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
       email: email.trim() || null,
       preferred_language: preferredLanguage,
       password,
+      face_data: enrolledFace
+        ? JSON.stringify({
+            descriptor: enrolledFace.descriptor,
+            photo: enrolledFace.photo,
+            timestamp: enrolledFace.timestamp,
+          })
+        : null,
     });
   }
 
   const displayError = localError || error;
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit} noValidate>
-      <div className="auth-card-head">
-        <h2>Create your Khata account</h2>
-        <p>Sign up to access your kirana voice ledger and per-customer accounts.</p>
-      </div>
-
-      {displayError && (
-        <div className="auth-error-banner" role="alert">
-          {displayError}
+    <>
+      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <div className="auth-card-head">
+          <h2>Create your Khata account</h2>
+          <p>Sign up to access your kirana voice ledger and per-customer accounts.</p>
         </div>
-      )}
 
-      <div className="auth-two-col">
-        <label className="auth-field">
-          <span>Full Name *</span>
-          <input
-            id="signup-name"
+        {displayError && (
+          <div className="auth-error-banner" role="alert">
+            {displayError}
+          </div>
+        )}
+
+        <div className="auth-two-col">
+          <label className="auth-field">
+            <span>Full Name *</span>
+            <input
+              id="signup-name"
+              className="text-input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Karthik Achar"
+              autoComplete="name"
+              required
+            />
+          </label>
+
+          <label className="auth-field">
+            <span>Shop / Store Name (Optional)</span>
+            <input
+              id="signup-shop"
+              className="text-input"
+              type="text"
+              value={shopName}
+              onChange={(e) => setShopName(e.target.value)}
+              placeholder="e.g. Sri Lakshmi Kirana"
+              autoComplete="organization"
+            />
+          </label>
+        </div>
+
+        <div className="auth-two-col">
+          <label className="auth-field">
+            <span>Mobile Number * (Mandatory)</span>
+            <input
+              id="signup-phone"
+              className="text-input"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="10-digit mobile number (e.g. 9876543210)"
+              autoComplete="tel"
+              required
+            />
+          </label>
+
+          <label className="auth-field">
+            <span>Email Address (Optional)</span>
+            <input
+              id="signup-email"
+              className="text-input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@gmail.com (optional)"
+              autoComplete="email"
+            />
+          </label>
+        </div>
+
+        <label className="auth-field" style={{ gridColumn: "1 / -1" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 700 }}>
+            <Globe size={15} style={{ color: "var(--accent)" }} /> Default Account Language * (डिफ़ॉल्ट भाषा)
+          </span>
+          <select
+            id="signup-language"
             className="text-input"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Karthik Achar"
-            autoComplete="name"
-            required
-          />
+            value={preferredLanguage}
+            onChange={(e) => setPreferredLanguage(e.target.value)}
+            style={{ fontWeight: 600 }}
+          >
+            {SUPPORTED_LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.flag} {l.native} · {l.en} ({l.code})
+              </option>
+            ))}
+          </select>
+          <small style={{ color: "var(--muted)", fontSize: "0.76rem", marginTop: 4 }}>
+            This will be your default voice assistant, ledger, and workspace language whenever you log in.
+          </small>
         </label>
 
-        <label className="auth-field">
-          <span>Shop / Store Name (Optional)</span>
-          <input
-            id="signup-shop"
-            className="text-input"
-            type="text"
-            value={shopName}
-            onChange={(e) => setShopName(e.target.value)}
-            placeholder="e.g. Sri Lakshmi Kirana"
-            autoComplete="organization"
+        {/* Biometric Face ID Registration Section */}
+        <div className="face-id-signup-card">
+          <div className="face-id-signup-info">
+            <div className="face-id-signup-title">
+              <ScanFace size={18} style={{ color: "var(--accent)" }} />
+              <strong>Biometric Face ID Setup</strong>
+            </div>
+            <p>
+              Register your face now to sign in effortlessly without typing passwords.
+            </p>
+          </div>
+
+          {enrolledFace ? (
+            <div className="face-id-enrolled-row">
+              {enrolledFace.photo && (
+                <img
+                  src={enrolledFace.photo}
+                  alt="Enrolled face preview"
+                  className="face-id-thumbnail"
+                />
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="face-id-enrolled-badge">
+                  <CheckCircle2 size={14} /> Face ID Registered
+                </div>
+                <small style={{ color: "var(--muted)", fontSize: "0.74rem" }}>
+                  Face biometric template enrolled successfully.
+                </small>
+              </div>
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ padding: "4px 8px", fontSize: "0.78rem" }}
+                onClick={() => setFaceModalOpen(true)}
+              >
+                Re-scan
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ padding: "4px 8px", fontSize: "0.78rem", color: "#dc2626" }}
+                onClick={() => setEnrolledFace(null)}
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <div className="face-id-prompt-row">
+              <button
+                type="button"
+                className="btn btn-outline face-enroll-trigger-btn"
+                onClick={() => setFaceModalOpen(true)}
+              >
+                <Camera size={16} /> Register Face ID with Camera
+              </button>
+              <span className="face-id-optional-tag">Optional · Can be skipped</span>
+            </div>
+          )}
+        </div>
+
+        <div className="auth-two-col">
+          <PasswordInput
+            id="signup-password"
+            label="Password (min 6 chars)"
+            value={password}
+            onChange={setPassword}
+            placeholder="Create password"
+            autoComplete="new-password"
           />
-        </label>
-      </div>
 
-      <div className="auth-two-col">
-        <label className="auth-field">
-          <span>Mobile Number * (Mandatory)</span>
-          <input
-            id="signup-phone"
-            className="text-input"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="10-digit mobile number (e.g. 9876543210)"
-            autoComplete="tel"
-            required
+          <PasswordInput
+            id="signup-confirm-password"
+            label="Confirm Password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            placeholder="Re-enter password"
+            autoComplete="new-password"
           />
-        </label>
+        </div>
 
-        <label className="auth-field">
-          <span>Email Address (Optional)</span>
-          <input
-            id="signup-email"
-            className="text-input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@gmail.com (optional)"
-            autoComplete="email"
-          />
-        </label>
-      </div>
-
-      <label className="auth-field" style={{ gridColumn: "1 / -1" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 700 }}>
-          <Globe size={15} style={{ color: "var(--accent)" }} /> Default Account Language * (डिफ़ॉल्ट भाषा)
-        </span>
-        <select
-          id="signup-language"
-          className="text-input"
-          value={preferredLanguage}
-          onChange={(e) => setPreferredLanguage(e.target.value)}
-          style={{ fontWeight: 600 }}
-        >
-          {SUPPORTED_LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>
-              {l.flag} {l.native} · {l.en} ({l.code})
-            </option>
-          ))}
-        </select>
-        <small style={{ color: "var(--muted)", fontSize: "0.76rem", marginTop: 4 }}>
-          This will be your default voice assistant, ledger, and workspace language whenever you log in.
-        </small>
-      </label>
-
-      <div className="auth-two-col">
-        <PasswordInput
-          id="signup-password"
-          label="Password (min 6 chars)"
-          value={password}
-          onChange={setPassword}
-          placeholder="Create password"
-          autoComplete="new-password"
-        />
-
-        <PasswordInput
-          id="signup-confirm-password"
-          label="Confirm Password"
-          value={confirmPassword}
-          onChange={setConfirmPassword}
-          placeholder="Re-enter password"
-          autoComplete="new-password"
-        />
-      </div>
-
-      <button className="btn btn-primary auth-submit-btn" type="submit" disabled={loading}>
-        <UserPlus size={16} /> {loading ? "Creating account..." : "Create Account & Enter Dashboard"}
-      </button>
-
-      <div className="auth-switch-row">
-        <span>Already have an account?</span>
-        <button type="button" className="auth-link-btn" onClick={onSwitchToLogin}>
-          Sign in here
+        <button className="btn btn-primary auth-submit-btn" type="submit" disabled={loading}>
+          <UserPlus size={16} /> {loading ? "Creating account..." : "Create Account & Enter Dashboard"}
         </button>
-      </div>
-    </form>
+
+        <div className="auth-switch-row">
+          <span>Already have an account?</span>
+          <button type="button" className="auth-link-btn" onClick={onSwitchToLogin}>
+            Sign in here
+          </button>
+        </div>
+      </form>
+
+      <FaceScannerModal
+        isOpen={faceModalOpen}
+        mode="register"
+        onCapture={(data) => {
+          setEnrolledFace(data);
+          setFaceModalOpen(false);
+        }}
+        onClose={() => setFaceModalOpen(false)}
+        loading={loading}
+      />
+    </>
   );
 }
 
@@ -282,6 +407,7 @@ export function AuthGateway({
   mode,
   onChangeMode,
   onLogin,
+  onFaceLogin,
   onSignUp,
   loading = false,
   error = "",
@@ -322,7 +448,7 @@ export function AuthGateway({
             </li>
             <li>
               <ShieldCheck size={16} />
-              <span>Salted scrypt passwords, signed sessions &amp; AES-256-GCM encryption at rest</span>
+              <span>Salted scrypt passwords, biometric Face ID verification &amp; AES-256-GCM encryption</span>
             </li>
           </ul>
         </div>
@@ -361,6 +487,7 @@ export function AuthGateway({
           ) : (
             <LoginPage
               onSubmit={onLogin}
+              onFaceLogin={onFaceLogin}
               onSwitchToSignUp={() => onChangeMode("signup")}
               loading={loading}
               error={error}

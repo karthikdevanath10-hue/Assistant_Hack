@@ -155,6 +155,18 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }),
+  authFaceLogin: (payload) =>
+    request("/api/auth/face-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  authRegisterFace: (payload) =>
+    request("/api/auth/register-face", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
   authMe: () => request("/api/auth/me"),
   authUpdateProfile: (payload) =>
     request("/api/auth/profile", {

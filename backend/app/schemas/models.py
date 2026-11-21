@@ -327,6 +327,7 @@ class UserSignUpRequest(BaseModel):
     email: str | None = Field(default=None, max_length=160, description="Optional email address")
     password: str = Field(min_length=6, max_length=128)
     preferred_language: LanguageCode = "hi-IN"
+    face_data: str | None = None
 
     @field_validator("phone")
     @classmethod
@@ -355,6 +356,7 @@ class UserProfileUpdate(BaseModel):
     phone: str | None = Field(default=None, min_length=10, max_length=24)
     email: str | None = Field(default=None, max_length=160)
     preferred_language: LanguageCode | None = None
+    face_data: str | None = None
     current_password: str | None = Field(default=None, max_length=128)
     new_password: str | None = Field(default=None, min_length=6, max_length=128)
 
@@ -392,8 +394,18 @@ class UserOut(BaseModel):
     phone: str | None = None
     email: str | None = None
     preferred_language: str
+    has_face_id: bool = False
     created_at: str
     last_login_at: str | None = None
+
+
+class FaceLoginRequest(BaseModel):
+    identifier: str | None = Field(default=None, max_length=160)
+    face_data: str = Field(min_length=10)
+
+
+class FaceRegisterRequest(BaseModel):
+    face_data: str = Field(min_length=10)
 
 
 class AuthResponse(BaseModel):

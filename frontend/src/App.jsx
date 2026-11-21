@@ -367,6 +367,24 @@ export default function App() {
     }
   }
 
+  async function handleFaceLogin({ identifier, faceData }) {
+    setAuthSubmitting(true);
+    setAuthError("");
+    try {
+      const res = await api.authFaceLogin({
+        identifier: identifier.trim(),
+        face_data: faceData,
+      });
+      await completeAuthSuccess(res, res.user?.preferred_language);
+      return res;
+    } catch (err) {
+      setAuthError(err.message || "Face ID verification failed.");
+      throw err;
+    } finally {
+      setAuthSubmitting(false);
+    }
+  }
+
   async function handleSignUp(payload) {
     setAuthSubmitting(true);
     setAuthError("");
@@ -905,6 +923,7 @@ export default function App() {
         mode={authMode}
         onChangeMode={switchAuthMode}
         onLogin={handleLogin}
+        onFaceLogin={handleFaceLogin}
         onSignUp={handleSignUp}
         loading={authSubmitting}
         error={authError}
