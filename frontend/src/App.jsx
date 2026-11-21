@@ -88,24 +88,6 @@ export default function App() {
   const [useDirectAudio, setUseDirectAudio] = useState(false);
   const [useLiveStream, setUseLiveStream] = useState(false);
   const [interactiveConfirm, setInteractiveConfirm] = useState(true);
-  const [noiseCancellation, setNoiseCancellation] = useState(() => {
-    try {
-      const saved = localStorage.getItem("vk_noise_cancellation");
-      return saved !== null ? saved === "true" : true;
-    } catch {
-      return true;
-    }
-  });
-
-  function handleToggleNoiseCancellation(enabled) {
-    setNoiseCancellation(enabled);
-    try {
-      localStorage.setItem("vk_noise_cancellation", enabled ? "true" : "false");
-    } catch {}
-    if (liveClientRef.current?.setNoiseCancellation) {
-      liveClientRef.current.setNoiseCancellation(enabled);
-    }
-  }
 
   const [textDraft, setTextDraft] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -716,7 +698,6 @@ export default function App() {
         // Acquire microphone & unlock AudioContext synchronously inside user click gesture
         try {
           await client.prepareMic({
-            noiseCancellation,
             onLevel: (lvl) => setMicLevel(lvl),
             onMicInfo: (info) => setMicInfo(info),
           });
@@ -814,7 +795,6 @@ export default function App() {
         setLiveUserText("");
         await rec.start({
           language,
-          noiseCancellation,
           onLevel: (lvl) => {
             setMicLevel(lvl);
             if (lvl > 0.045) {
@@ -985,7 +965,6 @@ export default function App() {
           isProcessing={isProcessing}
           useLiveStream={useLiveStream && canLiveStream}
           interactiveConfirm={interactiveConfirm}
-          noiseCancellation={noiseCancellation}
           geminiConfigured={Boolean(statusInfo?.gemini_configured)}
           liveWsSupported={liveWsSupported}
           canLiveStream={canLiveStream}
@@ -1012,7 +991,6 @@ export default function App() {
               stopLiveSession();
             }
           }}
-          onToggleNoiseCancellation={handleToggleNoiseCancellation}
           onQuickReply={runTextTurn}
           onReplayAudio={handleReplayAudio}
         />
@@ -1221,7 +1199,6 @@ export default function App() {
             liveEphemeralSupported={liveEphemeralSupported}
             canLiveStream={canLiveStream}
             interactiveConfirm={interactiveConfirm}
-            noiseCancellation={noiseCancellation}
             onUpdateSetting={handleUpdateSettings}
             onToggleDirectAudio={setUseDirectAudio}
             onToggleLiveStream={(enabled) => {
@@ -1238,7 +1215,6 @@ export default function App() {
                 stopLiveSession();
               }
             }}
-            onToggleNoiseCancellation={handleToggleNoiseCancellation}
             onWipeTranscripts={async () => {
               await api.wipeTranscripts();
               await refreshAll();
