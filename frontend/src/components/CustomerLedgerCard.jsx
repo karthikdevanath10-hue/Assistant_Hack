@@ -3,7 +3,9 @@ import {
   Bell,
   BellOff,
   CheckCircle2,
+  ChevronDown,
   Download,
+  History,
   LayoutGrid,
   MessageCircle,
   Pencil,
@@ -42,6 +44,7 @@ export function CustomerLedgerCard({
   const [txType, setTxType] = useState("credit");
   const [note, setNote] = useState("");
   const [savingTx, setSavingTx] = useState(false);
+  const [txHistoryOpen, setTxHistoryOpen] = useState(false);
 
   useEffect(() => {
     setEditing(false);
@@ -49,12 +52,19 @@ export function CustomerLedgerCard({
     setAddingTx(false);
     setAmount("");
     setNote("");
+    setTxHistoryOpen(false);
   }, [customer?.id]);
 
   if (!customer) return null;
 
   const hiSet = new Set(highlightTxIds);
   const hasFreshTx = transactions.some((tx) => hiSet.has(tx.id));
+
+  useEffect(() => {
+    if (hasFreshTx || isHighlighted) {
+      setTxHistoryOpen(true);
+    }
+  }, [hasFreshTx, isHighlighted]);
   const outstanding = Number(customer.outstanding_balance || 0);
   const statusTag =
     outstanding > 0 ? "Balance Due" : outstanding < 0 ? "Advance Paid" : "Settled";
@@ -303,49 +313,103 @@ export function CustomerLedgerCard({
         </button>
       </div>
 
-      <div className="customer-block-tx-header">
-        <span>All Transactions ({transactions.length})</span>
-      </div>
-
-      <div className="tx-list">
-        {transactions.length === 0 ? (
-          <div style={{ color: "var(--muted)", fontSize: "0.86rem", padding: "6px 0" }}>
-            No transactions recorded yet.
-          </div>
-        ) : (
-          transactions.map((tx) => {
-            const isFresh = hiSet.has(tx.id);
-            return (
-              <div key={tx.id} className={`tx-row ${isFresh ? "live-flash" : ""}`}>
-                <div>
-                  <div style={{ fontWeight: 600 }}>
-                    {tx.transaction_date} ·{" "}
-                    <span className={`badge ${tx.tx_type}`}>{tx.tx_type}</span>
-                    {isFresh && <span className="live-tag">LIVE</span>}
-                  </div>
-                  <div style={{ fontSize: "0.76rem", color: "var(--muted)" }}>
-                    Receipt #{tx.id}
-                    {tx.note ? ` · ${tx.note}` : ""}
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div className={`tx-amt ${tx.tx_type}`}>
-                    {tx.tx_type === "credit" ? "+" : "-"}
-                    {formatINR(tx.amount)}
-                  </div>
-                  <button
-                    className="btn-icon-whatsapp"
-                    type="button"
-                    onClick={() => shareViaWhatsApp({ customer, tx, currentUser })}
-                    title={`Send WhatsApp receipt for ₹${tx.amount}`}
-                  >
-                    <MessageCircle size={13} />
-                  </button>
-                </div>
-              </div>
-            );
-          })
+      {/* Interactive Drop Notch for Transaction History */}
+      <div className={`customer-tx-drop-notch ${txHistoryOpen ? "is-open" : ""}`}>
+        {/* Transparent backdrop to dismiss floating drawer on tap outside */}
+        {txHistoryOpen && (
+          <div
+            className="dropnotch-backdrop"
+            onClick={() => setTxHistoryOpen(false)}
+            aria-hidden="true"
+          />
         )}
+
+        <button
+          type="button"
+          className={`stat-drop-notch-btn customer-tx-notch-btn ${txHistoryOpen ? "open" : ""}`}
+          onClick={() => setTxHistoryOpen((prev) => !prev)}
+          title={
+            transactions.length > 0
+              ? txHistoryOpen
+                ? "Click drop notch to fold history"
+                : "Click drop notch to view transaction history"
+              : "No transactions recorded yet"
+          }
+        >
+          <span className="notch-btn-label">
+            <span className="notch-count-pill tx-pill">
+              {transactions.length}
+            </span>
+            <span style={{ fontWeight: 750, letterSpacing: "-0.01em" }}>
+              Transaction History
+            </span>
+            {hasFreshTx && (
+              <span className="live-tag" style={{ marginLeft: 4, fontSize: "0.65rem", padding: "1px 6px" }}>
+                LIVE
+              </span>
+            )}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: "0.72rem", color: "var(--muted)", fontWeight: 600 }}>
+              {txHistoryOpen ? "Fold Notch" : "Drop Notch"}
+            </span>
+            <ChevronDown size={14} className="notch-chevron" />
+          </div>
+        </button>
+
+        {/* Floating Transaction Drawer */}
+        <div className={`customer-tx-notch-drawer ${txHistoryOpen ? "open" : ""}`}>
+          <div className="stat-notch-floating-header">
+            <span className="header-title" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <History size={13} style={{ color: "var(--accent)" }} />
+              {customer.name} · History
+            </span>
+            <span className="header-badge">
+              {transactions.length} {transactions.length === 1 ? "Record" : "Records"}
+            </span>
+          </div>
+
+          <div className="tx-list customer-tx-list-scroll">
+            {transactions.length === 0 ? (
+              <div style={{ color: "var(--muted)", fontSize: "0.85rem", padding: "16px 8px", textAlign: "center" }}>
+                No transactions recorded yet. Tap "+ Entry" above to add one.
+              </div>
+            ) : (
+              transactions.map((tx) => {
+                const isFresh = hiSet.has(tx.id);
+                return (
+                  <div key={tx.id} className={`tx-row ${isFresh ? "live-flash" : ""}`}>
+                    <div>
+                      <div style={{ fontWeight: 600 }}>
+                        {tx.transaction_date} ·{" "}
+                        <span className={`badge ${tx.tx_type}`}>{tx.tx_type}</span>
+                        {isFresh && <span className="live-tag">LIVE</span>}
+                      </div>
+                      <div style={{ fontSize: "0.76rem", color: "var(--muted)" }}>
+                        Receipt #{tx.id}
+                        {tx.note ? ` · ${tx.note}` : ""}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div className={`tx-amt ${tx.tx_type}`}>
+                        {tx.tx_type === "credit" ? "+" : "-"}
+                        {formatINR(tx.amount)}
+                      </div>
+                      <button
+                        className="btn-icon-whatsapp"
+                        type="button"
+                        onClick={() => shareViaWhatsApp({ customer, tx, currentUser })}
+                        title={`Send WhatsApp receipt for ₹${tx.amount}`}
+                      >
+                        <MessageCircle size={13} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

@@ -1772,6 +1772,13 @@ select.text-input option {
 .customer-ledger-block {
   border-top: 3.5px solid #ec4899;
   scroll-margin-top: 18px;
+  position: relative;
+  overflow: visible;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.customer-ledger-block:has(.customer-tx-drop-notch.is-open) {
+  z-index: 75;
 }
 
 .customer-ledger-block.live-flash {
@@ -1867,6 +1874,121 @@ select.text-input option {
   letter-spacing: 0.04em;
   color: #c4b5fd;
   margin-bottom: 8px;
+}
+
+/* --- Customer Digital Khata Drop Notch for Transaction History --- */
+.customer-tx-drop-notch {
+  position: relative;
+  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+  padding-top: 10px;
+  margin-top: 10px;
+  overflow: visible;
+}
+
+.customer-tx-drop-notch.is-open {
+  z-index: 80;
+}
+
+.customer-tx-notch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  z-index: 88;
+}
+
+.customer-tx-notch-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(236, 72, 153, 0.45);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 0 14px rgba(236, 72, 153, 0.2);
+}
+
+.customer-tx-notch-btn.open {
+  background: rgba(236, 72, 153, 0.16);
+  border-color: rgba(236, 72, 153, 0.6);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.3);
+}
+
+.notch-count-pill.tx-pill {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3) 0%, rgba(168, 85, 247, 0.3) 100%);
+  color: #f472b6;
+  border: 1px solid rgba(236, 72, 153, 0.45);
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border-radius: 999px;
+}
+
+.customer-tx-notch-drawer {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  min-width: 300px;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: rgba(22, 9, 52, 0.96);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-radius: 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(168, 85, 247, 0.25);
+  padding: 0;
+  z-index: 90;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.24s;
+  transform: translateY(-8px) scale(0.98);
+  overflow: hidden;
+}
+
+.customer-tx-notch-drawer.open {
+  max-height: 380px;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  padding: 14px;
+  transform: translateY(0) scale(1);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-card .customer-tx-notch-drawer,
+.inline-ledger-panel .customer-tx-notch-drawer {
+  position: static;
+  min-width: 100%;
+  margin-top: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.customer-tx-list-scroll {
+  overflow-y: auto;
+  max-height: 300px;
+  padding-right: 4px;
+  margin-top: 6px;
+}
+
+.customer-tx-list-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.customer-tx-list-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
 }
 
 /* Authentication Gateway (Login & Sign Up Pages) */
