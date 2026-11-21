@@ -64,7 +64,7 @@ export class ErrorBoundary extends React.Component {
               </pre>
             )}
             <button className="btn btn-primary" onClick={this.handleReset} style={{ width: "100%" }}>
-              Reload Workspace
+              {this.props.buttonText || "Return to Dashboard"}
             </button>
           </div>
         </div>

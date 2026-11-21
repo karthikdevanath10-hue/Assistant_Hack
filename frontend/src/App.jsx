@@ -19,6 +19,7 @@ import { CustomerLedgerModal } from "./components/CustomerLedgerModal";
 import { CustomerLedgersScreen } from "./components/CustomerLedgersScreen";
 import { CustomersScreen } from "./components/CustomersScreen";
 import { DashboardScreen } from "./components/DashboardScreen";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { JarvisHud } from "./components/JarvisHud";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { ProfileScreen } from "./components/ProfileScreen";
@@ -1133,111 +1134,113 @@ export default function App() {
           }}
         />
 
-        {tab === "home" && (
-          <DashboardScreen
-            dashboard={dashboard}
-            lastTurn={lastTurn}
-            customers={customers}
-            language={language}
-            currentUser={currentUser}
-            liveHighlightTxIds={liveHighlightTxIds}
-            onRunPhrase={runTextTurn}
-            onManualTx={handleManualTx}
-            onSelectCustomerById={(id) => openCustomerLedgerById(id)}
-            onOpenCustomersPage={() => navigateToTab("customers")}
-          />
-        )}
+        <ErrorBoundary onReset={() => setTab("home")} buttonText="Return to Dashboard">
+          {tab === "home" && (
+            <DashboardScreen
+              dashboard={dashboard}
+              lastTurn={lastTurn}
+              customers={customers}
+              language={language}
+              currentUser={currentUser}
+              liveHighlightTxIds={liveHighlightTxIds}
+              onRunPhrase={runTextTurn}
+              onManualTx={handleManualTx}
+              onSelectCustomerById={(id) => openCustomerLedgerById(id)}
+              onOpenCustomersPage={() => navigateToTab("customers")}
+            />
+          )}
 
-        {tab === "customers" && (
-          <CustomersScreen
-            customers={customers}
-            language={language}
-            currentUser={currentUser}
-            highlightCustomerId={liveHighlightCustId}
-            onSearch={(q) => refreshAll(q)}
-            onCreateCustomer={handleCreateCustomer}
-            onUpdateCustomer={handleUpdateCustomer}
-            onDeleteCustomer={handleDeleteCustomer}
-            onToggleOptIn={handleToggleOptIn}
-            onSendReminder={(id) => api.sendReminder(id, language)}
-            onOpenLedger={(c) => openCustomerLedgerById(c.id)}
-            onOpenLedgersPage={() => navigateToTab("ledgers")}
-          />
-        )}
+          {tab === "customers" && (
+            <CustomersScreen
+              customers={customers}
+              language={language}
+              currentUser={currentUser}
+              highlightCustomerId={liveHighlightCustId}
+              onSearch={(q) => refreshAll(q)}
+              onCreateCustomer={handleCreateCustomer}
+              onUpdateCustomer={handleUpdateCustomer}
+              onDeleteCustomer={handleDeleteCustomer}
+              onToggleOptIn={handleToggleOptIn}
+              onSendReminder={(id) => api.sendReminder(id, language)}
+              onOpenLedger={(c) => openCustomerLedgerById(c.id)}
+              onOpenLedgersPage={() => navigateToTab("ledgers")}
+            />
+          )}
 
-        {tab === "ledgers" && (
-          <CustomerLedgersScreen
-            customers={customers}
-            allTransactions={allTransactions}
-            language={language}
-            currentUser={currentUser}
-            highlightCustomerId={liveHighlightCustId}
-            highlightTxIds={liveHighlightTxIds}
-            focusCustomerId={focusLedgersCustId}
-            onClearFocus={() => setFocusLedgersCustId(null)}
-            onManualTx={handleManualTx}
-            onCreateCustomer={handleCreateCustomer}
-            onUpdateCustomer={handleUpdateCustomer}
-            onDeleteCustomer={handleDeleteCustomer}
-            onToggleOptIn={handleToggleOptIn}
-            onSendReminder={(id) => api.sendReminder(id, language)}
-          />
-        )}
+          {tab === "ledgers" && (
+            <CustomerLedgersScreen
+              customers={customers}
+              allTransactions={allTransactions}
+              language={language}
+              currentUser={currentUser}
+              highlightCustomerId={liveHighlightCustId}
+              highlightTxIds={liveHighlightTxIds}
+              focusCustomerId={focusLedgersCustId}
+              onClearFocus={() => setFocusLedgersCustId(null)}
+              onManualTx={handleManualTx}
+              onCreateCustomer={handleCreateCustomer}
+              onUpdateCustomer={handleUpdateCustomer}
+              onDeleteCustomer={handleDeleteCustomer}
+              onToggleOptIn={handleToggleOptIn}
+              onSendReminder={(id) => api.sendReminder(id, language)}
+            />
+          )}
 
-        {tab === "settings" && (
-          <SettingsScreen
-            currentUser={currentUser}
-            onLogout={handleLogout}
-            statusInfo={statusInfo}
-            language={language}
-            aiMode={aiMode}
-            speechProvider={speechProvider}
-            ephemeral={ephemeral}
-            useDirectAudio={useDirectAudio}
-            useLiveStream={useLiveStream && canLiveStream}
-            liveWsSupported={liveWsSupported}
-            liveEphemeralSupported={liveEphemeralSupported}
-            canLiveStream={canLiveStream}
-            interactiveConfirm={interactiveConfirm}
-            onUpdateSetting={handleUpdateSettings}
-            onToggleDirectAudio={setUseDirectAudio}
-            onToggleLiveStream={(enabled) => {
-              if (!enabled || !canLiveStream) {
-                stopLiveSession();
-                setUseLiveStream(false);
-                return;
-              }
-              setUseLiveStream(true);
-            }}
-            onToggleInteractiveConfirm={(val) => {
-              setInteractiveConfirm(val);
-              if (liveConnected || liveConnecting) {
-                stopLiveSession();
-              }
-            }}
-            onWipeTranscripts={async () => {
-              await api.wipeTranscripts();
-              await refreshAll();
-            }}
-          />
-        )}
+          {tab === "settings" && (
+            <SettingsScreen
+              currentUser={currentUser}
+              onLogout={handleLogout}
+              statusInfo={statusInfo}
+              language={language}
+              aiMode={aiMode}
+              speechProvider={speechProvider}
+              ephemeral={ephemeral}
+              useDirectAudio={useDirectAudio}
+              useLiveStream={useLiveStream && canLiveStream}
+              liveWsSupported={liveWsSupported}
+              liveEphemeralSupported={liveEphemeralSupported}
+              canLiveStream={canLiveStream}
+              interactiveConfirm={interactiveConfirm}
+              onUpdateSetting={handleUpdateSettings}
+              onToggleDirectAudio={setUseDirectAudio}
+              onToggleLiveStream={(enabled) => {
+                if (!enabled || !canLiveStream) {
+                  stopLiveSession();
+                  setUseLiveStream(false);
+                  return;
+                }
+                setUseLiveStream(true);
+              }}
+              onToggleInteractiveConfirm={(val) => {
+                setInteractiveConfirm(val);
+                if (liveConnected || liveConnecting) {
+                  stopLiveSession();
+                }
+              }}
+              onWipeTranscripts={async () => {
+                await api.wipeTranscripts();
+                await refreshAll();
+              }}
+            />
+          )}
 
-        {tab === "profile" && (
-          <ProfileScreen
-            currentUser={currentUser}
-            onUpdateCurrentUser={(updated) => {
-              setCurrentUser(updated);
-              try {
-                localStorage.setItem("voice_khata_user_v1", JSON.stringify(updated));
-              } catch {
-                // ignore storage error
-              }
-            }}
-            onLanguageChange={handleSelectLanguage}
-            onBack={() => navigateToTab("home")}
-            language={language}
-          />
-        )}
+          {tab === "profile" && (
+            <ProfileScreen
+              currentUser={currentUser}
+              onUpdateCurrentUser={(updated) => {
+                setCurrentUser(updated);
+                try {
+                  localStorage.setItem("voice_khata_user_v1", JSON.stringify(updated));
+                } catch {
+                  // ignore storage error
+                }
+              }}
+              onLanguageChange={handleSelectLanguage}
+              onBack={() => navigateToTab("home")}
+              language={language}
+            />
+          )}
+        </ErrorBoundary>
 
         <BottomNavBar
           activeTab={tab}

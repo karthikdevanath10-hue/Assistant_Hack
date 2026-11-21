@@ -6,6 +6,28 @@ import { playReplyAudio } from "../audio/recorder";
 import { shareViaWhatsApp } from "../utils/whatsappReceipt";
 import { getDemoPhrases, t } from "../utils/i18n";
 
+function BreakdownChips({ items = [], tone = "credit", emptyText = "", onSelectCustomerById }) {
+  if (!items || items.length === 0) {
+    return emptyText ? <div className="stat-breakdown-empty">{emptyText}</div> : null;
+  }
+  return (
+    <div className="stat-breakdown" style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 6 }}>
+      {items.map((item) => (
+        <button
+          key={item.customer_id || item.customer_name}
+          type="button"
+          className={`mini-cust-pill ${tone}`}
+          onClick={() => item.customer_id && onSelectCustomerById?.(item.customer_id)}
+          title={`Open ${item.customer_name}'s khata`}
+        >
+          <span className="pill-name">{item.customer_name}</span>
+          <strong className="pill-amt">{formatINR(item.amount)}</strong>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function StatCardWithNotch({
   title,
   value,
