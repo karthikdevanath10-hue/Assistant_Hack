@@ -69,7 +69,6 @@ export function JarvisHud({
         <div className="jarvis-header-pill">
           <span className={`jarvis-notch-dot ${modeClass}`} />
           <span className="jarvis-notch-brand">Voice Khata AI</span>
-          <span className="jarvis-notch-model">Gemini 3.8</span>
         </div>
       </div>
 
