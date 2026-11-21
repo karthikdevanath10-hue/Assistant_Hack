@@ -3721,7 +3721,6 @@ body {
   width: 100%;
   height: 100%;
   min-height: 440px;
-  z-index: 10;
 }
 
 .curved-dome-dish {
@@ -3740,7 +3739,6 @@ body {
   align-items: center;
   justify-content: center;
   overflow: visible;
-  z-index: 12;
   transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -3774,7 +3772,6 @@ body {
   justify-content: center;
   box-shadow: 0 4px 22px rgba(167, 139, 250, 0.6), 0 0 0 8px rgba(167, 139, 250, 0.18);
   cursor: pointer;
-  touch-action: manipulation;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
   z-index: 25;
 }
@@ -3802,7 +3799,6 @@ body {
   height: 100%;
   min-height: 440px;
   display: block;
-  z-index: 15;
 }
 
 /* Arc Items Spaced Along the Sweeping Circular Arc with Spring Animation */
@@ -3814,21 +3810,8 @@ body {
   gap: 7px;
   cursor: pointer;
   user-select: none;
-  z-index: 20;
+  z-index: 10;
   transform-origin: 480px 40px;
-  touch-action: manipulation;
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  font: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.curved-arc-item svg,
-.curved-arc-btn svg {
-  pointer-events: none;
 }
 
 /* HIDDEN STATE: Tucked into the option button, invisible */
@@ -3861,20 +3844,8 @@ body {
 .curved-arc-nav.is-open .curved-pos-4 { transition-delay: 0.22s; }
 .curved-arc-nav.is-open .curved-pos-5 { transition-delay: 0.28s; }
 
-@media (hover: hover) and (pointer: fine) {
-  .curved-arc-nav.is-open .curved-arc-item:hover {
-    transform: scale(1.08) translateY(-4px);
-  }
-
-  .curved-arc-btn:hover {
-    color: #7c3aed;
-    transform: scale(1.12);
-    box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
-  }
-}
-
-.curved-arc-item:active .curved-arc-btn {
-  transform: scale(0.92);
+.curved-arc-nav.is-open .curved-arc-item:hover {
+  transform: scale(1.08) translateY(-4px);
 }
 
 /* 5 Positions Along the Grand Sweeping Arc */
@@ -3896,9 +3867,13 @@ body {
   justify-content: center;
   color: #1e1b4b;
   cursor: pointer;
-  pointer-events: auto;
-  touch-action: manipulation;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.curved-arc-btn:hover {
+  color: #7c3aed;
+  transform: scale(1.12);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
 }
 
 .curved-arc-btn.active,
@@ -3915,9 +3890,6 @@ body {
   font-weight: 750;
   color: #475569;
   text-align: center;
-  pointer-events: auto;
-  cursor: pointer;
-  touch-action: manipulation;
   transition: color 0.2s ease;
 }
 
@@ -3957,48 +3929,6 @@ body {
   .curved-arc-nav.is-open .curved-arc-item {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-/* TopBar First Page Back Button */
-.topbar-hero-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.16), rgba(129, 140, 248, 0.16));
-  border: 1.5px solid rgba(139, 92, 246, 0.35);
-  color: #6d28d9;
-  font-weight: 750;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
-}
-
-.topbar-hero-back-btn:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
-  transform: translateY(-1px);
-}
-
-/* Panel Open Fade & Slide Transition */
-.workspace-panel-fade {
-  animation: panelOpenFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  width: 100%;
-}
-
-@keyframes panelOpenFade {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.99);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 

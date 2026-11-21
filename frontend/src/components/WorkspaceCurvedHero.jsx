@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   BarChart3,
   Box,
@@ -22,54 +22,48 @@ export function WorkspaceCurvedHero({
   onScrollToExplore,
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const lastTriggerRef = useRef(0);
-
-  const handleSelectOption = (targetTab, itemId, e) => {
-    if (e) {
-      e.stopPropagation?.();
-    }
-    const now = Date.now();
-    if (now - lastTriggerRef.current < 280) return;
-    lastTriggerRef.current = now;
-
-    if (typeof onSelectTab === "function") {
-      onSelectTab(targetTab);
-    }
-    if ((targetTab === "home" || itemId === "analytics") && typeof onScrollToExplore === "function") {
-      onScrollToExplore(itemId);
-    }
-  };
-
   const navItems = [
     {
       id: "home",
       label: "Home",
-      targetTab: "home",
       icon: Home,
+      action: () => {
+        onSelectTab("home");
+        if (onScrollToExplore) onScrollToExplore();
+      },
     },
     {
       id: "analytics",
       label: "Analytics",
-      targetTab: "home",
       icon: BarChart3,
+      action: () => {
+        onSelectTab("home");
+        if (onScrollToExplore) onScrollToExplore();
+      },
     },
     {
       id: "tools",
       label: "Tools",
-      targetTab: "ledgers",
       icon: Box,
+      action: () => {
+        onSelectTab("ledgers");
+      },
     },
     {
       id: "settings",
       label: "Settings",
-      targetTab: "settings",
       icon: Settings,
+      action: () => {
+        onSelectTab("settings");
+      },
     },
     {
       id: "about",
       label: "About",
-      targetTab: "profile",
       icon: Info,
+      action: () => {
+        onSelectTab("profile");
+      },
     },
   ];
 
@@ -102,7 +96,7 @@ export function WorkspaceCurvedHero({
           <button
             type="button"
             className="curved-hero-scroll-btn"
-            onClick={() => handleSelectOption("home", "home")}
+            onClick={onScrollToExplore}
             title="Scroll down to inspect live khata metrics & ledgers"
           >
             <div className="curved-mouse-pill">
@@ -121,10 +115,7 @@ export function WorkspaceCurvedHero({
             <button
               type="button"
               className={`curved-sparkle-circle ${isOpen ? "is-open" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen((prev) => !prev);
-              }}
+              onClick={() => setIsOpen((prev) => !prev)}
               title={isOpen ? "Hide dashboard options" : "Show dashboard options"}
               aria-label={isOpen ? "Hide dashboard options" : "Show dashboard options"}
               aria-expanded={isOpen}
@@ -145,22 +136,21 @@ export function WorkspaceCurvedHero({
                   (item.id === "about" && activeTab === "profile");
 
                 return (
-                  <button
+                  <div
                     key={item.id}
-                    type="button"
                     className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
-                    onClick={(e) => handleSelectOption(item.targetTab, item.id, e)}
-                    onPointerUp={(e) => handleSelectOption(item.targetTab, item.id, e)}
-                    aria-label={item.label}
-                    title={`Open ${item.label} panel`}
+                    onClick={item.action}
                   >
-                    <span className={`curved-arc-btn ${isActive ? "active" : ""}`}>
+                    <button
+                      type="button"
+                      className={`curved-arc-btn ${isActive ? "active" : ""}`}
+                      aria-label={item.label}
+                      title={`Go to ${item.label}`}
+                    >
                       <Icon size={20} />
-                    </span>
-                    <span className="curved-arc-label">
-                      {item.label}
-                    </span>
-                  </button>
+                    </button>
+                    <span className="curved-arc-label">{item.label}</span>
+                  </div>
                 );
               })}
             </nav>

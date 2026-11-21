@@ -1,14 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import { BookOpen, LayoutGrid, LogOut, Settings, Sparkles, User, Users, X } from "lucide-react";
+import { BookOpen, LayoutGrid, LogOut, Settings, User, Users, X } from "lucide-react";
 import { t } from "../utils/i18n";
 
 export const NAV_SECTIONS = [
-  {
-    id: "welcome",
-    label: "First Page",
-    subtitle: "Welcome hero & curved menu",
-    Icon: Sparkles,
-  },
   {
     id: "home",
     label: "Khata",
@@ -47,7 +41,6 @@ export const NAV_SECTIONS = [
 export function RightSlideDashboard({
   open,
   activeTab,
-  showHero = false,
   currentUser = null,
   onSelectTab,
   onLogout,
@@ -107,11 +100,9 @@ export function RightSlideDashboard({
 
         <nav className="nav-drawer-list" aria-label="Primary sections">
           {NAV_SECTIONS.map(({ id, label, subtitle, Icon }) => {
-            const isActive = (showHero && id === "welcome") || (!showHero && activeTab === id);
+            const isActive = activeTab === id;
             const translatedLabel =
-              id === "welcome"
-                ? "First Page"
-                : id === "home"
+              id === "home"
                 ? t("navDashboard", language)
                 : id === "customers"
                 ? t("navCustomers", language)

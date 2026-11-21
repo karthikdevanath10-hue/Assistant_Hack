@@ -48,7 +48,6 @@ export default function App() {
   const [authError, setAuthError] = useState("");
 
   const [tab, setTab] = useState("home");
-  const [showHero, setShowHero] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -56,19 +55,9 @@ export default function App() {
   }, [tab]);
 
   function navigateToTab(nextTab) {
-    if (nextTab === "hero" || nextTab === "welcome") {
-      setShowHero(true);
-      setDrawerOpen(false);
-      return;
-    }
-    setShowHero(false);
     setTab(nextTab);
     setDrawerOpen(false);
-    try {
-      refreshAll().catch(() => {});
-    } catch {
-      // ignore
-    }
+    refreshAll();
   }
   const [statusInfo, setStatusInfo] = useState(null);
   const [dashboard, setDashboard] = useState(null);
@@ -252,7 +241,6 @@ export default function App() {
     setLiveUserText("");
     setLiveTranscriptNote("");
     setTab("home");
-    setShowHero(true);
     setDrawerOpen(false);
     hasLoadedPrimarySettingsRef.current = false;
     initializedAudioPrefRef.current = false;
@@ -1031,8 +1019,8 @@ export default function App() {
                     liveConnected
                       ? `Live (${Math.round(micLevel * 100)}%) ${t("hudListening", language)}`
                       : isRecording
-                        ? `${t("hudListening", language)} (${Math.round(micLevel * 100)}%)...`
-                        : t("inputPlaceholder", language)
+                      ? `${t("hudListening", language)} (${Math.round(micLevel * 100)}%)...`
+                      : t("inputPlaceholder", language)
                   }
                 />
                 {detectedPreview !== null && (
@@ -1053,9 +1041,9 @@ export default function App() {
         <header className="topbar">
           <div
             className="brand"
-            onClick={() => setShowHero(true)}
+            onClick={() => navigateToTab("profile")}
             style={{ cursor: "pointer" }}
-            title="Click to view first page (welcome hero)"
+            title="Click to view & edit shopkeeper profile"
           >
             <div className="brand-mark">₹</div>
             <div>
@@ -1064,18 +1052,6 @@ export default function App() {
             </div>
           </div>
           <div className="topbar-right">
-            {!showHero && (
-              <button
-                type="button"
-                className="topbar-hero-back-btn"
-                onClick={() => setShowHero(true)}
-                title="Return to the first page (welcome menu)"
-                aria-label="Return to first page"
-              >
-                <Sparkles size={14} />
-                <span>First Page</span>
-              </button>
-            )}
             <LanguageSelector
               currentLanguage={language}
               onChangeLanguage={handleSelectLanguage}
@@ -1093,191 +1069,180 @@ export default function App() {
           </div>
         </header>
 
-        {showHero ? (
-          <WorkspaceCurvedHero
-            activeTab={tab}
-            onSelectTab={navigateToTab}
-            onToggleDrawer={() => setDrawerOpen((prev) => !prev)}
-            onScrollToExplore={(mode) => {
-              setShowHero(false);
-              setTab("home");
-              if (mode === "analytics") {
-                setTimeout(() => {
-                  const el = document.getElementById("dashboard-metrics-section");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }, 120);
-              }
-            }}
+        <WorkspaceCurvedHero
+          activeTab={tab}
+          onSelectTab={navigateToTab}
+          onToggleDrawer={() => setDrawerOpen((prev) => !prev)}
+          onScrollToExplore={() => {
+            const el = document.getElementById("dashboard-metrics-section");
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+        />
+
+        {!consentAccepted && (
+          <ConsentBanner
+            disclosurePreview={statusInfo?.ai_disclosure_preview || "Voice Khata AI Assistant"}
+            onAccept={() => handleUpdateSettings({ dpdp_consent_accepted: true })}
           />
-        ) : (
-          <div className="workspace-panel-fade">
-            {!consentAccepted && (
-              <ConsentBanner
-                disclosurePreview={statusInfo?.ai_disclosure_preview || "Voice Khata AI Assistant"}
-                onAccept={() => handleUpdateSettings({ dpdp_consent_accepted: true })}
-              />
-            )}
+        )}
 
-            {errorMsg && (
-              <div className="reply-banner" style={{ borderLeftColor: "#dc2626", background: "#fef2f2" }}>
-                <strong>Notice:</strong> {errorMsg}
-              </div>
-            )}
-
-            {tab !== "home" &&
-              lastTurn &&
-              (lastTurn.status === "needs_confirmation" || liveHighlightTxIds.length > 0 || liveHighlightCustId != null) && (
-                <div className="reply-banner">
-                  <strong>{lastTurn.status === "needs_confirmation" ? "Awaiting Confirmation:" : "Live Ledger Sync:"}</strong>{" "}
-                  {lastTurn.spoken_reply}
-                </div>
-              )}
-
-            <CustomerLedgerModal
-              customer={selectedCustomer}
-              transactions={selectedCustomerTxs}
-              highlightTxIds={liveHighlightTxIds}
-              onUpdateCustomer={handleUpdateCustomer}
-              onDeleteCustomer={handleDeleteCustomer}
-              onOpenInLedgers={(cust) => {
-                selectedCustomerIdRef.current = null;
-                setSelectedCustomer(null);
-                setSelectedCustomerTxs([]);
-                setFocusLedgersCustId(cust.id);
-                setLiveHighlightCustId(cust.id);
-                scheduleClearHighlights();
-                navigateToTab("ledgers");
-              }}
-              onClose={() => {
-                selectedCustomerIdRef.current = null;
-                setSelectedCustomer(null);
-                setSelectedCustomerTxs([]);
-              }}
-            />
-
-            {tab === "home" && (
-              <DashboardScreen
-                dashboard={dashboard}
-                lastTurn={lastTurn}
-                customers={customers}
-                language={language}
-                liveHighlightTxIds={liveHighlightTxIds}
-                onRunPhrase={runTextTurn}
-                onManualTx={handleManualTx}
-                onSelectCustomerById={(id) => openCustomerLedgerById(id)}
-                onOpenCustomersPage={() => navigateToTab("customers")}
-              />
-            )}
-
-            {tab === "customers" && (
-              <CustomersScreen
-                customers={customers}
-                language={language}
-                highlightCustomerId={liveHighlightCustId}
-                onSearch={(q) => refreshAll(q)}
-                onCreateCustomer={handleCreateCustomer}
-                onUpdateCustomer={handleUpdateCustomer}
-                onDeleteCustomer={handleDeleteCustomer}
-                onToggleOptIn={handleToggleOptIn}
-                onSendReminder={(id) => api.sendReminder(id, language)}
-                onOpenLedger={(c) => openCustomerLedgerById(c.id)}
-                onOpenLedgersPage={() => navigateToTab("ledgers")}
-              />
-            )}
-
-            {tab === "ledgers" && (
-              <CustomerLedgersScreen
-                customers={customers}
-                allTransactions={allTransactions}
-                language={language}
-                highlightCustomerId={liveHighlightCustId}
-                highlightTxIds={liveHighlightTxIds}
-                focusCustomerId={focusLedgersCustId}
-                onClearFocus={() => setFocusLedgersCustId(null)}
-                onManualTx={handleManualTx}
-                onCreateCustomer={handleCreateCustomer}
-                onUpdateCustomer={handleUpdateCustomer}
-                onDeleteCustomer={handleDeleteCustomer}
-                onToggleOptIn={handleToggleOptIn}
-                onSendReminder={(id) => api.sendReminder(id, language)}
-              />
-            )}
-
-            {tab === "settings" && (
-              <SettingsScreen
-                currentUser={currentUser}
-                onLogout={handleLogout}
-                statusInfo={statusInfo}
-                language={language}
-                aiMode={aiMode}
-                speechProvider={speechProvider}
-                ephemeral={ephemeral}
-                useDirectAudio={useDirectAudio}
-                useLiveStream={useLiveStream && canLiveStream}
-                liveWsSupported={liveWsSupported}
-                liveEphemeralSupported={liveEphemeralSupported}
-                canLiveStream={canLiveStream}
-                interactiveConfirm={interactiveConfirm}
-                onUpdateSetting={handleUpdateSettings}
-                onToggleDirectAudio={setUseDirectAudio}
-                onToggleLiveStream={(enabled) => {
-                  if (!enabled || !canLiveStream) {
-                    stopLiveSession();
-                    setUseLiveStream(false);
-                    return;
-                  }
-                  setUseLiveStream(true);
-                }}
-                onToggleInteractiveConfirm={(val) => {
-                  setInteractiveConfirm(val);
-                  if (liveConnected || liveConnecting) {
-                    stopLiveSession();
-                  }
-                }}
-                onWipeTranscripts={async () => {
-                  await api.wipeTranscripts();
-                  await refreshAll();
-                }}
-              />
-            )}
-
-            {tab === "profile" && (
-              <ProfileScreen
-                currentUser={currentUser}
-                onUpdateCurrentUser={(updated) => {
-                  setCurrentUser(updated);
-                  try {
-                    localStorage.setItem("voice_khata_user_v1", JSON.stringify(updated));
-                  } catch {
-                    // ignore storage error
-                  }
-                }}
-                onLanguageChange={handleSelectLanguage}
-                onBack={() => setShowHero(true)}
-                language={language}
-              />
-            )}
+        {errorMsg && (
+          <div className="reply-banner" style={{ borderLeftColor: "#dc2626", background: "#fef2f2" }}>
+            <strong>Notice:</strong> {errorMsg}
           </div>
         )}
 
-        {!showHero && (
-          <BottomNavBar
-            activeTab={tab}
-            onSelectTab={navigateToTab}
-            isListening={liveConnected || isRecording}
-            isRecording={isRecording}
-            liveConnected={liveConnected}
-            useLiveStream={useLiveStream && canLiveStream}
-            isProcessing={isProcessing}
-            onToggleMic={toggleMic}
+        {tab !== "home" &&
+          lastTurn &&
+          (lastTurn.status === "needs_confirmation" || liveHighlightTxIds.length > 0 || liveHighlightCustId != null) && (
+            <div className="reply-banner">
+              <strong>{lastTurn.status === "needs_confirmation" ? "Awaiting Confirmation:" : "Live Ledger Sync:"}</strong>{" "}
+              {lastTurn.spoken_reply}
+            </div>
+          )}
+
+        <CustomerLedgerModal
+          customer={selectedCustomer}
+          transactions={selectedCustomerTxs}
+          highlightTxIds={liveHighlightTxIds}
+          onUpdateCustomer={handleUpdateCustomer}
+          onDeleteCustomer={handleDeleteCustomer}
+          onOpenInLedgers={(cust) => {
+            selectedCustomerIdRef.current = null;
+            setSelectedCustomer(null);
+            setSelectedCustomerTxs([]);
+            setFocusLedgersCustId(cust.id);
+            setLiveHighlightCustId(cust.id);
+            scheduleClearHighlights();
+            navigateToTab("ledgers");
+          }}
+          onClose={() => {
+            selectedCustomerIdRef.current = null;
+            setSelectedCustomer(null);
+            setSelectedCustomerTxs([]);
+          }}
+        />
+
+        {tab === "home" && (
+          <DashboardScreen
+            dashboard={dashboard}
+            lastTurn={lastTurn}
+            customers={customers}
+            language={language}
+            liveHighlightTxIds={liveHighlightTxIds}
+            onRunPhrase={runTextTurn}
+            onManualTx={handleManualTx}
+            onSelectCustomerById={(id) => openCustomerLedgerById(id)}
+            onOpenCustomersPage={() => navigateToTab("customers")}
           />
         )}
+
+        {tab === "customers" && (
+          <CustomersScreen
+            customers={customers}
+            language={language}
+            highlightCustomerId={liveHighlightCustId}
+            onSearch={(q) => refreshAll(q)}
+            onCreateCustomer={handleCreateCustomer}
+            onUpdateCustomer={handleUpdateCustomer}
+            onDeleteCustomer={handleDeleteCustomer}
+            onToggleOptIn={handleToggleOptIn}
+            onSendReminder={(id) => api.sendReminder(id, language)}
+            onOpenLedger={(c) => openCustomerLedgerById(c.id)}
+            onOpenLedgersPage={() => navigateToTab("ledgers")}
+          />
+        )}
+
+        {tab === "ledgers" && (
+          <CustomerLedgersScreen
+            customers={customers}
+            allTransactions={allTransactions}
+            language={language}
+            highlightCustomerId={liveHighlightCustId}
+            highlightTxIds={liveHighlightTxIds}
+            focusCustomerId={focusLedgersCustId}
+            onClearFocus={() => setFocusLedgersCustId(null)}
+            onManualTx={handleManualTx}
+            onCreateCustomer={handleCreateCustomer}
+            onUpdateCustomer={handleUpdateCustomer}
+            onDeleteCustomer={handleDeleteCustomer}
+            onToggleOptIn={handleToggleOptIn}
+            onSendReminder={(id) => api.sendReminder(id, language)}
+          />
+        )}
+
+        {tab === "settings" && (
+          <SettingsScreen
+            currentUser={currentUser}
+            onLogout={handleLogout}
+            statusInfo={statusInfo}
+            language={language}
+            aiMode={aiMode}
+            speechProvider={speechProvider}
+            ephemeral={ephemeral}
+            useDirectAudio={useDirectAudio}
+            useLiveStream={useLiveStream && canLiveStream}
+            liveWsSupported={liveWsSupported}
+            liveEphemeralSupported={liveEphemeralSupported}
+            canLiveStream={canLiveStream}
+            interactiveConfirm={interactiveConfirm}
+            onUpdateSetting={handleUpdateSettings}
+            onToggleDirectAudio={setUseDirectAudio}
+            onToggleLiveStream={(enabled) => {
+              if (!enabled || !canLiveStream) {
+                stopLiveSession();
+                setUseLiveStream(false);
+                return;
+              }
+              setUseLiveStream(true);
+            }}
+            onToggleInteractiveConfirm={(val) => {
+              setInteractiveConfirm(val);
+              if (liveConnected || liveConnecting) {
+                stopLiveSession();
+              }
+            }}
+            onWipeTranscripts={async () => {
+              await api.wipeTranscripts();
+              await refreshAll();
+            }}
+          />
+        )}
+
+        {tab === "profile" && (
+          <ProfileScreen
+            currentUser={currentUser}
+            onUpdateCurrentUser={(updated) => {
+              setCurrentUser(updated);
+              try {
+                localStorage.setItem("voice_khata_user_v1", JSON.stringify(updated));
+              } catch {
+                // ignore storage error
+              }
+            }}
+            onLanguageChange={handleSelectLanguage}
+            onBack={() => navigateToTab("home")}
+            language={language}
+          />
+        )}
+
+        <BottomNavBar
+          activeTab={tab}
+          onSelectTab={navigateToTab}
+          isListening={liveConnected || isRecording}
+          isRecording={isRecording}
+          liveConnected={liveConnected}
+          useLiveStream={useLiveStream && canLiveStream}
+          isProcessing={isProcessing}
+          onToggleMic={toggleMic}
+        />
       </main>
 
       <RightSlideDashboard
         open={drawerOpen}
         activeTab={tab}
-        showHero={showHero}
         currentUser={currentUser}
         onSelectTab={navigateToTab}
         onLogout={handleLogout}
