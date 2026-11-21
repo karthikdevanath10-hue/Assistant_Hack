@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Download, Search, UserPlus } from "lucide-react";
+import { Download, FileText, Search, UserPlus } from "lucide-react";
 import { api } from "../api/client";
 import {
   countCustomerBalanceGroups,
@@ -132,8 +132,18 @@ export function CustomerLedgersScreen({
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button className="btn btn-secondary" type="button" onClick={() => api.exportCsv()}>
-              <Download size={15} /> Export All CSV
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() =>
+                api.exportPdf(null, {
+                  transactions: allTransactions,
+                  currentUser,
+                })
+              }
+              title="Download store-wide PDF ledger statement"
+            >
+              <FileText size={15} /> Export PDF
             </button>
             {onCreateCustomer && (
               <button className="btn btn-primary" type="button" onClick={() => setShowAdd((v) => !v)}>

@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Download,
+  FileText,
   History,
   LayoutGrid,
   MessageCircle,
@@ -308,9 +309,16 @@ export function CustomerLedgerCard({
         <button
           className="btn btn-secondary btn-sm"
           type="button"
-          onClick={() => api.exportCsv(customer.id)}
+          onClick={() =>
+            api.exportPdf(customer.id, {
+              customer,
+              transactions: safeTxs,
+              currentUser,
+            })
+          }
+          title={`Download ${customer.name}'s PDF khata statement`}
         >
-          <Download size={14} /> CSV
+          <FileText size={14} /> PDF
         </button>
       </div>
 

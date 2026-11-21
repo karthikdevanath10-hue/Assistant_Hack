@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronDown, Clock, History, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronDown, Clock, FileText, History, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
 import { api } from "../api/client";
 import { formatINR } from "../utils/numberNormalizer";
 import { playReplyAudio } from "../audio/recorder";
@@ -396,8 +396,18 @@ export function DashboardScreen({
       <div className="card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <span style={{ fontWeight: 700 }}>{t("recentActivity", language)}</span>
-          <button className="btn btn-secondary" type="button" onClick={() => api.exportCsv()}>
-            Export CSV
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={() =>
+              api.exportPdf(null, {
+                transactions: dashboard?.recent_transactions || [],
+                currentUser,
+              })
+            }
+            title="Download store-wide PDF ledger statement"
+          >
+            <FileText size={14} /> Export PDF
           </button>
         </div>
         <div className="tx-list">

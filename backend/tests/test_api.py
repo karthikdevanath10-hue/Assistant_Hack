@@ -49,6 +49,11 @@ def test_dpdp_wipe_and_csv_export(api_client):
     assert csv_res.status_code == 200
     assert "Customer,Date,Type,Amount (INR)" in csv_res.text
 
+    pdf_res = api_client.get("/api/export/pdf")
+    assert pdf_res.status_code == 200
+    assert pdf_res.headers["content-type"] == "application/pdf"
+    assert pdf_res.content.startswith(b"%PDF-")
+
 
 def test_vercel_serverless_entrypoint_and_readonly_safety(monkeypatch, tmp_path, api_client):
     import importlib

@@ -175,6 +175,42 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   authLogout: () => request("/api/auth/logout", { method: "POST" }),
+  exportPdf: async (customerId = null, options = {}) => {
+    try {
+      const token = getAuthToken();
+      const headers = new Headers();
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      const url =
+        customerId != null
+          ? `/api/export/pdf?customer_id=${encodeURIComponent(customerId)}`
+          : "/api/export/pdf";
+      const res = await fetch(url, { headers });
+      if (!res.ok) {
+        throw new Error(`PDF export failed (HTTP ${res.status})`);
+      }
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `voice_khata_${customerId ?? "statement"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      console.warn("Server PDF export failed, trying client-side PDF generator:", err);
+      if (options.customer || options.transactions) {
+        const { generateClientLedgerPdf } = await import("../utils/pdfGenerator");
+        generateClientLedgerPdf({
+          customer: options.customer,
+          transactions: options.transactions,
+          currentUser: options.currentUser,
+        });
+        return;
+      }
+      throw err;
+    }
+  },
   exportCsv: async (customerId = null) => {
     const token = getAuthToken();
     const headers = new Headers();

@@ -22,6 +22,7 @@ from app.schemas.models import (
     ReminderResponse,
     TransactionOut,
 )
+from app.services.pdf_export import generate_ledger_pdf
 from app.services.responsible_ai import build_polite_reminder
 
 
@@ -222,5 +223,39 @@ def export_ledger_csv(customer_id: int | None = None, container: AppContainer = 
         iter([buf.getvalue()]),
         media_type="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/export/pdf")
+def export_ledger_pdf(customer_id: int | None = None, container: AppContainer = Depends(get_scoped_container)):
+    rows = container.db.export_transactions(customer_id=customer_id)
+    cust = None
+    if customer_id is not None:
+        cust = container.db.get_customer_by_id(customer_id)
+
+    shop_name = "Voice Khata"
+    merchant_name = "Merchant"
+    merchant_phone = ""
+    if hasattr(container, "user") and container.user:
+        shop_name = container.user.get("shop_name") or container.user.get("name") or "Voice Khata"
+        merchant_name = container.user.get("name") or "Merchant"
+        merchant_phone = container.user.get("phone") or ""
+
+    pdf_bytes = generate_ledger_pdf(
+        transactions=rows,
+        customer=cust,
+        shop_name=shop_name,
+        merchant_name=merchant_name,
+        merchant_phone=merchant_phone,
+    )
+
+    cust_clean = cust["name"].replace(" ", "_") if cust and cust.get("name") else "all_customers"
+    filename = f"voice_khata_{cust_clean}.pdf"
+    clean_filename = "".join(c for c in filename if c.isalnum() or c in "._- ")
+
+    return StreamingResponse(
+        iter([pdf_bytes]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{clean_filename}"'},
     )
 
