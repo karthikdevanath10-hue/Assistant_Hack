@@ -118,6 +118,7 @@ export function DashboardScreen({
   lastTurn,
   customers,
   language,
+  currentUser = null,
   liveHighlightTxIds = [],
   onRunPhrase,
   onManualTx,
@@ -178,7 +179,7 @@ export function DashboardScreen({
                   <button
                     className="btn btn-whatsapp"
                     type="button"
-                    onClick={() => shareViaWhatsApp({ customer: cust, tx })}
+                    onClick={() => shareViaWhatsApp({ customer: cust, tx, currentUser })}
                     title="Send WhatsApp receipt for this entry"
                   >
                     <MessageCircle size={15} /> WhatsApp
@@ -402,7 +403,7 @@ export function DashboardScreen({
                       phone: "",
                       outstanding_balance: 0,
                     };
-                    shareViaWhatsApp({ customer: cust, tx });
+                    shareViaWhatsApp({ customer: cust, tx, currentUser });
                   }}
                   title={`Send WhatsApp receipt for ₹${tx.amount}`}
                 >

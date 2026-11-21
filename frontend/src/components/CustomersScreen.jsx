@@ -7,6 +7,7 @@ import { CustomerEditForm } from "./CustomerEditForm";
 export function CustomersScreen({
   customers,
   language,
+  currentUser = null,
   highlightCustomerId = null,
   onSearch,
   onCreateCustomer,
@@ -213,7 +214,7 @@ export function CustomersScreen({
                   <button
                     className="btn btn-whatsapp"
                     type="button"
-                    onClick={() => shareViaWhatsApp({ customer: c })}
+                    onClick={() => shareViaWhatsApp({ customer: c, currentUser })}
                     title="Send WhatsApp Khata Statement"
                   >
                     <MessageCircle size={15} /> WhatsApp

@@ -6,6 +6,7 @@ export function CustomerLedgerModal({
   transactions,
   highlightTxIds = [],
   inline = false,
+  currentUser = null,
   onUpdateCustomer,
   onDeleteCustomer,
   onOpenInLedgers,
@@ -28,6 +29,7 @@ export function CustomerLedgerModal({
       transactions={transactions}
       highlightTxIds={highlightTxIds}
       inline={inline}
+      currentUser={currentUser}
       onUpdateCustomer={onUpdateCustomer}
       onDeleteCustomer={onDeleteCustomer}
       onOpenInLedgers={onOpenInLedgers}

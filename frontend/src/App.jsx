@@ -275,6 +275,9 @@ export default function App() {
         if (!active) return;
         currentUserRef.current = me;
         setCurrentUser(me);
+        try {
+          localStorage.setItem("voice_khata_user_v1", JSON.stringify(me));
+        } catch {}
         if (me?.preferred_language) {
           setLanguage(me.preferred_language);
           try {
@@ -351,6 +354,9 @@ export default function App() {
     setAuthToken(res.access_token);
     currentUserRef.current = res.user;
     setCurrentUser(res.user);
+    try {
+      localStorage.setItem("voice_khata_user_v1", JSON.stringify(res.user));
+    } catch {}
     const userLang = preferredLanguage || res.user?.preferred_language;
     if (userLang) {
       setLanguage(userLang);
@@ -422,6 +428,9 @@ export default function App() {
     clearAuthToken();
     currentUserRef.current = null;
     setCurrentUser(null);
+    try {
+      localStorage.removeItem("voice_khata_user_v1");
+    } catch {}
     setAuthMode("landing");
     setAuthError("");
     resetWorkspaceState(null);
@@ -1105,6 +1114,7 @@ export default function App() {
           customer={selectedCustomer}
           transactions={selectedCustomerTxs}
           highlightTxIds={liveHighlightTxIds}
+          currentUser={currentUser}
           onUpdateCustomer={handleUpdateCustomer}
           onDeleteCustomer={handleDeleteCustomer}
           onOpenInLedgers={(cust) => {
@@ -1129,6 +1139,7 @@ export default function App() {
             lastTurn={lastTurn}
             customers={customers}
             language={language}
+            currentUser={currentUser}
             liveHighlightTxIds={liveHighlightTxIds}
             onRunPhrase={runTextTurn}
             onManualTx={handleManualTx}
@@ -1141,6 +1152,7 @@ export default function App() {
           <CustomersScreen
             customers={customers}
             language={language}
+            currentUser={currentUser}
             highlightCustomerId={liveHighlightCustId}
             onSearch={(q) => refreshAll(q)}
             onCreateCustomer={handleCreateCustomer}
@@ -1158,6 +1170,7 @@ export default function App() {
             customers={customers}
             allTransactions={allTransactions}
             language={language}
+            currentUser={currentUser}
             highlightCustomerId={liveHighlightCustId}
             highlightTxIds={liveHighlightTxIds}
             focusCustomerId={focusLedgersCustId}

@@ -26,6 +26,7 @@ export function CustomerLedgerCard({
   highlightTxIds = [],
   isHighlighted = false,
   inline = false,
+  currentUser = null,
   onUpdateCustomer,
   onDeleteCustomer,
   onAddTransaction,
@@ -103,7 +104,7 @@ export function CustomerLedgerCard({
           <button
             className="btn btn-whatsapp btn-sm"
             type="button"
-            onClick={() => shareViaWhatsApp({ customer, transactions })}
+            onClick={() => shareViaWhatsApp({ customer, transactions, currentUser })}
             title="Send WhatsApp Khata statement"
           >
             <MessageCircle size={14} /> WhatsApp
@@ -335,7 +336,7 @@ export function CustomerLedgerCard({
                   <button
                     className="btn-icon-whatsapp"
                     type="button"
-                    onClick={() => shareViaWhatsApp({ customer, tx })}
+                    onClick={() => shareViaWhatsApp({ customer, tx, currentUser })}
                     title={`Send WhatsApp receipt for ₹${tx.amount}`}
                   >
                     <MessageCircle size={13} />

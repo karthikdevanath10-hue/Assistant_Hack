@@ -114,16 +114,76 @@ export function normalizePhoneForWhatsApp(phone) {
 }
 
 /**
+ * Retrieves the currently logged-in shopkeeper profile from localStorage.
+ */
+export function getLoggedInShopkeeper() {
+  if (typeof window === "undefined" || !window.localStorage) return null;
+  try {
+    const raw = localStorage.getItem("voice_khata_user_v1");
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Builds polite WhatsApp formatted receipt text with bolding and dividers.
+ * Dynamically inserts shopkeeper's name, phone number (for online payment),
+ * and shop name (if configured in profile) for each shopkeeper.
  */
 export function buildReceiptMessage({
   customer,
   tx = null,
-  shopName = "Kirana Store",
+  shopName,
+  shopkeeperName,
+  shopkeeperPhone,
+  currentUser = null,
 } = {}) {
   const custName = customer?.name || "Grahak";
   const balance = Number(customer?.outstanding_balance || 0);
   const formattedBalance = formatINR(balance);
+
+  // Dynamic logged-in shopkeeper profile (specific to each shopkeeper)
+  const loggedIn = currentUser || getLoggedInShopkeeper();
+
+  // 1. Shop Name: use explicitly provided if set, otherwise from shopkeeper profile
+  let effectiveShopName = "";
+  if (shopName && shopName.trim()) {
+    effectiveShopName = shopName.trim();
+  } else if (loggedIn?.shop_name && loggedIn.shop_name.trim() !== "Voice Khata") {
+    effectiveShopName = loggedIn.shop_name.trim();
+  }
+
+  // 2. Shopkeeper Name: use explicitly provided or from profile
+  const effectiveShopkeeperName = (
+    shopkeeperName ||
+    loggedIn?.name ||
+    ""
+  ).trim();
+
+  // 3. Shopkeeper Phone: use explicitly provided or from profile
+  const effectiveShopkeeperPhone = (
+    shopkeeperPhone ||
+    loggedIn?.phone ||
+    ""
+  ).trim();
+
+  // Format header lines:
+  // Only show shop line if shopkeeper added a shop name in profile
+  const shopLine = effectiveShopName ? `🏪 *${effectiveShopName}*\n` : "";
+  // Only show shopkeeper line if shopkeeper name is present
+  const shopkeeperLine = effectiveShopkeeperName ? `👤 *Shopkeeper*: ${effectiveShopkeeperName}\n` : "";
+
+  // Payment line: adds shopkeeper's phone number so customer knows number for online payment
+  let paymentSection = "";
+  if (effectiveShopkeeperPhone) {
+    if (effectiveShopkeeperName) {
+      paymentSection = `💳 *For online payment use this number*: ${effectiveShopkeeperPhone} (${effectiveShopkeeperName})\n--------------------------------\n`;
+    } else {
+      paymentSection = `💳 *For online payment use this number*: ${effectiveShopkeeperPhone}\n--------------------------------\n`;
+    }
+  }
 
   // Single transaction receipt
   if (tx) {
@@ -135,7 +195,8 @@ export function buildReceiptMessage({
 
     return (
       `🧾 *Digital Khata Receipt*\n` +
-      `🏪 *${shopName}*\n` +
+      shopLine +
+      shopkeeperLine +
       `👤 *Customer*: ${custName}\n` +
       `--------------------------------\n` +
       `📅 *Date*: ${dateStr}\n` +
@@ -143,6 +204,7 @@ export function buildReceiptMessage({
       noteStr +
       `📊 *Kul Baaki (Net Due)*: ${formattedBalance}\n` +
       `--------------------------------\n` +
+      paymentSection +
       `_Aapke vishwas aur sahyog ke liye dhanyawad!_`
     );
   }
@@ -155,13 +217,15 @@ export function buildReceiptMessage({
 
   return (
     `🧾 *Digital Khata Statement*\n` +
-    `🏪 *${shopName}*\n` +
+    shopLine +
+    shopkeeperLine +
     `👤 *Customer*: ${custName}\n` +
     `--------------------------------\n` +
     `📈 *Total Udhaar (Credit)*: ${totalCredit}\n` +
     `📉 *Total Jama (Paid)*: ${totalPayment}\n` +
     `📊 *${statusLabel}*: ${formattedBalance}\n` +
     `--------------------------------\n` +
+    paymentSection +
     `_Kripya hisab check karein. Kisi sawaal ke liye sampark karein. Dhanyawad!_`
   );
 }
@@ -170,13 +234,10 @@ export function buildReceiptMessage({
  * Returns WhatsApp click-to-chat intent URL.
  * If phone is missing or invalid, omits phone parameter so user can select any WhatsApp contact.
  */
-export function getWhatsAppShareUrl({
-  customer,
-  tx = null,
-  shopName = "Kirana Store",
-} = {}) {
+export function getWhatsAppShareUrl(options = {}) {
+  const { customer } = options;
   const phone = normalizePhoneForWhatsApp(customer?.phone);
-  const text = buildReceiptMessage({ customer, tx, shopName });
+  const text = buildReceiptMessage(options);
   const encodedText = encodeURIComponent(text);
 
   if (phone) {
@@ -188,12 +249,8 @@ export function getWhatsAppShareUrl({
 /**
  * Returns WhatsApp URL that always opens the contact picker (omits phone).
  */
-export function getWhatsAppContactPickerUrl({
-  customer,
-  tx = null,
-  shopName = "Kirana Store",
-} = {}) {
-  const text = buildReceiptMessage({ customer, tx, shopName });
+export function getWhatsAppContactPickerUrl(options = {}) {
+  const text = buildReceiptMessage(options);
   return `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
 }
 
@@ -223,12 +280,9 @@ export async function copyReceiptToClipboard(options) {
 /**
  * Returns SMS intent URL fallback.
  */
-export function getSmsShareUrl({
-  customer,
-  tx = null,
-  shopName = "Kirana Store",
-} = {}) {
+export function getSmsShareUrl(options = {}) {
+  const { customer } = options;
   const phone = normalizePhoneForWhatsApp(customer?.phone) || "";
-  const text = buildReceiptMessage({ customer, tx, shopName });
+  const text = buildReceiptMessage(options);
   return `sms:${phone}?body=${encodeURIComponent(text)}`;
 }

@@ -82,4 +82,40 @@ describe("whatsappReceipt utilities", () => {
     expect(waUrl).toContain("https://api.whatsapp.com/send?text=");
     expect(waUrl).not.toContain("phone=");
   });
+
+  it("includes shopkeeper name, shop name, and payment phone number from profile", () => {
+    const customer = { name: "Lakshmi Devi", phone: "7411490271", total_credit: 1190, total_payment: 1190, outstanding_balance: 0 };
+    const currentUser = { name: "Karthik .D", shop_name: "Karthik .D's Khata", phone: "9876543210" };
+
+    const msg = buildReceiptMessage({ customer, currentUser });
+    expect(msg).toContain("🏪 *Karthik .D's Khata*");
+    expect(msg).toContain("👤 *Shopkeeper*: Karthik .D");
+    expect(msg).toContain("👤 *Customer*: Lakshmi Devi");
+    expect(msg).toContain("💳 *For online payment use this number*: 9876543210 (Karthik .D)");
+  });
+
+  it("sends only payment number when shopkeeper name and shop name are not present in profile", () => {
+    const customer = { name: "Lakshmi Devi", phone: "7411490271", total_credit: 1190, total_payment: 1190, outstanding_balance: 0 };
+    const currentUser = { name: "", shop_name: "", phone: "9123456789" };
+
+    const msg = buildReceiptMessage({ customer, currentUser });
+    expect(msg).not.toContain("🏪");
+    expect(msg).not.toContain("Shopkeeper*:");
+    expect(msg).toContain("👤 *Customer*: Lakshmi Devi");
+    expect(msg).toContain("💳 *For online payment use this number*: 9123456789\n");
+  });
+
+  it("dynamically works for different shopkeepers with their own unique phone numbers", () => {
+    const customer = { name: "Mahesh", phone: "9888888888", total_credit: 500, total_payment: 0, outstanding_balance: 500 };
+
+    const shopkeeperA = { name: "Ramesh", shop_name: "Ramesh Provisions", phone: "9845011111" };
+    const msgA = buildReceiptMessage({ customer, currentUser: shopkeeperA });
+    expect(msgA).toContain("Ramesh Provisions");
+    expect(msgA).toContain("9845011111 (Ramesh)");
+
+    const shopkeeperB = { name: "Anand", shop_name: "Anand Kirana", phone: "9845022222" };
+    const msgB = buildReceiptMessage({ customer, currentUser: shopkeeperB });
+    expect(msgB).toContain("Anand Kirana");
+    expect(msgB).toContain("9845022222 (Anand)");
+  });
 });

@@ -19,6 +19,7 @@ export function CustomerLedgersScreen({
   customers = [],
   allTransactions = [],
   language,
+  currentUser = null,
   highlightCustomerId = null,
   highlightTxIds = [],
   focusCustomerId = null,
@@ -284,6 +285,7 @@ export function CustomerLedgersScreen({
                   transactions={custTxs}
                   highlightTxIds={highlightTxIds}
                   isHighlighted={isHighlighted}
+                  currentUser={currentUser}
                   onUpdateCustomer={onUpdateCustomer}
                   onDeleteCustomer={onDeleteCustomer}
                   onAddTransaction={onManualTx}
