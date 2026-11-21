@@ -57,20 +57,6 @@ export function JarvisHud({
   const orbScale = isListening ? 1 + Math.min(0.28, micLevel * 0.35) : aiSpeaking ? 1.12 : 1;
   const detectedNum = previewSpokenAmount(liveUserText);
 
-  const hudEndRef = React.useRef(null);
-
-  React.useEffect(() => {
-    hudEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [
-    conversationFeed,
-    lastTurn,
-    liveUserText,
-    liveAiText,
-    awaitingCustName,
-    awaitingConfirm,
-    awaitingDisambig,
-  ]);
-
   return (
     <section className={`jarvis-hud ${modeClass}`} aria-label="Assistant Live Voice HUD">
       <div className="jarvis-top">
@@ -266,8 +252,6 @@ export function JarvisHud({
           </div>
         </div>
       )}
-
-      <div ref={hudEndRef} style={{ height: 1, minHeight: 1, flexShrink: 0 }} />
     </section>
   );
 }
