@@ -27,6 +27,7 @@ import { resolveInitialAuthMode } from "./utils/authHelpers";
 import { playListeningStart, playTransactionSuccess } from "./utils/feedback";
 import { previewSpokenAmount } from "./utils/numberNormalizer";
 import { inferNavigationFromText } from "./utils/voiceNavigator";
+import { t } from "./utils/i18n";
 
 function newSessionId() {
   return `khata-${Math.random().toString(36).slice(2, 8)}`;
@@ -65,7 +66,13 @@ export default function App() {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedCustomerTxs, setSelectedCustomerTxs] = useState([]);
 
-  const [language, setLanguage] = useState("hi-IN");
+  const [language, setLanguage] = useState(() => {
+    try {
+      return localStorage.getItem("preferred_language") || "hi-IN";
+    } catch {
+      return "hi-IN";
+    }
+  });
   const [aiMode, setAiMode] = useState("cascaded");
   const [speechProvider, setSpeechProvider] = useState("auto");
   const [ephemeral, setEphemeral] = useState(false);
@@ -773,9 +780,44 @@ export default function App() {
     setSelectedCustomerTxs(txs);
   }
 
+  function handleSelectLanguage(newLang) {
+    if (!newLang) return;
+    // 1. Immediately update state and storage for zero-latency instant re-render across the whole page
+    setLanguage(newLang);
+    try {
+      localStorage.setItem("preferred_language", newLang);
+    } catch {
+      // ignore
+    }
+    // 2. Persist to backend settings asynchronously
+    handleUpdateSettings({ preferred_language: newLang });
+    // 3. If Live voice stream is active, restart with new language so assistant greets and speaks in it
+    if (liveConnected || liveConnecting) {
+      stopLiveSession();
+      setTimeout(() => {
+        startLiveSession(newLang);
+      }, 200);
+    }
+  }
+
   async function handleUpdateSettings(patch) {
+    if (patch.preferred_language) {
+      setLanguage(patch.preferred_language);
+      try {
+        localStorage.setItem("preferred_language", patch.preferred_language);
+      } catch {
+        // ignore
+      }
+    }
     const updated = await api.updateSettings(patch);
-    if (updated.preferred_language) setLanguage(updated.preferred_language);
+    if (updated.preferred_language) {
+      setLanguage(updated.preferred_language);
+      try {
+        localStorage.setItem("preferred_language", updated.preferred_language);
+      } catch {
+        // ignore
+      }
+    }
     if (updated.ai_mode) setAiMode(updated.ai_mode);
     if (updated.speech_provider) setSpeechProvider(updated.speech_provider);
     setEphemeral(updated.ephemeral_transcripts === "true");
@@ -938,10 +980,10 @@ export default function App() {
                   onChange={(e) => setTextDraft(e.target.value)}
                   placeholder={
                     liveConnected
-                      ? `Live (${Math.round(micLevel * 100)}%) listening...`
+                      ? `Live (${Math.round(micLevel * 100)}%) ${t("hudListening", language)}`
                       : isRecording
-                      ? `Listening (${Math.round(micLevel * 100)}%)...`
-                      : "Speak or type command..."
+                      ? `${t("hudListening", language)} (${Math.round(micLevel * 100)}%)...`
+                      : t("inputPlaceholder", language)
                   }
                 />
                 {detectedPreview !== null && (
@@ -951,7 +993,7 @@ export default function App() {
                 )}
               </div>
               <button className="btn btn-primary" type="submit" disabled={isProcessing || !textDraft.trim()}>
-                <Send size={14} /> {isProcessing ? "..." : "Send"}
+                <Send size={14} /> {isProcessing ? "..." : t("sendBtn", language)}
               </button>
             </form>
           </div>
@@ -964,13 +1006,13 @@ export default function App() {
             <div className="brand-mark">₹</div>
             <div>
               <h1>{currentUser?.shop_name || "Voice Khata"}</h1>
-              <small>Voice Khata · Kirana AI Digital Accountant</small>
+              <small>{t("storeSubtitle", language)}</small>
             </div>
           </div>
           <div className="topbar-right">
             <LanguageSelector
               currentLanguage={language}
-              onChangeLanguage={(l) => handleUpdateSettings({ preferred_language: l })}
+              onChangeLanguage={handleSelectLanguage}
             />
             <div className="topbar-user-pill" title={currentUser?.phone || currentUser?.email || ""}>
               <User size={14} />
@@ -985,7 +1027,7 @@ export default function App() {
               aria-label="Open sliding dashboard"
             >
               <PanelRightOpen size={16} />
-              <span>Dashboard</span>
+              <span>{t("navDashboard", language)}</span>
               <span className="nav-trigger-badge">{activeNavSection.label}</span>
             </button>
             <button
@@ -1149,6 +1191,7 @@ export default function App() {
         onSelectTab={navigateToTab}
         onLogout={handleLogout}
         onClose={() => setDrawerOpen(false)}
+        language={language}
       />
     </div>
   );

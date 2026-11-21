@@ -2,6 +2,7 @@ import React from "react";
 import { Check, Mic, MicOff, Radio, ShieldCheck, Sparkles, Volume2, X } from "lucide-react";
 import { playReplyAudio } from "../audio/recorder";
 import { previewSpokenAmount } from "../utils/numberNormalizer";
+import { t } from "../utils/i18n";
 
 const FREQ_LEFT_BARS = [5, 8, 12, 18, 26, 19, 32, 22, 38, 28, 44, 34];
 const FREQ_RIGHT_BARS = [34, 44, 28, 38, 22, 32, 19, 26, 18, 12, 8, 5];
@@ -38,22 +39,22 @@ export function JarvisHud({
     lastTurn?.status === "needs_confirmation" && !awaitingCustName && Boolean(lastTurn?.pending_action);
   const awaitingDisambig = lastTurn?.status === "needs_disambiguation";
 
-  let statusLabel = "तैयार · बोलकर एंट्री करें (Tap to Speak)";
+  let statusLabel = t("hudReady", language);
   let modeClass = "idle";
   if (liveConnecting || isProcessing) {
-    statusLabel = "हिसाब जोड़ रहा हूँ... · Processing";
+    statusLabel = t("hudProcessing", language);
     modeClass = "thinking";
   } else if (aiSpeaking) {
-    statusLabel = "सहायक बोल रहा है · Assistant Speaking";
+    statusLabel = t("hudSpeaking", language);
     modeClass = "speaking";
   } else if (awaitingCustName) {
-    statusLabel = "ग्राहक का नाम बोलें · Awaiting Name";
+    statusLabel = t("hudAwaitingName", language);
     modeClass = "confirm";
   } else if (awaitingConfirm) {
-    statusLabel = "पुष्टि करें: 'हाँ' या 'ना' बोलें · Confirm";
+    statusLabel = t("hudConfirm", language);
     modeClass = "confirm";
   } else if (isListening) {
-    statusLabel = liveConnected ? "लाइव सुन रहा हूँ... · Listening Live" : "बोलिए, सुन रहा हूँ... · Listening";
+    statusLabel = liveConnected ? t("hudListeningLive", language) : t("hudListening", language);
     modeClass = "listening";
   }
 
@@ -165,8 +166,8 @@ export function JarvisHud({
             </div>
             <div className="jarvis-subtitle">
               {useLiveStream && canLiveStream
-                ? "रीयल-टाइम आवाज़ बातचीत (Gemini 3.8 Live)"
-                : "आराम से बोलें, रुकने पर अपने आप दर्ज होगा (Hands-Free Voice)"}
+                ? t("hudSubtitleLive", language)
+                : t("hudSubtitlePtt", language)}
             </div>
           </div>
         </div>
@@ -183,7 +184,7 @@ export function JarvisHud({
                 : "Switch between Gemini 3.8 Live Stream and Hands-Free Push-to-Talk"
             }
           >
-            <Radio size={13} /> {useLiveStream ? "Live AI: चालू" : "Push-to-Talk"}
+            <Radio size={13} /> {useLiveStream ? t("liveAiOn", language) : t("liveAiOff", language)}
           </button>
           <button
             type="button"
@@ -191,7 +192,7 @@ export function JarvisHud({
             onClick={() => onToggleInteractiveConfirm(!interactiveConfirm)}
             title="Ask 'Sure, sir. Shall I confirm?' before saving credits or payments"
           >
-            <ShieldCheck size={13} /> पुष्टि नियम: {interactiveConfirm ? "चालू (ON)" : "बंद (OFF)"}
+            <ShieldCheck size={13} /> {interactiveConfirm ? t("confirmRuleOn", language) : t("confirmRuleOff", language)}
           </button>
         </div>
       </div>
@@ -200,7 +201,7 @@ export function JarvisHud({
       <div className="jarvis-transcript-grid">
         <div className="jarvis-caption-box">
           <div className="jarvis-caption-label">
-            <span>आपकी आवाज़ · YOU</span>
+            <span>{t("yourVoiceLabel", language)}</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
               {isListening && (
                 <span className="jarvis-meter-track" title={`Mic level: ${Math.round(micLevel * 100)}%`}>
@@ -218,7 +219,7 @@ export function JarvisHud({
               liveUserText
             ) : isListening && aiSpeaking ? (
               <span style={{ color: "#6ee7b7" }}>
-                सहायक बोल रहा है — रुकने पर बोलें...
+                {t("hudSpeaking", language)}
               </span>
             ) : isListening && micInfo?.signalOk === false ? (
               <span className="jarvis-mic-warn">
@@ -226,13 +227,13 @@ export function JarvisHud({
               </span>
             ) : isListening && micInfo?.speechActive ? (
               <span style={{ color: "#38bdf8" }}>
-                आपकी आवाज़ साफ सुनाई दे रही है...
+                {t("hudListeningLive", language)}
               </span>
             ) : (
               <span style={{ opacity: 0.75 }}>
                 {isListening
-                  ? `सुन रहा हूँ — बोलें जैसे "सुरेश का 340 उधार" या "रमेश ने 200 दिया"...`
-                  : "माइक बटन दबाएं और बोलें — यहाँ आपकी बात तुरंत दिखेगी।"}
+                  ? t("listenHint", language)
+                  : t("idleHint", language)}
               </span>
             )}
           </div>
@@ -241,7 +242,7 @@ export function JarvisHud({
         <div className="jarvis-caption-box jarvis-ai-box">
           <div className="jarvis-caption-label">
             <span>
-              <Sparkles size={12} style={{ verticalAlign: "-1px" }} /> किराना सहायक · AI
+              <Sparkles size={12} style={{ verticalAlign: "-1px" }} /> {t("aiAssistantLabel", language)}
             </span>
             {lastTurn?.spoken_reply && (
               <button
@@ -259,14 +260,14 @@ export function JarvisHud({
                 }
                 title="फिर से सुनें / Replay"
               >
-                <Volume2 size={13} /> सुनें
+                <Volume2 size={13} /> {t("listenBtn", language)}
               </button>
             )}
           </div>
           <div className="jarvis-caption-text">
             {liveAiText || lastTurn?.spoken_reply || (
               <span style={{ opacity: 0.7 }}>
-                माइक दबाकर बोलें — सहायक हिसाब जोड़कर तुरंत जवाब देगा।
+                {t("aiIdleHint", language)}
               </span>
             )}
           </div>
@@ -276,21 +277,21 @@ export function JarvisHud({
       {/* 1-tap Interactive Confirmation / Customer Name / Disambiguation bar */}
       {awaitingCustName && (
         <div className="jarvis-action-bar">
-          <span className="jarvis-action-prompt">नया ग्राहक: नाम बोलें या नीचे लिखें:</span>
+          <span className="jarvis-action-prompt">{t("newCustomerPrompt", language)}</span>
           <button
             type="button"
             className="jarvis-confirm-no"
             disabled={isProcessing}
             onClick={() => onQuickReply("No, cancel")}
           >
-            <X size={14} /> रद्द करें (Cancel)
+            <X size={14} /> {t("cancel", language)}
           </button>
         </div>
       )}
 
       {awaitingConfirm && (
         <div className="jarvis-action-bar">
-          <span className="jarvis-action-prompt">पुष्टि: &ldquo;हाँ, सेव करो&rdquo; बोलें या बटन दबाएं:</span>
+          <span className="jarvis-action-prompt">{t("confirmPrompt", language)}</span>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <button
               type="button"
@@ -298,7 +299,7 @@ export function JarvisHud({
               disabled={isProcessing}
               onClick={() => onQuickReply("Yes, confirm")}
             >
-              <Check size={14} /> हाँ, सेव करें (Save)
+              <Check size={14} /> {t("yesSave", language)}
             </button>
             <button
               type="button"
@@ -306,7 +307,7 @@ export function JarvisHud({
               disabled={isProcessing}
               onClick={() => onQuickReply("No, cancel")}
             >
-              <X size={14} /> रद्द करें (Cancel)
+              <X size={14} /> {t("cancel", language)}
             </button>
           </div>
         </div>
@@ -314,7 +315,7 @@ export function JarvisHud({
 
       {awaitingDisambig && lastTurn?.candidate_customers?.length > 0 && (
         <div className="jarvis-action-bar">
-          <span className="jarvis-action-prompt">कौन से ग्राहक का हिसाब?</span>
+          <span className="jarvis-action-prompt">{t("whichCustomer", language)}</span>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {lastTurn.candidate_customers.map((name) => (
               <button

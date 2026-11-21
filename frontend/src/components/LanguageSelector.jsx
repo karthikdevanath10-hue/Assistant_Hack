@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import { Check, Globe } from "lucide-react";
+import { SUPPORTED_LANGUAGES } from "../utils/i18n";
 
-export const SUPPORTED_LANGUAGES = [
-  { code: "hi-IN", native: "हिन्दी", en: "Hindi", flag: "🇮🇳" },
-  { code: "kn-IN", native: "ಕನ್ನಡ", en: "Kannada", flag: "🇮🇳" },
-  { code: "ta-IN", native: "தமிழ்", en: "Tamil", flag: "🇮🇳" },
-  { code: "te-IN", native: "తెలుగు", en: "Telugu", flag: "🇮🇳" },
-  { code: "en-IN", native: "English", en: "Indian English", flag: "🇮🇳" },
-];
+export { SUPPORTED_LANGUAGES };
 
 export function LanguageSelector({ currentLanguage, onChangeLanguage }) {
   const [open, setOpen] = useState(false);

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { BookOpen, LayoutGrid, LogOut, Settings, User, Users, X } from "lucide-react";
+import { t } from "../utils/i18n";
 
 export const NAV_SECTIONS = [
   {
@@ -38,6 +39,7 @@ export function RightSlideDashboard({
   onSelectTab,
   onLogout,
   onClose,
+  language = "hi-IN",
 }) {
   const asideRef = useRef(null);
 
@@ -93,6 +95,16 @@ export function RightSlideDashboard({
         <nav className="nav-drawer-list" aria-label="Primary sections">
           {NAV_SECTIONS.map(({ id, label, subtitle, Icon }) => {
             const isActive = activeTab === id;
+            const translatedLabel =
+              id === "home"
+                ? t("navDashboard", language)
+                : id === "customers"
+                ? t("navCustomers", language)
+                : id === "ledgers"
+                ? t("navLedgers", language)
+                : id === "settings"
+                ? t("navSettings", language)
+                : label;
             return (
               <button
                 key={id}
@@ -104,7 +116,7 @@ export function RightSlideDashboard({
                   <Icon size={18} />
                 </span>
                 <span className="nav-drawer-text">
-                  <strong>{label}</strong>
+                  <strong>{translatedLabel}</strong>
                   <small>{subtitle}</small>
                 </span>
                 {isActive && <span className="nav-drawer-active-dot">Active</span>}
@@ -133,7 +145,7 @@ export function RightSlideDashboard({
                 onClick={onLogout}
                 title="Sign out to login screen"
               >
-                <LogOut size={14} /> Logout
+                <LogOut size={14} /> {t("logout", language)}
               </button>
             )}
           </div>

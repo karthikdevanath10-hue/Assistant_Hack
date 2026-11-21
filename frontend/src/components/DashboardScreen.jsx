@@ -4,17 +4,7 @@ import { api } from "../api/client";
 import { formatINR } from "../utils/numberNormalizer";
 import { playReplyAudio } from "../audio/recorder";
 import { shareViaWhatsApp } from "../utils/whatsappReceipt";
-
-const DEMO_PHRASES = [
-  "Ramesh ka 340 udhaar, kal 200 diya tha",
-  "Suresh ka teen sau chaalis udhaar",
-  "Nahi, 430",
-  "Ramesh ka 300 udhaar",
-  "Ramesh Gowda",
-  "Aaj kitna udhaar gaya?",
-  "Suresh ka total batao",
-  "Sabse zyada udhaar kiske paas hai?",
-];
+import { getDemoPhrases, t } from "../utils/i18n";
 
 function BreakdownChips({ items = [], tone = "credit", emptyText = "", onSelectCustomerById }) {
   if (!items || items.length === 0) {
@@ -164,27 +154,27 @@ export function DashboardScreen({
 
       <div className="stats-grid">
         <div className="card stat-card-credit">
-          <div className="stat-label">🔴 आज का उधार · Credit Today</div>
+          <div className="stat-label">{t("statCreditToday", language)}</div>
           <div className="stat-val credit">{formatINR(dashboard?.today_credit)}</div>
           <BreakdownChips
             items={dashboard?.today_credit_customers}
             tone="credit"
-            emptyText="No credit today"
+            emptyText={t("emptyCreditToday", language)}
             onSelectCustomerById={onSelectCustomerById}
           />
         </div>
         <div className="card stat-card-payment">
-          <div className="stat-label">🟢 आज का जमा · Payments Today</div>
+          <div className="stat-label">{t("statPaymentsToday", language)}</div>
           <div className="stat-val payment">{formatINR(dashboard?.today_payment)}</div>
           <BreakdownChips
             items={dashboard?.today_payment_customers}
             tone="payment"
-            emptyText="No payments today"
+            emptyText={t("emptyPaymentsToday", language)}
             onSelectCustomerById={onSelectCustomerById}
           />
         </div>
         <div className="card stat-card-due">
-          <div className="stat-label">📊 कुल बाज़ार बाकी · Total Due</div>
+          <div className="stat-label">{t("statTotalDue", language)}</div>
           <div className="stat-val accent">{formatINR(dashboard?.total_outstanding)}</div>
           <BreakdownChips
             items={dashboard?.outstanding_customers}
@@ -194,7 +184,7 @@ export function DashboardScreen({
           />
         </div>
         <div className="card stat-card-cust">
-          <div className="stat-label">👥 कुल ग्राहक · Customers</div>
+          <div className="stat-label">{t("statCustomers", language)}</div>
           <div className="stat-val">{dashboard?.total_customers ?? 0}</div>
         </div>
       </div>
@@ -202,18 +192,18 @@ export function DashboardScreen({
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <div>
-            <div style={{ fontWeight: 700 }}>Quick Voice / Judge Test Prompts</div>
+            <div style={{ fontWeight: 700 }}>{t("quickVoiceTitle", language)}</div>
             <div style={{ fontSize: "0.8rem", color: "var(--muted)" }}>
-              Tap any prompt or hold the mic button below to speak live in Hindi, Kannada, Tamil, Telugu, or English.
+              {t("quickVoiceSub", language)}
             </div>
           </div>
           <button className="btn btn-secondary" onClick={() => setShowManual((v) => !v)}>
-            <Plus size={15} /> Manual Entry
+            <Plus size={15} /> {t("manualEntry", language)}
           </button>
         </div>
 
         <div className="demo-chips">
-          {DEMO_PHRASES.map((phrase) => (
+          {getDemoPhrases(language).map((phrase) => (
             <button key={phrase} className="chip-btn" onClick={() => onRunPhrase(phrase)}>
               {phrase}
             </button>
@@ -223,7 +213,7 @@ export function DashboardScreen({
         {showManual && (
           <form onSubmit={submitManual} style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 8 }}>
             <select className="text-input" value={custId} onChange={(e) => setCustId(e.target.value)} required>
-              <option value="">Select Customer...</option>
+              <option value="">{t("selectCustomer", language)}</option>
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -235,23 +225,23 @@ export function DashboardScreen({
               type="number"
               min="1"
               step="0.01"
-              placeholder="Amount ₹"
+              placeholder={t("amountPlaceholder", language)}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
             />
             <select className="text-input" value={txType} onChange={(e) => setTxType(e.target.value)}>
-              <option value="credit">Credit (Udhaar)</option>
-              <option value="payment">Payment</option>
+              <option value="credit">{t("creditOption", language)}</option>
+              <option value="payment">{t("paymentOption", language)}</option>
             </select>
             <input
               className="text-input"
-              placeholder="Note (optional)"
+              placeholder={t("noteOptional", language)}
               value={note}
               onChange={(e) => setNote(e.target.value)}
             />
             <button className="btn btn-primary" type="submit">
-              <CheckCircle2 size={15} /> Save
+              <CheckCircle2 size={15} /> {t("saveBtn", language)}
             </button>
           </form>
         )}
@@ -259,7 +249,7 @@ export function DashboardScreen({
 
       <div className="card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <span style={{ fontWeight: 700 }}>Recent Transactions</span>
+          <span style={{ fontWeight: 700 }}>{t("recentActivity", language)}</span>
           <button className="btn btn-secondary" type="button" onClick={() => api.exportCsv()}>
             Export CSV
           </button>
@@ -267,7 +257,7 @@ export function DashboardScreen({
         <div className="tx-list">
           {(dashboard?.recent_transactions || []).length === 0 && (
             <div style={{ color: "var(--muted)", fontSize: "0.86rem", padding: "6px 0" }}>
-              No transactions in this account yet. Speak a command or add a manual entry above to start your ledger.
+              {t("noTransactionsYet", language)}
             </div>
           )}
           {(dashboard?.recent_transactions || []).map((tx) => {
