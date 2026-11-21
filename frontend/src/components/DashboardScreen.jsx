@@ -22,7 +22,7 @@ function StatCardWithNotch({
   const isCustCard = tone === "cust";
 
   return (
-    <div className={`card stat-card stat-card-${tone}`}>
+    <div className={`card stat-card stat-card-${tone} ${isOpen ? "is-open" : ""}`}>
       {/* Top Notch Badge */}
       <div className="stat-card-top">
         <div className="stat-card-notch">
@@ -38,7 +38,16 @@ function StatCardWithNotch({
 
       {/* Interactive Drop Notch */}
       {!isCustCard ? (
-        <div className="stat-drop-notch">
+        <div className={`stat-drop-notch ${isOpen ? "is-open" : ""}`}>
+          {/* Transparent Backdrop to dismiss floating popover on tap-outside */}
+          {isOpen && (
+            <div
+              className="dropnotch-backdrop"
+              onClick={onToggle}
+              aria-hidden="true"
+            />
+          )}
+
           <button
             type="button"
             className={`stat-drop-notch-btn ${isOpen ? "open" : ""}`}
@@ -59,15 +68,22 @@ function StatCardWithNotch({
             {count > 0 && <ChevronDown size={14} className="notch-chevron" />}
           </button>
 
-          {/* Collapsible Dropdown Content */}
+          {/* Floating Dropdown Content */}
           <div className={`stat-notch-drawer ${isOpen ? "open" : ""}`}>
+            <div className="stat-notch-floating-header">
+              <span className="header-title">{title}</span>
+              <span className="header-badge">{count} {t("customers", language)}</span>
+            </div>
             <div className="stat-breakdown">
               {items.map((item) => (
                 <button
                   key={item.customer_id}
                   type="button"
                   className={`mini-cust-pill ${tone}`}
-                  onClick={() => onSelectCustomerById?.(item.customer_id)}
+                  onClick={() => {
+                    onToggle();
+                    onSelectCustomerById?.(item.customer_id);
+                  }}
                   title={`Open ${item.customer_name}'s khata`}
                 >
                   <span className="pill-name">{item.customer_name}</span>

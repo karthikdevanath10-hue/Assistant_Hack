@@ -2308,7 +2308,12 @@ body {
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.stat-card.is-open,
+.stat-card:has(.stat-drop-notch.is-open) {
+  z-index: 75;
 }
 
 .stat-card:hover {
@@ -2409,9 +2414,23 @@ body {
 
 /* The Drop Notch Drawer & Trigger */
 .stat-drop-notch {
+  position: relative;
   border-top: 1px dashed rgba(226, 232, 240, 0.95);
   padding-top: 8px;
   margin-top: 4px;
+}
+
+.stat-drop-notch.is-open {
+  z-index: 80;
+}
+
+/* Tap outside Backdrop to close floating drawer */
+.dropnotch-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  background: transparent;
+  pointer-events: auto;
 }
 
 .stat-drop-notch-btn {
@@ -2428,12 +2447,20 @@ body {
   font-size: 0.74rem;
   font-weight: 700;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 88;
 }
 
 .stat-drop-notch-btn:not(:disabled):hover {
   background: #f1f5f9;
   border-color: #cbd5e1;
   color: var(--ink);
+}
+
+.stat-drop-notch-btn.open {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
 .stat-drop-notch-btn:disabled {
@@ -2485,21 +2512,72 @@ body {
   transform: rotate(180deg);
 }
 
-/* Dropdown Drawer */
+/* Floating Dropdown Drawer */
 .stat-notch-drawer {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -2px;
+  right: -2px;
+  min-width: 250px;
   max-height: 0;
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1.5px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  z-index: 90;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.22s;
+  transform: translateY(-8px) scale(0.97);
   overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.25s ease;
-  margin-top: 0;
+}
+
+.stat-card-due .stat-notch-drawer {
+  right: 0;
+  left: auto;
+  width: max(100%, 250px);
 }
 
 .stat-notch-drawer.open {
-  max-height: 240px;
+  max-height: 280px;
   opacity: 1;
-  margin-top: 8px;
+  visibility: visible;
+  pointer-events: auto;
+  padding: 12px;
   overflow-y: auto;
-  padding-right: 2px;
+  transform: translateY(0) scale(1);
+}
+
+.stat-notch-floating-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.stat-notch-floating-header .header-title {
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-notch-floating-header .header-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #4338ca;
+  background: #eef2ff;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
 .stat-notch-drawer::-webkit-scrollbar {
