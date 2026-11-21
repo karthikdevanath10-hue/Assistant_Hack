@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, field_validator
 
 TxType = Literal["credit", "payment"]
 LanguageCode = Literal["hi-IN", "kn-IN", "ta-IN", "te-IN", "en-IN"]
-NavTab = Literal["home", "customers", "ledgers", "settings"]
+NavTab = Literal["home", "customers", "ledgers", "settings", "profile"]
 IntentType = Literal[
     "record_transactions",
     "correction",
@@ -347,6 +347,30 @@ class UserSignUpRequest(BaseModel):
         if len(cleaned) < 2:
             raise ValueError("Name must be at least 2 characters.")
         return cleaned
+
+
+class UserProfileUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=80)
+    shop_name: str | None = Field(default=None, max_length=100)
+    phone: str | None = Field(default=None, min_length=10, max_length=24)
+    email: str | None = Field(default=None, max_length=160)
+    preferred_language: LanguageCode | None = None
+    current_password: str | None = Field(default=None, max_length=128)
+    new_password: str | None = Field(default=None, min_length=6, max_length=128)
+
+    @field_validator("phone")
+    @classmethod
+    def _validate_phone(cls, value: str | None) -> str | None:
+        if value is None or not str(value).strip():
+            return None
+        return _normalize_valid_phone(value)
+
+    @field_validator("email")
+    @classmethod
+    def _validate_email(cls, value: str | None) -> str | None:
+        if value is None or not str(value).strip():
+            return None
+        return _normalize_valid_email(str(value))
 
 
 class UserLoginRequest(BaseModel):

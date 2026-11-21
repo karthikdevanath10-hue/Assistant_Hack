@@ -156,6 +156,12 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   authMe: () => request("/api/auth/me"),
+  authUpdateProfile: (payload) =>
+    request("/api/auth/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
   authLogout: () => request("/api/auth/logout", { method: "POST" }),
   exportCsv: async (customerId = null) => {
     const token = getAuthToken();

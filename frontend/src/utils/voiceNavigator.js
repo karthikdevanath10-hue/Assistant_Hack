@@ -35,9 +35,12 @@ export function inferNavigationFromText(text, customers = []) {
     return { tab: "customers", openCustomerId: null, openCustomerName: null };
   }
 
-  // 2. Explicit app tabs (Khata / Settings)
+  // 2. Explicit app tabs (Khata / Settings / Profile)
   if (/(open|show|go\s+to|kholo)?\s*settings\b/i.test(low)) {
     return { tab: "settings", openCustomerId: null, openCustomerName: null };
+  }
+  if (/(open|show|go\s+to|kholo)?\s*(my\s+)?profile\b/i.test(low)) {
+    return { tab: "profile", openCustomerId: null, openCustomerName: null };
   }
   if (
     /(open\s+khata|show\s+khata|open\s+dashboard|show\s+dashboard|go\s+home|home\s+page|main\s+page|today'?s?\s+credit|credit\s+today|who\s+took\s+credit|today'?s?\s+payment|payments?\s+today|who\s+paid\s+today|total\s+outstanding)/i.test(

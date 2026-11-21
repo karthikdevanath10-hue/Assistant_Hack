@@ -21,6 +21,7 @@ import { CustomersScreen } from "./components/CustomersScreen";
 import { DashboardScreen } from "./components/DashboardScreen";
 import { JarvisHud } from "./components/JarvisHud";
 import { LanguageSelector } from "./components/LanguageSelector";
+import { ProfileScreen } from "./components/ProfileScreen";
 import { NAV_SECTIONS, RightSlideDashboard } from "./components/RightSlideDashboard";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { resolveInitialAuthMode } from "./utils/authHelpers";
@@ -1012,7 +1013,12 @@ export default function App() {
 
       <main className="work-pane" aria-label="Khata Workspace">
         <header className="topbar">
-          <div className="brand">
+          <div
+            className="brand"
+            onClick={() => navigateToTab("profile")}
+            style={{ cursor: "pointer" }}
+            title="Click to view & edit shopkeeper profile"
+          >
             <div className="brand-mark">₹</div>
             <div>
               <h1>{currentUser?.shop_name || "Voice Khata"}</h1>
@@ -1024,10 +1030,20 @@ export default function App() {
               currentLanguage={language}
               onChangeLanguage={handleSelectLanguage}
             />
-            <div className="topbar-user-pill" title={currentUser?.phone || currentUser?.email || ""}>
+            <button
+              type="button"
+              className="topbar-user-pill"
+              onClick={() => navigateToTab("profile")}
+              title="Click to edit shopkeeper name, contact, email & language"
+              style={{
+                cursor: "pointer",
+                background: tab === "profile" ? "rgba(249, 115, 22, 0.15)" : undefined,
+                borderColor: tab === "profile" ? "var(--accent)" : undefined,
+              }}
+            >
               <User size={14} />
               <span>{currentUser?.name || "Shopkeeper"}</span>
-            </div>
+            </button>
             <button
               type="button"
               className={`nav-drawer-trigger ${drawerOpen ? "open" : ""}`}
@@ -1180,6 +1196,23 @@ export default function App() {
               await api.wipeTranscripts();
               await refreshAll();
             }}
+          />
+        )}
+
+        {tab === "profile" && (
+          <ProfileScreen
+            currentUser={currentUser}
+            onUpdateCurrentUser={(updated) => {
+              setCurrentUser(updated);
+              try {
+                localStorage.setItem("voice_khata_user_v1", JSON.stringify(updated));
+              } catch {
+                // ignore storage error
+              }
+            }}
+            onLanguageChange={handleSelectLanguage}
+            onBack={() => navigateToTab("home")}
+            language={language}
           />
         )}
 

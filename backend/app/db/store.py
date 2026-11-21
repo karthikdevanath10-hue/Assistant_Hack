@@ -210,6 +210,17 @@ class KhataStore(Protocol):
         created_at: str | None = None,
     ) -> dict: ...
     def update_user_last_login(self, user_id: int, last_login_at: str) -> None: ...
+    def update_user_profile(
+        self,
+        user_id: int,
+        *,
+        name: str | None = None,
+        shop_name: str | None = None,
+        phone: str | None = None,
+        email: str | None = None,
+        preferred_language: str | None = None,
+        password_hash: str | None = None,
+    ) -> dict | None: ...
     def for_user(self, user_id: int, preferred_language: str = "hi-IN") -> "KhataStore": ...
 
 
@@ -948,6 +959,49 @@ class SqliteKhataStore:
                 (last_login_at, int(user_id)),
             )
 
+    def update_user_profile(
+        self,
+        user_id: int,
+        *,
+        name: str | None = None,
+        shop_name: str | None = None,
+        phone: str | None = None,
+        email: str | None = None,
+        preferred_language: str | None = None,
+        password_hash: str | None = None,
+    ) -> dict | None:
+        updates: dict[str, str | None] = {}
+        if name is not None:
+            updates["name"] = name.strip()
+        if shop_name is not None:
+            updates["shop_name"] = shop_name.strip()
+        if phone is not None:
+            clean_phone = normalize_phone(phone)
+            existing_phone = self.get_user_by_phone(clean_phone)
+            if existing_phone and int(existing_phone["id"]) != int(user_id):
+                raise ValueError("An account with this mobile number already exists.")
+            updates["phone"] = clean_phone
+        if email is not None:
+            clean_email = normalize_email(email) if email and email.strip() else None
+            if clean_email:
+                existing_email = self.get_user_by_email(clean_email)
+                if existing_email and int(existing_email["id"]) != int(user_id):
+                    raise ValueError("An account with this email already exists.")
+            updates["email"] = clean_email
+        if preferred_language is not None:
+            updates["preferred_language"] = preferred_language
+        if password_hash is not None:
+            updates["password_hash"] = password_hash
+
+        if not updates:
+            return self.get_user_by_id(user_id)
+
+        set_clause = ", ".join(f"{k} = ?" for k in updates.keys())
+        values = list(updates.values()) + [int(user_id)]
+        with self._conn(write=True) as conn:
+            conn.execute(f"UPDATE users SET {set_clause} WHERE id = ?", values)
+        return self.get_user_by_id(user_id)
+
     def for_user(self, user_id: int, preferred_language: str = "hi-IN") -> "SqliteKhataStore":
         """Return a dedicated SQLite database file scoped strictly to user_id."""
         if self._is_tenant:
@@ -1682,6 +1736,47 @@ class MongoKhataStore:
             {"id": int(user_id)},
             {"$set": {"last_login_at": last_login_at}},
         )
+
+    def update_user_profile(
+        self,
+        user_id: int,
+        *,
+        name: str | None = None,
+        shop_name: str | None = None,
+        phone: str | None = None,
+        email: str | None = None,
+        preferred_language: str | None = None,
+        password_hash: str | None = None,
+    ) -> dict | None:
+        updates: dict[str, str | None] = {}
+        if name is not None:
+            updates["name"] = name.strip()
+        if shop_name is not None:
+            updates["shop_name"] = shop_name.strip()
+        if phone is not None:
+            clean_phone = normalize_phone(phone)
+            existing_phone = self.get_user_by_phone(clean_phone)
+            if existing_phone and int(existing_phone["id"]) != int(user_id):
+                raise ValueError("An account with this mobile number already exists.")
+            updates["phone"] = clean_phone
+        if email is not None:
+            clean_email = normalize_email(email) if email and email.strip() else None
+            if clean_email:
+                existing_email = self.get_user_by_email(clean_email)
+                if existing_email and int(existing_email["id"]) != int(user_id):
+                    raise ValueError("An account with this email already exists.")
+            updates["email"] = clean_email
+        if preferred_language is not None:
+            updates["preferred_language"] = preferred_language
+        if password_hash is not None:
+            updates["password_hash"] = password_hash
+
+        if updates:
+            self.mongo_db["users"].update_one(
+                {"id": int(user_id)},
+                {"$set": updates},
+            )
+        return self.get_user_by_id(user_id)
 
     def for_user(self, user_id: int, preferred_language: str = "hi-IN") -> "MongoKhataStore":
         """Return an isolated MongoDB database (or prefixed collections if Atlas restricts DB creation) for user_id."""

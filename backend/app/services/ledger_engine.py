@@ -585,7 +585,7 @@ class LedgerEngine:
             # Case A2: Direct Page / Customer Navigation
             elif plan.intent == "navigate_page":
                 page = plan.target_page or "home"
-                if page not in ("home", "customers", "ledgers", "settings"):
+                if page not in ("home", "customers", "ledgers", "settings", "profile"):
                     page = "home"
                 navigate_tab = page
                 if plan.selected_customer:
@@ -600,6 +600,7 @@ class LedgerEngine:
                     "customers": "Customers Details",
                     "ledgers": "All Customer Ledgers",
                     "settings": "Settings",
+                    "profile": "Shopkeeper Profile",
                 }
                 if open_customer_details and highlight_customer_name:
                     spoken_reply = _pick_lang(

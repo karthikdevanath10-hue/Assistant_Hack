@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 
 from app.db.crypto import hash_password, verify_password
 from app.deps import AppContainer, get_container
-from app.schemas.models import AuthResponse, UserLoginRequest, UserOut, UserSignUpRequest
+from app.schemas.models import AuthResponse, UserLoginRequest, UserOut, UserProfileUpdate, UserSignUpRequest
 
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -149,6 +149,44 @@ def get_authenticated_user(
     container: AppContainer = Depends(get_container),
 ) -> UserOut:
     return _user_to_out(user, container)
+
+
+@router.patch("/profile", response_model=UserOut)
+@router.put("/profile", response_model=UserOut)
+def update_profile(
+    req: UserProfileUpdate,
+    user: dict = Depends(get_current_user),
+    container: AppContainer = Depends(get_container),
+) -> UserOut:
+    uid = int(user["id"])
+    new_password_hash: str | None = None
+    if req.new_password:
+        if not req.current_password:
+            raise HTTPException(
+                status_code=400,
+                detail="Current password is required to change your password.",
+            )
+        if not verify_password(req.current_password, user["password_hash"]):
+            raise HTTPException(status_code=400, detail="Current password is incorrect.")
+        new_password_hash = hash_password(req.new_password)
+
+    try:
+        updated = container.db.update_user_profile(
+            uid,
+            name=req.name,
+            shop_name=req.shop_name,
+            phone=req.phone,
+            email=req.email,
+            preferred_language=req.preferred_language,
+            password_hash=new_password_hash,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    return _user_to_out(updated, container)
 
 
 @router.post("/logout")

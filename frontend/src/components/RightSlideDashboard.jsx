@@ -27,6 +27,12 @@ export const NAV_SECTIONS = [
     subtitle: "Language, Gemini AI & privacy",
     Icon: Settings,
   },
+  {
+    id: "profile",
+    label: "Profile",
+    subtitle: "Shopkeeper name, phone, email & shop",
+    Icon: User,
+  },
 ];
 
 /**
@@ -104,6 +110,8 @@ export function RightSlideDashboard({
                 ? t("navLedgers", language)
                 : id === "settings"
                 ? t("navSettings", language)
+                : id === "profile"
+                ? "Profile"
                 : label;
             return (
               <button
@@ -126,7 +134,12 @@ export function RightSlideDashboard({
         </nav>
 
         {currentUser && (
-          <div className="nav-drawer-user">
+          <div
+            className="nav-drawer-user"
+            onClick={() => onSelectTab("profile")}
+            style={{ cursor: "pointer" }}
+            title="Click to view & edit your shopkeeper profile"
+          >
             <div style={{ minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: "0.86rem" }}>
                 <User size={15} />

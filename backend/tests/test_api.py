@@ -438,6 +438,35 @@ def test_user_signup_login_session_and_encryption(api_client, isolated_container
     )
     assert phone_only_login.status_code == 200
 
+    # Test shopkeeper profile update (name, shop_name, phone, email, language)
+    profile_update = api_client.patch(
+        "/api/auth/profile",
+        headers={"Authorization": f"Bearer {s_body['access_token']}"},
+        json={
+            "name": "Karthik Updated",
+            "shop_name": "Karthik Super Kirana",
+            "phone": "9876500002",
+            "email": "karthik.new@example.com",
+            "preferred_language": "ta-IN",
+        },
+    )
+    assert profile_update.status_code == 200
+    p_body = profile_update.json()
+    assert p_body["name"] == "Karthik Updated"
+    assert p_body["shop_name"] == "Karthik Super Kirana"
+    assert p_body["phone"] == "9876500002"
+    assert p_body["email"] == "karthik.new@example.com"
+    assert p_body["preferred_language"] == "ta-IN"
+
+    # Verify updated profile via /me
+    me_updated = api_client.get(
+        "/api/auth/me",
+        headers={"Authorization": f"Bearer {s_body['access_token']}"},
+    )
+    assert me_updated.status_code == 200
+    assert me_updated.json()["name"] == "Karthik Updated"
+    assert me_updated.json()["shop_name"] == "Karthik Super Kirana"
+
     assert api_client.post("/api/auth/logout").json() == {"status": "logged_out"}
 
 
