@@ -24,6 +24,7 @@ import { LanguageSelector } from "./components/LanguageSelector";
 import { ProfileScreen } from "./components/ProfileScreen";
 import { NAV_SECTIONS, RightSlideDashboard } from "./components/RightSlideDashboard";
 import { SettingsScreen } from "./components/SettingsScreen";
+import { WorkspaceCurvedHero } from "./components/WorkspaceCurvedHero";
 import { resolveInitialAuthMode } from "./utils/authHelpers";
 import { playListeningStart, playTransactionSuccess } from "./utils/feedback";
 import { previewSpokenAmount } from "./utils/numberNormalizer";
@@ -1093,6 +1094,18 @@ export default function App() {
             </button>
           </div>
         </header>
+
+        <WorkspaceCurvedHero
+          activeTab={tab}
+          onSelectTab={navigateToTab}
+          onToggleDrawer={() => setDrawerOpen((prev) => !prev)}
+          onScrollToExplore={() => {
+            const el = document.getElementById("dashboard-metrics-section");
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+        />
 
         {!consentAccepted && (
           <ConsentBanner

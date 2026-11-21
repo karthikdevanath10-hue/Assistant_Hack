@@ -227,7 +227,7 @@ export function DashboardScreen({
         </div>
       )}
 
-      <div className="stats-grid">
+      <div className="stats-grid" id="dashboard-metrics-section">
         <StatCardWithNotch
           title={t("statCreditToday", language)}
           value={formatINR(dashboard?.today_credit)}
