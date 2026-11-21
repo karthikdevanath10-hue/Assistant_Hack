@@ -22,6 +22,7 @@ import { JarvisHud } from "./components/JarvisHud";
 import { NAV_SECTIONS, RightSlideDashboard } from "./components/RightSlideDashboard";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { resolveInitialAuthMode } from "./utils/authHelpers";
+import { playListeningStart, playTransactionSuccess } from "./utils/feedback";
 import { previewSpokenAmount } from "./utils/numberNormalizer";
 import { inferNavigationFromText } from "./utils/voiceNavigator";
 
@@ -394,6 +395,7 @@ export default function App() {
     const freshCusts = refreshed?.custs || customersRef.current;
 
     if (res?.transactions?.length > 0) {
+      playTransactionSuccess();
       const txIds = res.transactions.map((t) => t.id);
       const custId = res.transactions[0].customer_id;
       setLiveHighlightTxIds(txIds);
@@ -654,6 +656,7 @@ export default function App() {
           greet: true,
           voice: "Charon",
           onReady: () => {
+            playListeningStart();
             setLiveConnecting(false);
             setLiveConnected(true);
           },
@@ -724,6 +727,7 @@ export default function App() {
 
     if (!isRecording) {
       try {
+        playListeningStart();
         clearPttSilenceTimer();
         pttSpeechDetectedRef.current = false;
         const rec = new ShopAudioRecorder();
@@ -800,6 +804,7 @@ export default function App() {
 
   async function handleManualTx(payload) {
     const tx = await api.manualTransaction(payload);
+    playTransactionSuccess();
     if (tx?.id != null) {
       setLiveHighlightTxIds([tx.id]);
     }

@@ -5,12 +5,14 @@ import {
   CheckCircle2,
   Download,
   LayoutGrid,
+  MessageCircle,
   Pencil,
   Plus,
   Trash2,
   X,
 } from "lucide-react";
 import { formatINR } from "../utils/numberNormalizer";
+import { shareViaWhatsApp } from "../utils/whatsappReceipt";
 import { api } from "../api/client";
 import { CustomerEditForm } from "./CustomerEditForm";
 
@@ -98,6 +100,14 @@ export function CustomerLedgerCard({
         </div>
 
         <div className="customer-block-actions">
+          <button
+            className="btn btn-whatsapp btn-sm"
+            type="button"
+            onClick={() => shareViaWhatsApp({ customer, transactions })}
+            title="Send WhatsApp Khata statement"
+          >
+            <MessageCircle size={14} /> WhatsApp
+          </button>
           {onAddTransaction && (
             <button
               className="btn btn-secondary btn-sm"
@@ -317,9 +327,19 @@ export function CustomerLedgerCard({
                     {tx.note ? ` · ${tx.note}` : ""}
                   </div>
                 </div>
-                <div className={`tx-amt ${tx.tx_type}`}>
-                  {tx.tx_type === "credit" ? "+" : "-"}
-                  {formatINR(tx.amount)}
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div className={`tx-amt ${tx.tx_type}`}>
+                    {tx.tx_type === "credit" ? "+" : "-"}
+                    {formatINR(tx.amount)}
+                  </div>
+                  <button
+                    className="btn-icon-whatsapp"
+                    type="button"
+                    onClick={() => shareViaWhatsApp({ customer, tx })}
+                    title={`Send WhatsApp receipt for ₹${tx.amount}`}
+                  >
+                    <MessageCircle size={13} />
+                  </button>
                 </div>
               </div>
             );

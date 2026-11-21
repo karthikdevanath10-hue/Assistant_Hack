@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, Plus, Sparkles, Volume2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
 import { api } from "../api/client";
 import { formatINR } from "../utils/numberNormalizer";
 import { playReplyAudio } from "../audio/recorder";
+import { shareViaWhatsApp } from "../utils/whatsappReceipt";
 
 const DEMO_PHRASES = [
   "Ramesh ka 340 udhaar, kal 200 diya tha",
@@ -83,20 +84,41 @@ export function DashboardScreen({
                 {lastTurn.spoken_reply}
               </div>
             </div>
-            <button
-              className="btn btn-secondary"
-              onClick={() =>
-                playReplyAudio({
-                  audioBase64: lastTurn.audio_base64,
-                  audioMimeType: lastTurn.audio_mime_type,
-                  text: lastTurn.spoken_reply,
-                  language,
-                })
-              }
-              title="Replay spoken answer"
-            >
-              <Volume2 size={16} />
-            </button>
+            <div style={{ display: "flex", gap: 6, flexShrink: 0, alignItems: "center" }}>
+              {lastTurn.transactions?.length > 0 && (() => {
+                const tx = lastTurn.transactions[0];
+                const cust = customers?.find((c) => c.id === tx.customer_id) || {
+                  id: tx.customer_id,
+                  name: lastTurn.customer_breakdown?.[0]?.customer_name || "Customer",
+                  phone: "",
+                  outstanding_balance: lastTurn.balance,
+                };
+                return (
+                  <button
+                    className="btn btn-whatsapp"
+                    type="button"
+                    onClick={() => shareViaWhatsApp({ customer: cust, tx })}
+                    title="Send WhatsApp receipt for this entry"
+                  >
+                    <MessageCircle size={15} /> WhatsApp
+                  </button>
+                );
+              })()}
+              <button
+                className="btn btn-secondary"
+                onClick={() =>
+                  playReplyAudio({
+                    audioBase64: lastTurn.audio_base64,
+                    audioMimeType: lastTurn.audio_mime_type,
+                    text: lastTurn.spoken_reply,
+                    language,
+                  })
+                }
+                title="Replay spoken answer"
+              >
+                <Volume2 size={16} />
+              </button>
+            </div>
           </div>
 
           {lastTurn.customer_breakdown?.length > 0 && (

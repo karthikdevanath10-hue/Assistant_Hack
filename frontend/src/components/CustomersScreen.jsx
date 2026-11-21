@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Bell, BellOff, LayoutGrid, Pencil, Search, Trash2, UserPlus } from "lucide-react";
+import { Bell, BellOff, LayoutGrid, MessageCircle, Pencil, Search, Trash2, UserPlus } from "lucide-react";
 import { formatINR } from "../utils/numberNormalizer";
+import { shareViaWhatsApp } from "../utils/whatsappReceipt";
 import { CustomerEditForm } from "./CustomerEditForm";
 
 export function CustomersScreen({
@@ -180,6 +181,14 @@ export function CustomersScreen({
                   >
                     {formatINR(c.outstanding_balance)}
                   </div>
+                  <button
+                    className="btn btn-whatsapp"
+                    type="button"
+                    onClick={() => shareViaWhatsApp({ customer: c })}
+                    title="Send WhatsApp Khata Statement"
+                  >
+                    <MessageCircle size={15} /> WhatsApp
+                  </button>
                   <button
                     className="btn btn-secondary"
                     onClick={() => onToggleOptIn(c)}
