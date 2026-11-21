@@ -1065,12 +1065,21 @@ export default function App() {
             title="Click to view & edit shopkeeper profile"
           >
             <div className="brand-mark">₹</div>
-            <div>
+            <div className="brand-text">
               <h1>{currentUser?.shop_name || "Voice Khata"}</h1>
               <small>{t("storeSubtitle", language)}</small>
             </div>
           </div>
-          <div className="topbar-right">
+
+          <div className="topbar-hero-wrap">
+            <WorkspaceCurvedHero
+              activeTab={tab}
+              onSelectTab={navigateToTab}
+              onOpenChatHistory={() => setChatHistoryOpen(true)}
+            />
+          </div>
+
+          <div className="topbar-actions-row">
             <LanguageSelector
               currentLanguage={language}
               onChangeLanguage={handleSelectLanguage}
@@ -1095,11 +1104,6 @@ export default function App() {
               <LogOut size={14} />
               <span>Logout</span>
             </button>
-            <WorkspaceCurvedHero
-              activeTab={tab}
-              onSelectTab={navigateToTab}
-              onOpenChatHistory={() => setChatHistoryOpen(true)}
-            />
           </div>
         </header>
 

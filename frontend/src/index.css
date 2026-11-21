@@ -55,6 +55,20 @@ body {
   margin-left: auto;
 }
 
+.topbar-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  order: 2;
+}
+
+.topbar-hero-wrap {
+  display: flex;
+  align-items: center;
+  order: 3;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -1386,15 +1400,47 @@ select.text-input option {
 
 @media (max-width: 899px) {
   .split-shell {
-    padding: 10px 10px 96px;
-    gap: 12px;
+    padding: 10px 10px calc(110px + env(safe-area-inset-bottom, 20px));
+    gap: 14px;
     background: transparent;
   }
 
   .ai-pane {
-    max-height: 440px;
-    border-radius: 24px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(168, 85, 247, 0.25);
+    max-height: none;
+    border-radius: 22px;
+    padding: 12px 14px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(168, 85, 247, 0.22);
+  }
+
+  .ai-pane .jarvis-hud {
+    padding: 10px 6px 8px;
+    gap: 8px;
+  }
+
+  .ai-pane .jarvis-freq-stage {
+    height: 52px;
+  }
+
+  .ai-pane .jarvis-orb {
+    width: 52px;
+    height: 52px;
+  }
+
+  .ai-pane .jarvis-orb-container {
+    width: 52px;
+    height: 52px;
+  }
+
+  .ai-pane .jarvis-controls {
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ai-pane .jarvis-controls::-webkit-scrollbar {
+    display: none;
   }
 
   .work-pane {
@@ -1406,22 +1452,22 @@ select.text-input option {
     -webkit-backdrop-filter: blur(28px);
     border: 1.5px solid rgba(255, 255, 255, 0.14);
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
-    padding: 16px 16px 90px !important;
+    padding: 14px 14px calc(140px + env(safe-area-inset-bottom, 20px)) !important;
     color: #ffffff;
   }
 
   .ai-dock-card {
-    position: fixed !important;
-    bottom: 8px !important;
-    left: 10px !important;
-    right: 10px !important;
-    width: auto !important;
-    z-index: 9999 !important;
-    border-radius: 24px !important;
-    margin: 0 !important;
-    background: rgba(22, 10, 52, 0.96) !important;
-    border: 1px solid rgba(168, 85, 247, 0.4) !important;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8) !important;
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    z-index: 10 !important;
+    border-radius: 18px !important;
+    margin: 10px 0 0 !important;
+    background: rgba(18, 8, 42, 0.94) !important;
+    border: 1px solid rgba(168, 85, 247, 0.35) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
   }
 }
 
@@ -2429,7 +2475,7 @@ select.text-input option {
 
 @media (max-width: 899px) {
   .work-pane {
-    padding-bottom: 100px;
+    padding-bottom: calc(140px + env(safe-area-inset-bottom, 20px)) !important;
   }
 
   .bottom-nav-bar {
@@ -4821,6 +4867,292 @@ select.text-input option {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
 }
+
+/* ==========================================================================
+   Mobile-Responsive Alignment & Interface Refinements
+   ========================================================================== */
+
+/* Topbar Header & Actions on Mobile */
+@media (max-width: 680px) {
+  .topbar {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-areas:
+      "brand hero"
+      "actions actions" !important;
+    row-gap: 12px !important;
+    column-gap: 8px !important;
+    padding: 6px 2px 14px !important;
+    align-items: center !important;
+  }
+
+  .topbar .brand {
+    grid-area: brand;
+    min-width: 0;
+  }
+
+  .topbar .brand-text {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .topbar .brand h1 {
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar .brand small {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.72rem;
+  }
+
+  .topbar .topbar-hero-wrap {
+    grid-area: hero;
+    margin: 0;
+    justify-self: end;
+  }
+
+  .topbar .topbar-actions-row {
+    grid-area: actions;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .topbar .topbar-actions-row > * {
+    flex: 1 1 0%;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    padding: 7px 8px !important;
+    font-size: 0.76rem !important;
+    white-space: nowrap;
+  }
+
+  .topbar .topbar-actions-row .lang-trigger {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Customer Card Row - High-Fidelity Mobile Card Layout */
+.customer-card-item {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 14px 16px !important;
+  border-radius: 18px !important;
+}
+
+.customer-card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  cursor: pointer;
+  width: 100%;
+}
+
+.customer-card-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.customer-card-name {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.customer-card-meta {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.customer-card-balance {
+  font-size: 1.12rem !important;
+  font-weight: 800 !important;
+  padding: 4px 10px !important;
+  border-radius: 10px !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.customer-card-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px !important;
+}
+
+.customer-card-actions .customer-action-btn {
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 7px 10px !important;
+  font-size: 0.78rem !important;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  border-radius: 10px;
+}
+
+.customer-card-actions .customer-action-btn.customer-icon-btn {
+  flex: 0 0 38px;
+  width: 38px;
+  padding: 7px 0 !important;
+  justify-content: center;
+}
+
+.customer-card-actions .customer-action-btn.opt-active {
+  border-color: rgba(13, 148, 136, 0.4);
+  background: rgba(13, 148, 136, 0.12);
+}
+
+.customer-delete-confirm-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+}
+
+/* Customer Block Actions in All Ledgers on Mobile */
+@media (max-width: 680px) {
+  .customer-block-head {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .customer-block-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .customer-block-actions .btn-whatsapp {
+    grid-column: span 2 !important;
+  }
+
+  .customer-block-actions .btn {
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 7px 8px !important;
+    font-size: 0.76rem !important;
+  }
+}
+
+/* Settings Screen Mobile Layout & Controls */
+.settings-container {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-account-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-field-group {
+  display: grid;
+  gap: 6px;
+}
+
+.settings-field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.settings-select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  border-radius: 12px;
+  background: rgba(15, 8, 38, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}
+
+.settings-checkboxes-group {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.settings-check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.settings-check-row:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.settings-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.settings-check-text {
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: #f1f5f9;
+}
+
+.settings-wipe-btn {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+@media (max-width: 680px) {
+  .settings-account-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settings-logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 
 
 

@@ -30,15 +30,15 @@ export function SettingsScreen({
   onWipeTranscripts,
 }) {
   return (
-    <div style={{ display: "grid", gap: 14 }}>
+    <div className="settings-container">
       {currentUser && (
-        <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <div>
+        <div className="card settings-account-card">
+          <div className="settings-account-inner">
+            <div className="settings-account-info">
               <h3 style={{ margin: "0 0 4px", display: "flex", alignItems: "center", gap: 6 }}>
                 <User size={17} /> Signed-In Shopkeeper Account
               </h3>
-              <div style={{ fontSize: "0.86rem", fontWeight: 700 }}>
+              <div style={{ fontSize: "0.88rem", fontWeight: 700 }}>
                 {currentUser.name} · {currentUser.shop_name}
               </div>
               <div style={{ fontSize: "0.8rem", color: "var(--muted)", marginTop: 2 }}>
@@ -47,7 +47,7 @@ export function SettingsScreen({
               </div>
             </div>
             {onLogout && (
-              <button className="btn btn-secondary" type="button" onClick={onLogout}>
+              <button className="btn btn-secondary settings-logout-btn" type="button" onClick={onLogout}>
                 <LogOut size={15} /> Sign Out
               </button>
             )}
@@ -55,13 +55,13 @@ export function SettingsScreen({
         </div>
       )}
 
-      <div className="card">
+      <div className="card settings-engine-card">
         <h3 style={{ marginTop: 0 }}>Language &amp; Gemini AI Engine</h3>
-        <div style={{ display: "grid", gap: 12 }}>
-          <label style={{ display: "grid", gap: 4, fontSize: "0.85rem", fontWeight: 600 }}>
-            Preferred Shopkeeper Language
+        <div style={{ display: "grid", gap: 14 }}>
+          <label className="settings-field-group">
+            <span className="settings-field-label">Preferred Shopkeeper Language</span>
             <select
-              className="text-input"
+              className="text-input settings-select"
               value={language}
               onChange={(e) => onUpdateSetting({ preferred_language: e.target.value })}
             >
@@ -73,15 +73,15 @@ export function SettingsScreen({
             </select>
           </label>
 
-          <label style={{ display: "grid", gap: 4, fontSize: "0.85rem", fontWeight: 600 }}>
-            Gemini Optimization Tier
+          <label className="settings-field-group">
+            <span className="settings-field-label">Gemini Optimization Tier</span>
             <select
-              className="text-input"
+              className="text-input settings-select"
               value={aiMode}
               onChange={(e) => onUpdateSetting({ ai_mode: e.target.value })}
             >
               <option value="cascaded">
-                Cascaded (Recommended: Fast-Path + Gemini 3.8 Flash + Gemini 4 Argon escalation)
+                Cascaded (Recommended: Fast-Path + Gemini 3.8 Flash + Gemini 4 Argon)
               </option>
               <option value="flash">Gemini 3.8 Flash Only (Lowest cloud latency)</option>
               <option value="argon">Gemini 4 Argon (Fast frontier reasoning)</option>
@@ -90,10 +90,10 @@ export function SettingsScreen({
             </select>
           </label>
 
-          <label style={{ display: "grid", gap: 4, fontSize: "0.85rem", fontWeight: 600 }}>
-            Speech Recognition &amp; TTS Provider
+          <label className="settings-field-group">
+            <span className="settings-field-label">Speech Recognition &amp; TTS Provider</span>
             <select
-              className="text-input"
+              className="text-input settings-select"
               value={speechProvider}
               onChange={(e) => onUpdateSetting({ speech_provider: e.target.value })}
             >
@@ -104,42 +104,57 @@ export function SettingsScreen({
             </select>
           </label>
 
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.86rem" }}>
-            <input type="checkbox" checked={useDirectAudio} onChange={(e) => onToggleDirectAudio(e.target.checked)} />
-            Upload 16kHz noise-filtered WAV directly to Gemini / Gnani (best under shop noise)
-          </label>
+          <div className="settings-checkboxes-group">
+            <label className="settings-check-row">
+              <input
+                type="checkbox"
+                className="settings-checkbox"
+                checked={useDirectAudio}
+                onChange={(e) => onToggleDirectAudio(e.target.checked)}
+              />
+              <span className="settings-check-text">
+                Upload 16kHz noise-filtered WAV directly to Gemini / Gnani (best under shop noise)
+              </span>
+            </label>
 
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.86rem" }}>
-            <input
-              type="checkbox"
-              checked={useLiveStream && canLiveStream}
-              disabled={!canLiveStream}
-              onChange={(e) => onToggleLiveStream(e.target.checked)}
-            />
-            Enable Real-Time Assistant Gemini 3.8 Live Voice Mode
-            {!canLiveStream
-              ? " (requires Gemini API Key; using Push-to-Talk)"
-              : !liveWsSupported && liveEphemeralSupported
-              ? " (Direct Cloud Live via Ephemeral Token)"
-              : " (/ws/live)"}
-          </label>
+            <label className="settings-check-row">
+              <input
+                type="checkbox"
+                className="settings-checkbox"
+                checked={useLiveStream && canLiveStream}
+                disabled={!canLiveStream}
+                onChange={(e) => onToggleLiveStream(e.target.checked)}
+              />
+              <span className="settings-check-text">
+                Enable Real-Time Assistant Gemini 3.8 Live Voice Mode
+                {!canLiveStream
+                  ? " (requires Gemini API Key; using Push-to-Talk)"
+                  : !liveWsSupported && liveEphemeralSupported
+                  ? " (Direct Cloud Live via Ephemeral Token)"
+                  : " (/ws/live)"}
+              </span>
+            </label>
 
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.86rem" }}>
-            <input
-              type="checkbox"
-              checked={interactiveConfirm}
-              onChange={(e) => onToggleInteractiveConfirm(e.target.checked)}
-            />
-            Interactive confirmation before saving (&ldquo;Sure, sir. Shall I add this entry?&rdquo;)
-          </label>
+            <label className="settings-check-row">
+              <input
+                type="checkbox"
+                className="settings-checkbox"
+                checked={interactiveConfirm}
+                onChange={(e) => onToggleInteractiveConfirm(e.target.checked)}
+              />
+              <span className="settings-check-text">
+                Interactive confirmation before saving (&ldquo;Sure, sir. Shall I add this entry?&rdquo;)
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
-      <div className="card">
+      <div className="card settings-dpdp-card">
         <h3 style={{ marginTop: 0, display: "flex", alignItems: "center", gap: 6 }}>
           <Lock size={17} /> Responsible AI &amp; DPDP Act Controls
         </h3>
-        <div style={{ fontSize: "0.84rem", color: "var(--muted)", marginBottom: 10 }}>
+        <div style={{ fontSize: "0.84rem", color: "var(--muted)", marginBottom: 12, lineHeight: 1.5 }}>
           Database:{" "}
           <strong>
             {statusInfo?.database_backend === "mongodb"
@@ -166,18 +181,23 @@ export function SettingsScreen({
           </div>
         )}
 
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.86rem", marginBottom: 14 }}>
+        <label className="settings-check-row" style={{ marginBottom: 14 }}>
           <input
             type="checkbox"
+            className="settings-checkbox"
             checked={ephemeral}
             onChange={(e) => onUpdateSetting({ ephemeral_transcripts: e.target.checked })}
           />
-          Ephemeral transcript mode (do not persist raw spoken transcripts in database)
+          <span className="settings-check-text">
+            Ephemeral transcript mode (do not persist raw spoken transcripts in database)
+          </span>
         </label>
 
-        <button className="btn btn-danger" onClick={onWipeTranscripts}>
-          <Trash2 size={15} /> Wipe Demo Transcripts Now (DPDP)
-        </button>
+        <div style={{ marginTop: 8 }}>
+          <button className="btn btn-danger settings-wipe-btn" onClick={onWipeTranscripts}>
+            <Trash2 size={15} /> Wipe Demo Transcripts Now (DPDP)
+          </button>
+        </div>
       </div>
     </div>
   );
