@@ -1096,7 +1096,7 @@ export default function App() {
         )}
 
         {errorMsg && (
-          <div className="reply-banner" style={{ borderLeftColor: "#dc2626", background: "#fef2f2" }}>
+          <div className="reply-banner" style={{ borderLeftColor: "#f43f5e", background: "rgba(244, 63, 94, 0.16)", color: "#fda4af" }}>
             <strong>Notice:</strong> {errorMsg}
           </div>
         )}

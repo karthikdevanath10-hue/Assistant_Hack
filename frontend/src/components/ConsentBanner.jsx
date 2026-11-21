@@ -6,7 +6,7 @@ export function ConsentBanner({ disclosurePreview, onAccept }) {
     <div className="consent-banner" role="region" aria-label="AI Disclosure and DPDP Consent">
       <div style={{ flex: "1 1 280px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: "0.9rem" }}>
-          <ShieldCheck size={16} color="#fb923c" />
+          <ShieldCheck size={16} color="#c084fc" />
           AI Disclosure &amp; DPDP Audio Notice
         </div>
         <div style={{ fontSize: "0.78rem", color: "#d6d3d1", marginTop: 4 }}>

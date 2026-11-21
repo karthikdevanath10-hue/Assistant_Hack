@@ -154,9 +154,9 @@ export function SettingsScreen({
           <div
             style={{
               fontSize: "0.8rem",
-              color: "#92400e",
-              background: "#fef3c7",
-              border: "1px solid #f59e0b",
+              color: "#fde68a",
+              background: "rgba(245, 158, 11, 0.16)",
+              border: "1px solid rgba(245, 158, 11, 0.4)",
               borderRadius: 8,
               padding: "8px 10px",
               marginBottom: 12,

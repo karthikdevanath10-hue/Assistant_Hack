@@ -135,7 +135,7 @@ export function ProfileScreen({
 
       {/* Hero Profile Card */}
       <div className="card profile-hero-card" style={{
-        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+        background: "linear-gradient(135deg, #1e0b4b 0%, #13072e 100%)",
         color: "#ffffff",
         borderRadius: 20,
         padding: "24px 28px",
@@ -144,20 +144,20 @@ export function ProfileScreen({
         gap: 20,
         flexWrap: "wrap",
         boxShadow: "0 12px 32px rgba(15, 23, 42, 0.15)",
-        border: "1px solid rgba(56, 189, 248, 0.25)"
+        border: "1px solid rgba(236, 72, 153, 0.35)"
       }}>
         <div style={{
           width: 68,
           height: 68,
           borderRadius: "50%",
-          background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+          background: "linear-gradient(135deg, #ec4899 0%, #a855f7 100%)",
           color: "#ffffff",
           fontSize: "1.65rem",
           fontWeight: 850,
           display: "grid",
           placeItems: "center",
           flexShrink: 0,
-          boxShadow: "0 4px 16px rgba(234, 88, 12, 0.4)",
+          boxShadow: "0 4px 16px rgba(236, 72, 153, 0.45)",
           border: "2px solid rgba(255, 255, 255, 0.2)"
         }}>
           {initials}
@@ -178,7 +178,7 @@ export function ProfileScreen({
             </span>
           </div>
           <div style={{ fontSize: "0.92rem", color: "#94a3b8", marginTop: 4, display: "flex", alignItems: "center", gap: 6 }}>
-            <Store size={15} style={{ color: "#f97316" }} />
+            <Store size={15} style={{ color: "#c084fc" }} />
             <strong style={{ color: "#f8fafc" }}>{shopName || "My Kirana Store"}</strong>
           </div>
           <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: 4 }}>
@@ -191,29 +191,29 @@ export function ProfileScreen({
       {/* Notifications */}
       {successMsg && (
         <div style={{
-          background: "#f0fdf4",
-          border: "1px solid #86efac",
+          background: "rgba(16, 185, 129, 0.16)",
+          border: "1px solid rgba(16, 185, 129, 0.4)",
           borderRadius: 14,
           padding: "12px 16px",
-          color: "#166534",
+          color: "#6ee7b7",
           display: "flex",
           alignItems: "center",
           gap: 10,
           fontWeight: 700,
           fontSize: "0.88rem"
         }}>
-          <CheckCircle2 size={18} style={{ color: "#16a34a", flexShrink: 0 }} />
+          <CheckCircle2 size={18} style={{ color: "#34d399", flexShrink: 0 }} />
           <span>{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
         <div style={{
-          background: "#fef2f2",
-          border: "1px solid #fca5a5",
+          background: "rgba(244, 63, 94, 0.16)",
+          border: "1px solid rgba(244, 63, 94, 0.4)",
           borderRadius: 14,
           padding: "12px 16px",
-          color: "#991b1b",
+          color: "#fda4af",
           fontWeight: 700,
           fontSize: "0.88rem"
         }}>
