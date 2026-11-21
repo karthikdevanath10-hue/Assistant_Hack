@@ -2982,6 +2982,553 @@ body {
   font-weight: 750;
 }
 
+/* ==========================================================================
+   KAURA LANDING PAGE & GLASSMORPHIC AUTH MODAL
+   ========================================================================== */
+
+.kaura-landing-shell {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse 70% 55% at 8% 30%, rgba(217, 70, 239, 0.38) 0%, transparent 60%),
+              radial-gradient(ellipse 65% 50% at 88% 22%, rgba(56, 189, 248, 0.32) 0%, transparent 55%),
+              radial-gradient(ellipse 70% 60% at 50% 85%, rgba(147, 51, 234, 0.45) 0%, transparent 60%),
+              radial-gradient(ellipse 55% 45% at 92% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 55%),
+              linear-gradient(135deg, #13072e 0%, #1e0b4b 35%, #2c0e5e 70%, #140833 100%);
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+/* Aurora Fluid Glows */
+.kaura-bg-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 1;
+}
+
+.top-left-glow {
+  top: -120px;
+  left: -80px;
+  width: 600px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.32), transparent 70%);
+}
+
+.top-right-glow {
+  top: -100px;
+  right: -80px;
+  width: 550px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.28), transparent 70%);
+}
+
+.bottom-glow {
+  bottom: -150px;
+  left: 30%;
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.35), transparent 70%);
+}
+
+/* Fluid Glass Ribbon Waves */
+.kaura-bg-wave {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.kaura-wave-top {
+  top: -140px;
+  left: -120px;
+  width: 750px;
+  height: 380px;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(168, 85, 247, 0.12));
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.15);
+}
+
+.kaura-wave-bottom {
+  bottom: -120px;
+  right: -100px;
+  width: 700px;
+  height: 420px;
+  border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(192, 132, 252, 0.14));
+  border-top: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -10px 40px rgba(56, 189, 248, 0.15);
+}
+
+/* Navbar */
+.kaura-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 56px;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .kaura-navbar {
+    padding: 18px 20px;
+  }
+}
+
+.kaura-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+
+.kaura-nav-brand:hover {
+  opacity: 0.9;
+}
+
+.kaura-nav-logo {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 10px rgba(236, 72, 153, 0.5));
+}
+
+.kaura-nav-title {
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.kaura-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.kaura-btn-signin {
+  padding: 9px 26px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 0.94rem;
+  font-weight: 650;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.22s ease;
+}
+
+.kaura-btn-signin:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
+}
+
+.kaura-btn-signup {
+  padding: 9px 28px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #06b6d4 100%);
+  border: none;
+  color: #ffffff;
+  font-size: 0.94rem;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.45);
+  transition: all 0.22s ease;
+}
+
+.kaura-btn-signup:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 26px rgba(236, 72, 153, 0.7);
+  filter: brightness(1.08);
+}
+
+/* Hero Section */
+.kaura-hero-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 56px 64px;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .kaura-hero-main {
+    padding: 16px 20px 48px;
+  }
+}
+
+.kaura-hero-container {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 52px;
+  margin: 0 auto;
+}
+
+@media (max-width: 960px) {
+  .kaura-hero-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+    justify-items: center;
+  }
+}
+
+.kaura-hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@media (max-width: 960px) {
+  .kaura-hero-left {
+    align-items: center;
+  }
+}
+
+.kaura-hero-heading {
+  margin: 0 0 16px;
+  line-height: 1.05;
+  display: flex;
+  flex-direction: column;
+}
+
+.kaura-welcome {
+  color: #ffffff;
+  font-size: clamp(2.4rem, 5.2vw, 4.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.kaura-brand-highlight {
+  font-size: clamp(3.6rem, 7.8vw, 6.4rem);
+  font-weight: 950;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #f472b6 0%, #c084fc 35%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 24px rgba(192, 132, 252, 0.4));
+}
+
+.kaura-hero-tagline {
+  color: rgba(255, 255, 255, 0.84);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.5;
+  margin: 0 0 36px;
+  max-width: 460px;
+  font-weight: 400;
+}
+
+.kaura-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 34px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #f43f5e 0%, #ec4899 30%, #a855f7 65%, #38bdf8 100%);
+  color: #ffffff;
+  font-size: 1.12rem;
+  font-weight: 750;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(236, 72, 153, 0.5), 0 0 20px rgba(56, 189, 248, 0.35);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kaura-hero-cta:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 42px rgba(236, 72, 153, 0.7), 0 0 28px rgba(56, 189, 248, 0.5);
+}
+
+.kaura-cta-arrow {
+  transition: transform 0.22s ease;
+}
+
+.kaura-hero-cta:hover .kaura-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* Hero Right: Frosted 3D Glass Card */
+.kaura-hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.kaura-glass-card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kaura-3d-card-img {
+  width: 100%;
+  height: auto;
+  max-width: 440px;
+  object-fit: contain;
+  border-radius: 36px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55), 0 0 45px rgba(168, 85, 247, 0.4);
+  animation: kauraCardFloat 5s ease-in-out infinite alternate;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kaura-3d-card-img:hover {
+  transform: translateY(-16px) scale(1.02);
+  box-shadow: 0 32px 85px rgba(0, 0, 0, 0.65), 0 0 60px rgba(168, 85, 247, 0.55);
+}
+
+@keyframes kauraCardFloat {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-14px) rotate(0.8deg);
+  }
+}
+
+/* Glassmorphic Auth Modal */
+.kaura-auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 5, 28, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  padding: 20px;
+  animation: kauraFadeIn 0.22s ease-out;
+}
+
+.kaura-auth-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(26, 12, 56, 0.92);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.75), 0 0 60px rgba(168, 85, 247, 0.35);
+  padding: 32px 28px;
+  color: #f8fafc;
+  animation: kauraModalSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.kaura-modal-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+
+.kaura-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: scale(1.06);
+}
+
+.kaura-auth-modal-tabs {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 9999px;
+  padding: 4px;
+  margin-bottom: 24px;
+  width: calc(100% - 48px);
+}
+
+.kaura-auth-tab {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kaura-auth-tab.active {
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);
+}
+
+/* Glassmorphic Form Elements Inside Auth Modal */
+.kaura-auth-modal-content .auth-card-head h2 {
+  color: #ffffff;
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+
+.kaura-auth-modal-content .auth-card-head p {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0 0 18px;
+}
+
+.kaura-auth-modal-content .auth-field span {
+  color: #e2e8f0;
+  font-size: 0.84rem;
+  font-weight: 650;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.kaura-auth-modal-content .text-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.94rem;
+  transition: all 0.2s ease;
+}
+
+.kaura-auth-modal-content .text-input:focus {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: #c084fc;
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.25);
+  outline: none;
+}
+
+.kaura-auth-modal-content .text-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.kaura-auth-modal-content select.text-input option {
+  background: #1e0b4b;
+  color: #ffffff;
+}
+
+.kaura-auth-modal-content .auth-password-wrap .auth-eye-btn {
+  color: #cbd5e1;
+}
+
+.kaura-auth-modal-content .auth-submit-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 750;
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #06b6d4 100%);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45);
+  transition: all 0.22s ease;
+  margin-top: 14px;
+}
+
+.kaura-auth-modal-content .auth-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(236, 72, 153, 0.65);
+  filter: brightness(1.08);
+}
+
+.kaura-auth-modal-content .auth-switch-link {
+  color: #cbd5e1;
+  text-align: center;
+  font-size: 0.88rem;
+  margin-top: 18px;
+}
+
+.kaura-auth-modal-content .auth-switch-link button {
+  background: none;
+  border: none;
+  color: #67e8f9;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 4px;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.kaura-auth-modal-content .auth-switch-link button:hover {
+  color: #a5f3fc;
+}
+
+.kaura-auth-modal-content .face-id-enroll-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(168, 85, 247, 0.35);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.kaura-auth-modal-content .face-id-enroll-card h4 {
+  color: #ffffff;
+}
+
+.kaura-auth-modal-content .face-id-enroll-card p {
+  color: #cbd5e1;
+}
+
+@keyframes kauraFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes kauraModalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
 
 
 

@@ -7,7 +7,10 @@ export function resolveInitialAuthMode(pathname = "", hash = "") {
   if (target.includes("signup") || target.includes("sign-up") || target.includes("register")) {
     return "signup";
   }
-  return "login";
+  if (target.includes("login") || target.includes("signin") || target.includes("sign-in")) {
+    return "login";
+  }
+  return "landing";
 }
 
 export function isValidPhone(phone = "") {

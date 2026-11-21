@@ -40,7 +40,7 @@ export default function App() {
   const [authMode, setAuthMode] = useState(() =>
     typeof window !== "undefined"
       ? resolveInitialAuthMode(window.location.pathname, window.location.hash)
-      : "login"
+      : "landing"
   );
   const [authChecking, setAuthChecking] = useState(() => Boolean(getAuthToken()));
   const [authSubmitting, setAuthSubmitting] = useState(false);
@@ -327,7 +327,13 @@ export default function App() {
     setAuthMode(nextMode);
     setAuthError("");
     if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", nextMode === "signup" ? "#/signup" : "#/login");
+      if (nextMode === "signup") {
+        window.history.replaceState(null, "", "#/signup");
+      } else if (nextMode === "login") {
+        window.history.replaceState(null, "", "#/login");
+      } else {
+        window.history.replaceState(null, "", "#/");
+      }
     }
   }
 
@@ -409,11 +415,11 @@ export default function App() {
     clearAuthToken();
     currentUserRef.current = null;
     setCurrentUser(null);
-    setAuthMode("login");
+    setAuthMode("landing");
     setAuthError("");
     resetWorkspaceState(null);
     if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", "#/login");
+      window.history.replaceState(null, "", "#/");
     }
   }
 

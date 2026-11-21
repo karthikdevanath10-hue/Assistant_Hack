@@ -6,7 +6,7 @@ describe("authHelpers", () => {
     expect(resolveInitialAuthMode("/signup", "")).toBe("signup");
     expect(resolveInitialAuthMode("/", "#/signup")).toBe("signup");
     expect(resolveInitialAuthMode("/", "#/login")).toBe("login");
-    expect(resolveInitialAuthMode("/", "")).toBe("login");
+    expect(resolveInitialAuthMode("/", "")).toBe("landing");
   });
 
   it("validates login credentials clearly with phone or email", () => {

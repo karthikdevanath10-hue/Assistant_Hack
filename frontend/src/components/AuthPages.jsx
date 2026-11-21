@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Camera, CheckCircle2, Eye, EyeOff, Globe, LogIn, Mic, Phone, ScanFace, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
+import { ArrowRight, Camera, CheckCircle2, Eye, EyeOff, Globe, LogIn, Mic, Phone, ScanFace, ShieldCheck, Store, UserPlus, Users, X } from "lucide-react";
 import { validateLoginForm, validateSignUpForm } from "../utils/authHelpers";
 import { SUPPORTED_LANGUAGES } from "../utils/i18n";
 import { FaceScannerModal } from "./FaceScannerModal";
@@ -436,11 +436,12 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
 }
 
 /**
- * Full-screen authentication shell presenting Login and Sign Up pages
- * prior to entering the Voice Khata dashboard.
+ * KAURA Landing Page & Auth Gateway
+ * Serves as the futuristic first page with 3D logo, typography, orbital ring emblem,
+ * and seamless glassmorphic login/signup modal interactions.
  */
 export function AuthGateway({
-  mode,
+  mode = "landing",
   onChangeMode,
   onLogin,
   onFaceLogin,
@@ -450,87 +451,130 @@ export function AuthGateway({
   statusInfo = null,
 }) {
   return (
-    <div className="auth-shell">
-      <aside className="auth-hero" aria-label="Voice Khata Overview">
-        <div>
-          <div className="brand" style={{ marginBottom: 22 }}>
-            <div className="brand-mark">₹</div>
-            <div>
-              <h1 style={{ color: "#f8fafc", margin: 0, fontSize: "1.3rem" }}>Voice Khata</h1>
-              <small style={{ color: "#94a3b8" }}>Kirana AI Digital Accountant · Gemini 3.8 / 4 Argon</small>
-            </div>
-          </div>
+    <div className="kaura-landing-shell">
+      {/* Background Aurora Lighting Elements */}
+      <div className="kaura-bg-glow top-left-glow" />
+      <div className="kaura-bg-glow top-right-glow" />
+      <div className="kaura-bg-glow bottom-glow" />
+      <div className="kaura-bg-wave kaura-wave-top" />
+      <div className="kaura-bg-wave kaura-wave-bottom" />
 
-          <h2 className="auth-hero-title">
-            Your voice-first kirana ledger, protected before you open the register.
-          </h2>
-          <p className="auth-hero-sub">
-            Sign in or create your shopkeeper account to record daily udhaar, inspect every customer&apos;s
-            individual block ledger, and manage your store securely.
-          </p>
-
-          <ul className="auth-feature-list">
-            <li>
-              <Mic size={16} />
-              <span>Speak naturally in Hindi, Kannada, Tamil, Telugu, or Indian English</span>
-            </li>
-            <li>
-              <Users size={16} />
-              <span>Browse per-customer ledger blocks with complete transaction history</span>
-            </li>
-            <li>
-              <Store size={16} />
-              <span>Track today&apos;s credit, collections, and export CSV reports in one tap</span>
-            </li>
-            <li>
-              <ShieldCheck size={16} />
-              <span>Salted scrypt passwords, biometric Face ID verification &amp; AES-256-GCM encryption</span>
-            </li>
-          </ul>
+      {/* Top Navbar */}
+      <header className="kaura-navbar">
+        <div className="kaura-nav-brand" onClick={() => onChangeMode("landing")}>
+          <img src="/kaura-logo.png" alt="KAURA" className="kaura-nav-logo" />
+          <span className="kaura-nav-title">KAURA</span>
         </div>
-      </aside>
+        <div className="kaura-nav-actions">
+          <button
+            type="button"
+            className="kaura-btn-signin"
+            onClick={() => onChangeMode("login")}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            className="kaura-btn-signup"
+            onClick={() => onChangeMode("signup")}
+          >
+            Sign Up
+          </button>
+        </div>
+      </header>
 
-      <main className="auth-main">
-        <div className="card auth-card">
-          <div className="auth-mode-tabs" role="tablist" aria-label="Authentication Pages">
+      {/* Main Hero Container */}
+      <main className="kaura-hero-main">
+        <div className="kaura-hero-container">
+          {/* Left Column: Welcome Typography & CTA */}
+          <div className="kaura-hero-left">
+            <h1 className="kaura-hero-heading">
+              <span className="kaura-welcome">Welcome to</span>
+              <span className="kaura-brand-highlight">KAURA</span>
+            </h1>
+            <p className="kaura-hero-tagline">
+              Where ideas turn into reality with cutting-edge technology.
+            </p>
             <button
               type="button"
-              role="tab"
-              aria-selected={mode === "login"}
-              className={`auth-mode-tab ${mode === "login" ? "active" : ""}`}
-              onClick={() => onChangeMode("login")}
-            >
-              <LogIn size={15} /> Login Page
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === "signup"}
-              className={`auth-mode-tab ${mode === "signup" ? "active" : ""}`}
+              className="kaura-hero-cta"
               onClick={() => onChangeMode("signup")}
             >
-              <UserPlus size={15} /> Sign Up Page
+              <span>Get Started</span>
+              <ArrowRight size={20} className="kaura-cta-arrow" />
             </button>
           </div>
 
-          {mode === "signup" ? (
-            <SignUpPage
-              onSubmit={onSignUp}
-              onSwitchToLogin={() => onChangeMode("login")}
-              loading={loading}
-              error={error}
-            />
-          ) : (
-            <LoginPage
-              onSubmit={onLogin}
-              onFaceLogin={onFaceLogin}
-              onSwitchToSignUp={() => onChangeMode("signup")}
-              loading={loading}
-              error={error}
-            />
-          )}
+          {/* Right Column: Floating Frosted Glass Card with 3D Emblem & Neon Orbital Ring */}
+          <div className="kaura-hero-right">
+            <div className="kaura-glass-card-wrapper">
+              <img
+                src="/kaura-3d-symbol.png"
+                alt="KAURA 3D Emblem"
+                className="kaura-3d-card-img"
+              />
+            </div>
+          </div>
         </div>
       </main>
+
+      {/* Glassmorphic Auth Modal overlay when in login or signup mode */}
+      {(mode === "login" || mode === "signup") && (
+        <div
+          className="kaura-auth-modal-backdrop"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onChangeMode("landing");
+          }}
+        >
+          <div className="kaura-auth-modal-card">
+            <button
+              type="button"
+              className="kaura-modal-close-btn"
+              onClick={() => onChangeMode("landing")}
+              aria-label="Close"
+              title="Return to welcome page"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="kaura-auth-modal-tabs">
+              <button
+                type="button"
+                className={`kaura-auth-tab ${mode === "login" ? "active" : ""}`}
+                onClick={() => onChangeMode("login")}
+              >
+                <LogIn size={15} /> Sign In
+              </button>
+              <button
+                type="button"
+                className={`kaura-auth-tab ${mode === "signup" ? "active" : ""}`}
+                onClick={() => onChangeMode("signup")}
+              >
+                <UserPlus size={15} /> Sign Up
+              </button>
+            </div>
+
+            <div className="kaura-auth-modal-content">
+              {mode === "login" ? (
+                <LoginPage
+                  onSubmit={onLogin}
+                  onFaceLogin={onFaceLogin}
+                  onSwitchToSignUp={() => onChangeMode("signup")}
+                  loading={loading}
+                  error={error}
+                />
+              ) : (
+                <SignUpPage
+                  onSubmit={onSignUp}
+                  onSwitchToLogin={() => onChangeMode("login")}
+                  loading={loading}
+                  error={error}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
