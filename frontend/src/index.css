@@ -4103,11 +4103,12 @@ select.text-input option {
               transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.curved-arc-nav.is-hidden .curved-pos-5 { transition-delay: 0.02s; }
-.curved-arc-nav.is-hidden .curved-pos-4 { transition-delay: 0.05s; }
-.curved-arc-nav.is-hidden .curved-pos-3 { transition-delay: 0.08s; }
-.curved-arc-nav.is-hidden .curved-pos-2 { transition-delay: 0.11s; }
-.curved-arc-nav.is-hidden .curved-pos-1 { transition-delay: 0.14s; }
+.curved-arc-nav.is-hidden .curved-pos-6 { transition-delay: 0.01s; }
+.curved-arc-nav.is-hidden .curved-pos-5 { transition-delay: 0.03s; }
+.curved-arc-nav.is-hidden .curved-pos-4 { transition-delay: 0.06s; }
+.curved-arc-nav.is-hidden .curved-pos-3 { transition-delay: 0.09s; }
+.curved-arc-nav.is-hidden .curved-pos-2 { transition-delay: 0.12s; }
+.curved-arc-nav.is-hidden .curved-pos-1 { transition-delay: 0.15s; }
 
 /* OPEN STATE: Fans out gracefully along the arc curve with spring bounce */
 .curved-arc-nav.is-open .curved-arc-item {
@@ -4119,21 +4120,52 @@ select.text-input option {
 }
 
 .curved-arc-nav.is-open .curved-pos-1 { transition-delay: 0.04s; }
-.curved-arc-nav.is-open .curved-pos-2 { transition-delay: 0.10s; }
-.curved-arc-nav.is-open .curved-pos-3 { transition-delay: 0.16s; }
-.curved-arc-nav.is-open .curved-pos-4 { transition-delay: 0.22s; }
-.curved-arc-nav.is-open .curved-pos-5 { transition-delay: 0.28s; }
+.curved-arc-nav.is-open .curved-pos-2 { transition-delay: 0.09s; }
+.curved-arc-nav.is-open .curved-pos-3 { transition-delay: 0.14s; }
+.curved-arc-nav.is-open .curved-pos-4 { transition-delay: 0.19s; }
+.curved-arc-nav.is-open .curved-pos-5 { transition-delay: 0.24s; }
+.curved-arc-nav.is-open .curved-pos-6 { transition-delay: 0.29s; }
 
 .curved-arc-nav.is-open .curved-arc-item:hover {
   transform: scale(1.1) translateY(-4px);
 }
 
-/* 5 Positions Along the Grand Sweeping Arc */
-.curved-pos-1 { top: 24px;  left: 36px; }   /* Dashboard */
-.curved-pos-2 { top: 104px; left: 130px; }  /* Customers */
-.curved-pos-3 { top: 190px; left: 226px; }  /* Customer Analytics */
-.curved-pos-4 { top: 274px; left: 326px; }  /* Settings */
-.curved-pos-5 { top: 348px; left: 436px; }  /* About */
+/* Positions Along the Grand Sweeping Arc */
+.curved-pos-about,
+.curved-pos-6 {
+  top: -26px;
+  left: -8px;
+} /* About - positioned higher and to the left of Dashboard with zero overlap */
+
+.curved-pos-home,
+.curved-pos-1 {
+  top: 48px;
+  left: 68px;
+} /* Dashboard */
+
+.curved-pos-customers,
+.curved-pos-2 {
+  top: 124px;
+  left: 156px;
+} /* Customers */
+
+.curved-pos-ledgers,
+.curved-pos-3 {
+  top: 204px;
+  left: 248px;
+} /* Customer Analytics */
+
+.curved-pos-chat-history,
+.curved-pos-4 {
+  top: 284px;
+  left: 346px;
+} /* Chat History */
+
+.curved-pos-settings,
+.curved-pos-5 {
+  top: 362px;
+  left: 448px;
+} /* Settings */
 
 .curved-arc-btn {
   width: 58px;

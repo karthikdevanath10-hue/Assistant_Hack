@@ -150,7 +150,7 @@ export function WorkspaceCurvedHero({
               <button
                 key={item.id}
                 type="button"
-                className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
+                className={`curved-arc-item curved-pos-${index + 1} curved-pos-${item.id} ${isActive ? "active" : ""}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
