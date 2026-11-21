@@ -103,22 +103,11 @@ export function WorkspaceCurvedHero({
         <Sparkles size={22} />
       </button>
 
-      {/* Floating Curved Dome Dish Overlay */}
+      {/* Floating Curved Arc Navigation Overlay (no white background dish) */}
       <div
         className={`floating-dome-dish ${isOpen ? "is-open" : "is-hidden"}`}
         aria-hidden={!isOpen}
       >
-        {/* Glowing Purple Sparkle Option Button inside dish to close */}
-        <button
-          type="button"
-          className="curved-sparkle-circle is-open"
-          onClick={() => setIsOpen(false)}
-          title="Close navigation options"
-          aria-label="Close navigation options"
-        >
-          <Sparkles size={22} />
-        </button>
-
         {/* Circular Navigation Buttons Placed Generously Along the Sweeping Curve */}
         <nav
           className={`curved-arc-nav ${isOpen ? "is-open" : "is-hidden"}`}

@@ -3603,27 +3603,24 @@ body {
   animation: none;
 }
 
-/* Floating Sweeping Radial Dome Dish Overlay */
+/* Floating Sweeping Radial Arc Navigation Overlay (Transparent Canvas - No White Dish) */
 .floating-dome-dish {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 8px);
   right: 0;
   width: 580px;
   height: 440px;
-  border-radius: 65% 0 0 65% / 52% 0 0 52%;
-  background: radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.98) 0%, rgba(246, 242, 255, 0.95) 60%, rgba(237, 233, 254, 0.92) 100%);
-  border-left: 2px solid rgba(255, 255, 255, 0.98);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.92);
-  border-top: 1.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: -22px 24px 60px rgba(124, 58, 237, 0.22), 0 12px 36px rgba(15, 23, 42, 0.1), inset 0 0 45px rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   z-index: 999;
   overflow: visible;
   transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.35s;
-  pointer-events: auto;
+  pointer-events: none;
   transform-origin: top right;
 }
 
@@ -3638,43 +3635,7 @@ body {
   opacity: 1;
   visibility: visible;
   transform: scale(1) translate(0, 0);
-  pointer-events: auto;
-}
-
-/* Glowing Purple Sparkle Option Button (Top-Right inside dome dish) */
-.curved-sparkle-circle {
-  position: absolute;
-  top: 24px;
-  right: 28px;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 22px rgba(167, 139, 250, 0.6), 0 0 0 8px rgba(167, 139, 250, 0.18);
-  cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
-  z-index: 25;
-}
-
-.curved-sparkle-circle:hover {
-  transform: scale(1.12);
-  box-shadow: 0 8px 30px rgba(167, 139, 250, 0.8), 0 0 0 12px rgba(167, 139, 250, 0.28);
-}
-
-.curved-sparkle-circle.is-open {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-  box-shadow: 0 6px 26px rgba(124, 58, 237, 0.7), 0 0 0 10px rgba(124, 58, 237, 0.22);
-  transform: rotate(45deg);
-}
-
-.curved-sparkle-circle.is-open:hover {
-  transform: rotate(45deg) scale(1.12);
-  box-shadow: 0 10px 32px rgba(124, 58, 237, 0.9), 0 0 0 14px rgba(124, 58, 237, 0.3);
+  pointer-events: none;
 }
 
 /* Curved Arc Navigation Container */
@@ -3684,6 +3645,7 @@ body {
   height: 100%;
   min-height: 440px;
   display: block;
+  pointer-events: none;
 }
 
 /* Arc Items Spaced Along the Sweeping Circular Arc with Spring Animation */
@@ -3692,7 +3654,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   cursor: pointer;
   user-select: none;
   z-index: 10;
@@ -3703,6 +3665,7 @@ body {
   font-family: inherit;
   color: inherit;
   outline: none;
+  pointer-events: auto;
 }
 
 /* HIDDEN STATE: Tucked into the option button, invisible */
@@ -3736,7 +3699,7 @@ body {
 .curved-arc-nav.is-open .curved-pos-5 { transition-delay: 0.28s; }
 
 .curved-arc-nav.is-open .curved-arc-item:hover {
-  transform: scale(1.08) translateY(-4px);
+  transform: scale(1.1) translateY(-4px);
 }
 
 /* 5 Positions Along the Grand Sweeping Arc */
@@ -3752,7 +3715,7 @@ body {
   border-radius: 50%;
   background: #ffffff;
   border: 1.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 6px 22px rgba(124, 58, 237, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3765,7 +3728,7 @@ body {
 .curved-arc-item:hover .curved-arc-btn {
   color: #7c3aed;
   transform: scale(1.12);
-  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.3), 0 0 0 4px rgba(167, 139, 250, 0.2);
 }
 
 .curved-arc-btn.active,
@@ -3773,24 +3736,34 @@ body {
   background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
   color: #ffffff;
   border-color: transparent;
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.45), 0 0 0 4px rgba(167, 139, 250, 0.25);
   transform: scale(1.1);
 }
 
 .curved-arc-label {
   font-size: 0.8rem;
   font-weight: 750;
-  color: #475569;
+  color: #1e1b4b;
   text-align: center;
   line-height: 1.2;
-  max-width: 96px;
-  transition: color 0.2s ease;
+  white-space: nowrap;
+  transition: all 0.2s ease;
   pointer-events: none;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 4px 12px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
-.curved-arc-item.active .curved-arc-label {
+.curved-arc-item.active .curved-arc-label,
+.curved-arc-item:hover .curved-arc-label {
   color: #7c3aed;
-  font-weight: 850;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
+  border-color: #ddd6fe;
 }
 
 @media (max-width: 899px) {
@@ -3803,9 +3776,14 @@ body {
     max-width: 500px;
     height: auto;
     min-height: 240px;
-    border-radius: 36px;
+    border-radius: 0;
     padding: 24px 16px;
     margin: 0 auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     transform-origin: top center;
   }
 
