@@ -1,29 +1,98 @@
 import React, { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronDown, Clock, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
 import { api } from "../api/client";
 import { formatINR } from "../utils/numberNormalizer";
 import { playReplyAudio } from "../audio/recorder";
 import { shareViaWhatsApp } from "../utils/whatsappReceipt";
 import { getDemoPhrases, t } from "../utils/i18n";
 
-function BreakdownChips({ items = [], tone = "credit", emptyText = "", onSelectCustomerById }) {
-  if (!items || items.length === 0) {
-    return emptyText ? <div className="stat-breakdown-empty">{emptyText}</div> : null;
-  }
+function StatCardWithNotch({
+  title,
+  value,
+  tone,
+  items = [],
+  emptyText = "",
+  isOpen = false,
+  onToggle,
+  onSelectCustomerById,
+  onOpenCustomersPage,
+  language,
+}) {
+  const count = items.length;
+  const isCustCard = tone === "cust";
+
   return (
-    <div className="stat-breakdown">
-      {items.map((item) => (
-        <button
-          key={item.customer_id}
-          type="button"
-          className={`mini-cust-pill ${tone}`}
-          onClick={() => onSelectCustomerById?.(item.customer_id)}
-          title={`Open ${item.customer_name}'s khata`}
-        >
-          <span>{item.customer_name}</span>
-          <strong>{formatINR(item.amount)}</strong>
-        </button>
-      ))}
+    <div className={`card stat-card stat-card-${tone}`}>
+      {/* Top Notch Badge */}
+      <div className="stat-card-top">
+        <div className="stat-card-notch">
+          <span className={`stat-notch-dot ${tone}`} />
+          <span className="stat-notch-title">{title}</span>
+        </div>
+      </div>
+
+      {/* Main Metric Value */}
+      <div className={`stat-card-val ${tone}`}>
+        {value}
+      </div>
+
+      {/* Interactive Drop Notch */}
+      {!isCustCard ? (
+        <div className="stat-drop-notch">
+          <button
+            type="button"
+            className={`stat-drop-notch-btn ${isOpen ? "open" : ""}`}
+            onClick={count > 0 ? onToggle : undefined}
+            disabled={count === 0}
+            title={count > 0 ? (isOpen ? "Click to fold / notch up" : "Click drop notch to view breakdown") : emptyText}
+          >
+            <span className="notch-btn-label">
+              {count > 0 ? (
+                <>
+                  <span className="notch-count-pill">{count}</span>
+                  <span>{t("customers", language)}</span>
+                </>
+              ) : (
+                <span style={{ opacity: 0.65, fontWeight: 500 }}>{emptyText}</span>
+              )}
+            </span>
+            {count > 0 && <ChevronDown size={14} className="notch-chevron" />}
+          </button>
+
+          {/* Collapsible Dropdown Content */}
+          <div className={`stat-notch-drawer ${isOpen ? "open" : ""}`}>
+            <div className="stat-breakdown">
+              {items.map((item) => (
+                <button
+                  key={item.customer_id}
+                  type="button"
+                  className={`mini-cust-pill ${tone}`}
+                  onClick={() => onSelectCustomerById?.(item.customer_id)}
+                  title={`Open ${item.customer_name}'s khata`}
+                >
+                  <span className="pill-name">{item.customer_name}</span>
+                  <strong className="pill-amt">{formatINR(item.amount)}</strong>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="stat-drop-notch">
+          <button
+            type="button"
+            className="stat-drop-notch-btn cust-link"
+            onClick={onOpenCustomersPage}
+            title="View customer roster"
+          >
+            <span className="notch-btn-label">
+              <span className="notch-count-pill">{value}</span>
+              <span>{t("customers", language)}</span>
+            </span>
+            <span style={{ fontSize: "0.78rem" }}>→</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -37,12 +106,18 @@ export function DashboardScreen({
   onRunPhrase,
   onManualTx,
   onSelectCustomerById,
+  onOpenCustomersPage,
 }) {
+  const [openNotches, setOpenNotches] = useState({ credit: false, payment: false, due: false });
   const [showManual, setShowManual] = useState(false);
   const [custId, setCustId] = useState("");
   const [amount, setAmount] = useState("");
   const [txType, setTxType] = useState("credit");
   const [note, setNote] = useState("");
+
+  const toggleNotch = (key) => {
+    setOpenNotches((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   async function submitManual(e) {
     e.preventDefault();
@@ -153,40 +228,49 @@ export function DashboardScreen({
       )}
 
       <div className="stats-grid">
-        <div className="card stat-card-credit">
-          <div className="stat-label">{t("statCreditToday", language)}</div>
-          <div className="stat-val credit">{formatINR(dashboard?.today_credit)}</div>
-          <BreakdownChips
-            items={dashboard?.today_credit_customers}
-            tone="credit"
-            emptyText={t("emptyCreditToday", language)}
-            onSelectCustomerById={onSelectCustomerById}
-          />
-        </div>
-        <div className="card stat-card-payment">
-          <div className="stat-label">{t("statPaymentsToday", language)}</div>
-          <div className="stat-val payment">{formatINR(dashboard?.today_payment)}</div>
-          <BreakdownChips
-            items={dashboard?.today_payment_customers}
-            tone="payment"
-            emptyText={t("emptyPaymentsToday", language)}
-            onSelectCustomerById={onSelectCustomerById}
-          />
-        </div>
-        <div className="card stat-card-due">
-          <div className="stat-label">{t("statTotalDue", language)}</div>
-          <div className="stat-val accent">{formatINR(dashboard?.total_outstanding)}</div>
-          <BreakdownChips
-            items={dashboard?.outstanding_customers}
-            tone="accent"
-            emptyText="All settled"
-            onSelectCustomerById={onSelectCustomerById}
-          />
-        </div>
-        <div className="card stat-card-cust">
-          <div className="stat-label">{t("statCustomers", language)}</div>
-          <div className="stat-val">{dashboard?.total_customers ?? 0}</div>
-        </div>
+        <StatCardWithNotch
+          title={t("statCreditToday", language)}
+          value={formatINR(dashboard?.today_credit)}
+          tone="credit"
+          items={dashboard?.today_credit_customers || []}
+          emptyText={t("emptyCreditToday", language)}
+          isOpen={openNotches.credit}
+          onToggle={() => toggleNotch("credit")}
+          onSelectCustomerById={onSelectCustomerById}
+          language={language}
+        />
+
+        <StatCardWithNotch
+          title={t("statPaymentsToday", language)}
+          value={formatINR(dashboard?.today_payment)}
+          tone="payment"
+          items={dashboard?.today_payment_customers || []}
+          emptyText={t("emptyPaymentsToday", language)}
+          isOpen={openNotches.payment}
+          onToggle={() => toggleNotch("payment")}
+          onSelectCustomerById={onSelectCustomerById}
+          language={language}
+        />
+
+        <StatCardWithNotch
+          title={t("statTotalDue", language)}
+          value={formatINR(dashboard?.total_outstanding)}
+          tone="due"
+          items={dashboard?.outstanding_customers || []}
+          emptyText="All settled"
+          isOpen={openNotches.due}
+          onToggle={() => toggleNotch("due")}
+          onSelectCustomerById={onSelectCustomerById}
+          language={language}
+        />
+
+        <StatCardWithNotch
+          title={t("statCustomers", language)}
+          value={dashboard?.total_customers ?? 0}
+          tone="cust"
+          onOpenCustomersPage={onOpenCustomersPage}
+          language={language}
+        />
       </div>
 
       <div className="card" style={{ marginBottom: 16 }}>

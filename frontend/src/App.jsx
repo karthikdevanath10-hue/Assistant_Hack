@@ -1107,6 +1107,7 @@ export default function App() {
             onRunPhrase={runTextTurn}
             onManualTx={handleManualTx}
             onSelectCustomerById={(id) => openCustomerLedgerById(id)}
+            onOpenCustomersPage={() => navigateToTab("customers")}
           />
         )}
 

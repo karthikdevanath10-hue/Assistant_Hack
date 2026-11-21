@@ -2030,25 +2030,275 @@ body {
   }
 }
 
-/* --- Stat Cards Accent Highlights for Kirana Owners --- */
+/* --- Top-Notch Stat Cards with Interactive Drop Notch --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+  align-items: stretch;
+}
+
+.stat-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 16px 16px 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.09), 0 3px 8px rgba(15, 23, 42, 0.04);
+}
+
+/* Card Accent Themes */
 .stat-card-credit {
-  border-top: 3px solid #dc2626;
-  background: linear-gradient(180deg, #fff5f5 0%, #ffffff 40px);
+  border-top: 4px solid #dc2626;
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.75) 0%, #ffffff 56px);
 }
 
 .stat-card-payment {
-  border-top: 3px solid #16a34a;
-  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 40px);
+  border-top: 4px solid #16a34a;
+  background: linear-gradient(180deg, rgba(240, 253, 244, 0.75) 0%, #ffffff 56px);
 }
 
 .stat-card-due {
-  border-top: 3px solid #ea580c;
-  background: linear-gradient(180deg, #fff7ed 0%, #ffffff 40px);
+  border-top: 4px solid #ea580c;
+  background: linear-gradient(180deg, rgba(255, 247, 237, 0.75) 0%, #ffffff 56px);
 }
 
 .stat-card-cust {
-  border-top: 3px solid #6366f1;
-  background: linear-gradient(180deg, #eef2ff 0%, #ffffff 40px);
+  border-top: 4px solid #6366f1;
+  background: linear-gradient(180deg, rgba(238, 242, 255, 0.75) 0%, #ffffff 56px);
+}
+
+/* Top Notch Header */
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.stat-card-notch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stat-card-credit .stat-card-notch {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.stat-card-payment .stat-card-notch {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.22);
+}
+
+.stat-card-due .stat-card-notch {
+  background: rgba(234, 88, 12, 0.12);
+  color: #ea580c;
+  border: 1px solid rgba(234, 88, 12, 0.22);
+}
+
+.stat-card-cust .stat-card-notch {
+  background: rgba(99, 102, 241, 0.12);
+  color: #4f46e5;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+}
+
+.stat-notch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.stat-notch-dot.credit { background: #dc2626; box-shadow: 0 0 6px rgba(220, 38, 38, 0.6); }
+.stat-notch-dot.payment { background: #16a34a; box-shadow: 0 0 6px rgba(22, 163, 74, 0.6); }
+.stat-notch-dot.due { background: #ea580c; box-shadow: 0 0 6px rgba(234, 88, 12, 0.6); }
+.stat-notch-dot.cust { background: #6366f1; box-shadow: 0 0 6px rgba(99, 102, 241, 0.6); }
+
+/* Main Metric Value */
+.stat-card-val {
+  font-size: 1.85rem;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  margin: 10px 0 8px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stat-card-val.credit { color: #dc2626; }
+.stat-card-val.payment { color: #16a34a; }
+.stat-card-val.due { color: #ea580c; }
+.stat-card-val.cust { color: #0f172a; }
+
+/* The Drop Notch Drawer & Trigger */
+.stat-drop-notch {
+  border-top: 1px dashed rgba(226, 232, 240, 0.95);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.stat-drop-notch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.stat-drop-notch-btn:not(:disabled):hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: var(--ink);
+}
+
+.stat-drop-notch-btn:disabled {
+  cursor: default;
+  background: transparent;
+  border-color: transparent;
+  padding: 4px 0;
+}
+
+.notch-btn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notch-count-pill {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.stat-card-credit .notch-count-pill {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.stat-card-payment .notch-count-pill {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.stat-card-due .notch-count-pill {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.stat-card-cust .notch-count-pill {
+  background: #e0e7ff;
+  color: #4f46e5;
+}
+
+.notch-chevron {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-drop-notch-btn.open .notch-chevron {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Drawer */
+.stat-notch-drawer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.25s ease;
+  margin-top: 0;
+}
+
+.stat-notch-drawer.open {
+  max-height: 240px;
+  opacity: 1;
+  margin-top: 8px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.stat-notch-drawer::-webkit-scrollbar {
+  width: 4px;
+}
+.stat-notch-drawer::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+/* Polished mini-cust-pill */
+.stat-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 2px;
+}
+
+.mini-cust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mini-cust-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  filter: brightness(0.97);
+}
+
+.mini-cust-pill.credit {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.mini-cust-pill.payment {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.mini-cust-pill.accent {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+
+.mini-cust-pill .pill-amt {
+  font-weight: 800;
 }
 
 
