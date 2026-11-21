@@ -154,9 +154,24 @@ export function DashboardScreen({
   const [amount, setAmount] = useState("");
   const [txType, setTxType] = useState("credit");
   const [note, setNote] = useState("");
+  const [activityOpen, setActivityOpen] = useState(true);
+  const [visibleTxCount, setVisibleTxCount] = useState(5);
 
   const toggleNotch = (key) => {
     setOpenNotches((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const allRecentTxs = dashboard?.recent_transactions || [];
+  const visibleTxs = allRecentTxs.slice(0, visibleTxCount);
+  const hasMoreTxs = visibleTxCount < allRecentTxs.length;
+  const canShowLessTxs = visibleTxCount > 5;
+
+  const handleShowMoreTxs = () => {
+    setVisibleTxCount((prev) => Math.min(prev + 10, allRecentTxs.length));
+  };
+
+  const handleShowLessTxs = () => {
+    setVisibleTxCount((prev) => Math.max(5, prev - 10));
   };
 
   async function submitManual(e) {
@@ -393,15 +408,45 @@ export function DashboardScreen({
         )}
       </div>
 
-      <div className="card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <span style={{ fontWeight: 700 }}>{t("recentActivity", language)}</span>
+      <div className="card recent-activity-card">
+        <div className="recent-activity-header">
+          <div
+            className="recent-activity-title-wrap"
+            onClick={() => setActivityOpen((v) => !v)}
+            title={activityOpen ? "Click to fold Recent Activity" : "Click to expand Recent Activity"}
+          >
+            <span style={{ fontWeight: 700, fontSize: "0.98rem" }}>{t("recentActivity", language)}</span>
+            <span className="notch-count-pill tx-pill" style={{ fontSize: "0.74rem" }}>
+              {allRecentTxs.length}
+            </span>
+            <button
+              type="button"
+              className={`activity-drop-notch-btn ${activityOpen ? "open" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setActivityOpen((v) => !v);
+              }}
+              title={activityOpen ? "Fold Activity" : "Drop Notch"}
+              aria-expanded={activityOpen}
+            >
+              <span className="drop-notch-text">{activityOpen ? "Fold Notch" : "Drop Notch"}</span>
+              <ChevronDown
+                size={14}
+                className="notch-chevron"
+                style={{
+                  transform: activityOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.2s ease",
+                }}
+              />
+            </button>
+          </div>
+
           <button
             className="btn btn-secondary"
             type="button"
             onClick={() =>
               api.exportPdf(null, {
-                transactions: dashboard?.recent_transactions || [],
+                transactions: allRecentTxs,
                 currentUser,
               })
             }
@@ -410,65 +455,101 @@ export function DashboardScreen({
             <FileText size={14} /> Export PDF
           </button>
         </div>
-        <div className="tx-list">
-          {(dashboard?.recent_transactions || []).length === 0 && (
-            <div style={{ color: "var(--muted)", fontSize: "0.86rem", padding: "6px 0" }}>
-              {t("noTransactionsYet", language)}
+
+        {activityOpen && (
+          <>
+            <div className="tx-list">
+              {allRecentTxs.length === 0 && (
+                <div style={{ color: "var(--muted)", fontSize: "0.86rem", padding: "6px 0" }}>
+                  {t("noTransactionsYet", language)}
+                </div>
+              )}
+              {visibleTxs.map((tx) => {
+                const isFresh = liveHighlightTxIds.includes(tx.id);
+                return (
+                  <div
+                    key={tx.id}
+                    className={`tx-row ${isFresh ? "live-flash" : ""}`}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => onSelectCustomerById(tx.customer_id)}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      {tx.tx_type === "credit" ? (
+                        <ArrowUpRight size={18} color="var(--credit)" />
+                      ) : (
+                        <ArrowDownLeft size={18} color="var(--payment)" />
+                      )}
+                      <div>
+                        <div style={{ fontWeight: 700 }}>
+                          {tx.customer_name}
+                          {isFresh && <span className="live-tag">LIVE</span>}
+                        </div>
+                        <div style={{ fontSize: "0.78rem", color: "var(--muted)" }}>
+                          {tx.transaction_date} · <span className={`badge ${tx.tx_type}`}>{tx.tx_type}</span>
+                          {tx.note ? ` · ${tx.note}` : ""}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div className={`tx-amt ${tx.tx_type}`}>
+                        {tx.tx_type === "credit" ? "+" : "-"}
+                        {formatINR(tx.amount)}
+                      </div>
+                      <button
+                        className="btn-icon-whatsapp"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const cust = customers?.find((c) => c.id === tx.customer_id) || {
+                            id: tx.customer_id,
+                            name: tx.customer_name,
+                            phone: "",
+                            outstanding_balance: 0,
+                          };
+                          shareViaWhatsApp({ customer: cust, tx, currentUser });
+                        }}
+                        title={`Send WhatsApp receipt for ₹${tx.amount}`}
+                      >
+                        <MessageCircle size={14} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-          {(dashboard?.recent_transactions || []).map((tx) => {
-            const isFresh = liveHighlightTxIds.includes(tx.id);
-            return (
-            <div
-              key={tx.id}
-              className={`tx-row ${isFresh ? "live-flash" : ""}`}
-              style={{ cursor: "pointer" }}
-              onClick={() => onSelectCustomerById(tx.customer_id)}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                {tx.tx_type === "credit" ? (
-                  <ArrowUpRight size={18} color="var(--credit)" />
-                ) : (
-                  <ArrowDownLeft size={18} color="var(--payment)" />
-                )}
-                <div>
-                  <div style={{ fontWeight: 700 }}>
-                    {tx.customer_name}
-                    {isFresh && <span className="live-tag">LIVE</span>}
-                  </div>
-                  <div style={{ fontSize: "0.78rem", color: "var(--muted)" }}>
-                    {tx.transaction_date} · <span className={`badge ${tx.tx_type}`}>{tx.tx_type}</span>
-                    {tx.note ? ` · ${tx.note}` : ""}
-                  </div>
+
+            {/* Pagination / Expand Controls (Shows 5 initially, then extra up to 10 more, and Show Less) */}
+            {allRecentTxs.length > 5 && (
+              <div className="activity-pagination-bar">
+                <div className="activity-pagination-info">
+                  Showing <strong>{visibleTxs.length}</strong> of <strong>{allRecentTxs.length}</strong> transactions
+                </div>
+                <div className="activity-pagination-actions">
+                  {canShowLessTxs && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm activity-page-btn"
+                      onClick={handleShowLessTxs}
+                      title="Show fewer transactions"
+                    >
+                      <ChevronDown size={14} style={{ transform: "rotate(180deg)" }} /> Show Less
+                    </button>
+                  )}
+                  {hasMoreTxs && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm activity-page-btn show-more-btn"
+                      onClick={handleShowMoreTxs}
+                      title={`Show extra up to 10 more transactions (${Math.min(10, allRecentTxs.length - visibleTxs.length)} more)`}
+                    >
+                      <ChevronDown size={14} /> Show More (+{Math.min(10, allRecentTxs.length - visibleTxs.length)})
+                    </button>
+                  )}
                 </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div className={`tx-amt ${tx.tx_type}`}>
-                  {tx.tx_type === "credit" ? "+" : "-"}
-                  {formatINR(tx.amount)}
-                </div>
-                <button
-                  className="btn-icon-whatsapp"
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const cust = customers?.find((c) => c.id === tx.customer_id) || {
-                      id: tx.customer_id,
-                      name: tx.customer_name,
-                      phone: "",
-                      outstanding_balance: 0,
-                    };
-                    shareViaWhatsApp({ customer: cust, tx, currentUser });
-                  }}
-                  title={`Send WhatsApp receipt for ₹${tx.amount}`}
-                >
-                  <MessageCircle size={14} />
-                </button>
-              </div>
-            </div>
-            );
-          })}
-        </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
