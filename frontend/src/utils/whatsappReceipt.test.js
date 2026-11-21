@@ -4,6 +4,7 @@ import {
   getSmsShareUrl,
   getWhatsAppShareUrl,
   normalizePhoneForWhatsApp,
+  validateIndianMobile,
 } from "./whatsappReceipt";
 
 describe("whatsappReceipt utilities", () => {
@@ -13,6 +14,24 @@ describe("whatsappReceipt utilities", () => {
     expect(normalizePhoneForWhatsApp("09845012345")).toBe("919845012345");
     expect(normalizePhoneForWhatsApp("")).toBe("");
     expect(normalizePhoneForWhatsApp(null)).toBe("");
+  });
+
+  it("auto-corrects 11-digit typos by taking the valid 10-digit mobile prefix", () => {
+    // Exactly the user's issue: 74114902711 with extra 1
+    expect(normalizePhoneForWhatsApp("74114902711")).toBe("917411490271");
+    expect(normalizePhoneForWhatsApp("+91 74114902711")).toBe("917411490271");
+    expect(normalizePhoneForWhatsApp("9174114902711")).toBe("917411490271");
+  });
+
+  it("validates Indian mobile numbers and detects extra digits", () => {
+    const valid = validateIndianMobile("7411490271");
+    expect(valid.valid).toBe(true);
+    expect(valid.cleaned).toBe("7411490271");
+
+    const extra = validateIndianMobile("74114902711");
+    expect(extra.valid).toBe(false);
+    expect(extra.hasExtraDigit).toBe(true);
+    expect(extra.suggested).toBe("7411490271");
   });
 
   it("builds a formatted receipt for a single credit transaction", () => {

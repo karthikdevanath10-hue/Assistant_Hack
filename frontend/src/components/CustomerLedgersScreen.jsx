@@ -8,6 +8,7 @@ import {
   summarizeCustomerLedgers,
 } from "../utils/customerLedgers";
 import { formatINR } from "../utils/numberNormalizer";
+import { validateIndianMobile } from "../utils/whatsappReceipt";
 import { CustomerLedgerCard } from "./CustomerLedgerCard";
 
 /**
@@ -73,9 +74,11 @@ export function CustomerLedgersScreen({
   async function handleAddCustomer(e) {
     e.preventDefault();
     if (!newName.trim() || !onCreateCustomer) return;
+    const phoneVal = newPhone.trim() ? validateIndianMobile(newPhone) : null;
+    const cleanPhone = phoneVal?.hasExtraDigit ? phoneVal.suggested : newPhone.trim() || null;
     await onCreateCustomer({
       name: newName.trim(),
-      phone: newPhone.trim() || null,
+      phone: cleanPhone,
       reminder_opt_in: newOptIn,
       preferred_language: language,
     });
@@ -200,10 +203,37 @@ export function CustomerLedgersScreen({
             />
             <input
               className="text-input"
-              placeholder="Phone (encrypted at rest, optional)"
+              placeholder="10-digit mobile (e.g. 7411490271)"
               value={newPhone}
               onChange={(e) => setNewPhone(e.target.value)}
+              maxLength={16}
             />
+            {newPhone.trim() && (() => {
+              const pv = validateIndianMobile(newPhone);
+              if (pv.valid) {
+                return (
+                  <span style={{ fontSize: "0.72rem", color: "#16a34a", fontWeight: 600 }}>
+                    ✓ {pv.formatted} (Valid WhatsApp)
+                  </span>
+                );
+              }
+              if (pv.hasExtraDigit) {
+                return (
+                  <div style={{ fontSize: "0.72rem", color: "#ea580c", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 4 }}>
+                    <span>⚠️ 11 digits! Extra digit detected.</span>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: "1px 7px", fontSize: "0.68rem" }}
+                      onClick={() => setNewPhone(pv.suggested)}
+                    >
+                      Fix to {pv.suggested}
+                    </button>
+                  </div>
+                );
+              }
+              return null;
+            })()}
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.85rem" }}>
               <input type="checkbox" checked={newOptIn} onChange={(e) => setNewOptIn(e.target.checked)} />
               Customer explicitly opted in to polite payment reminders

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Check, X } from "lucide-react";
+import { validateIndianMobile } from "../utils/whatsappReceipt";
 
 const CUSTOMER_LANGUAGES = [
   { code: "hi-IN", label: "Hindi / Hinglish (hi-IN)" },
@@ -28,9 +29,11 @@ export function CustomerEditForm({ customer, onSave, onCancel }) {
     if (!name.trim() || saving) return;
     setSaving(true);
     try {
+      const phoneVal = phone.trim() ? validateIndianMobile(phone) : null;
+      const cleanPhone = phoneVal?.hasExtraDigit ? phoneVal.suggested : phone.trim();
       await onSave({
         name: name.trim(),
-        phone: phone.trim(),
+        phone: cleanPhone,
         preferred_language: preferredLanguage,
         reminder_opt_in: reminderOptIn,
       });
@@ -38,6 +41,8 @@ export function CustomerEditForm({ customer, onSave, onCancel }) {
       setSaving(false);
     }
   }
+
+  const phoneVal = phone.trim() ? validateIndianMobile(phone) : null;
 
   return (
     <form
@@ -69,8 +74,27 @@ export function CustomerEditForm({ customer, onSave, onCancel }) {
             className="text-input"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="Optional phone number"
+            placeholder="10-digit mobile (e.g. 7411490271)"
+            maxLength={16}
           />
+          {phoneVal?.valid && (
+            <span style={{ fontSize: "0.72rem", color: "#16a34a", fontWeight: 600 }}>
+              ✓ {phoneVal.formatted} (Valid WhatsApp)
+            </span>
+          )}
+          {phoneVal?.hasExtraDigit && (
+            <div style={{ fontSize: "0.72rem", color: "#ea580c", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 4, marginTop: 2 }}>
+              <span>⚠️ 11 digits! Extra digit detected.</span>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ padding: "1px 7px", fontSize: "0.68rem" }}
+                onClick={() => setPhone(phoneVal.suggested)}
+              >
+                Fix to {phoneVal.suggested}
+              </button>
+            </div>
+          )}
         </label>
         <label style={{ display: "grid", gap: 4, fontSize: "0.78rem", fontWeight: 600 }}>
           Language
