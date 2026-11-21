@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart3,
-  Home,
   Info,
   LayoutDashboard,
   Settings,
@@ -10,23 +9,34 @@ import {
 } from "lucide-react";
 
 /**
- * WorkspaceCurvedHero provides the grand 75% workspace hero canvas
- * matching the reference design:
- * - Sweeping circular radial dome with spacious neo-morphic arc navigation buttons:
+ * WorkspaceCurvedHero provides the floating tapper navigation:
+ * - Sleek glowing purple sparkle tapper button in the topbar.
+ * - When tapped, fans out the grand curved neo-morphic dome dish overlay
+ *   with the 5 arc navigation buttons:
  *   1. Dashboard (opens home / dashboard metrics)
  *   2. Customers (opens customers tab)
  *   3. Customer Analytics (opens ledgers / customer analytics tab)
  *   4. Settings (opens settings tab)
  *   5. About (opens profile tab)
- * - Top-right: Glowing purple circular sparkle option badge that animates the arc options in/out
+ * - When any option is clicked, the floating dish smoothly collapses ("goes off back to")
+ *   and opens the selected page right there at the top!
  */
 export function WorkspaceCurvedHero({
   activeTab = "home",
   onSelectTab,
-  onToggleDrawer,
-  onScrollToExplore,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   const navItems = [
     {
       id: "home",
@@ -34,7 +44,6 @@ export function WorkspaceCurvedHero({
       icon: LayoutDashboard,
       action: () => {
         onSelectTab("home");
-        if (onScrollToExplore) onScrollToExplore();
       },
     },
     {
@@ -72,68 +81,84 @@ export function WorkspaceCurvedHero({
   ];
 
   return (
-    <section className="curved-hero-section" aria-label="Workspace Welcome & Navigation">
-      {/* Background Soft Floating Aurora Orbs */}
-      <div className="curved-hero-bg-orb orb-left" />
-      <div className="curved-hero-bg-orb orb-center" />
+    <div className={`floating-tapper-wrapper ${isOpen ? "is-open" : "is-closed"}`}>
+      {/* Tap-outside Backdrop */}
+      {isOpen && (
+        <div
+          className="floating-tapper-backdrop"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Main Content Layout */}
-      <div className="curved-hero-inner">
-        {/* Sweeping Grand Radial Curved Dome with Arc Navigation */}
-        <div className="curved-hero-right">
-          {/* Grand Curved Dome Dish */}
-          <div className={`curved-dome-dish ${isOpen ? "is-open" : "is-hidden"}`}>
-            {/* Glowing Purple Sparkle Option Button in Top Right */}
-            <button
-              type="button"
-              className={`curved-sparkle-circle ${isOpen ? "is-open" : ""}`}
-              onClick={() => setIsOpen((prev) => !prev)}
-              title={isOpen ? "Hide dashboard options" : "Show dashboard options"}
-              aria-label={isOpen ? "Hide dashboard options" : "Show dashboard options"}
-              aria-expanded={isOpen}
-            >
-              <Sparkles size={22} />
-            </button>
+      {/* Floating Sparkle Tapper Trigger Button in Topbar */}
+      <button
+        type="button"
+        className={`floating-tapper-btn ${isOpen ? "is-open" : ""}`}
+        onClick={() => setIsOpen((prev) => !prev)}
+        title={isOpen ? "Close navigation options" : "Explore Workspace Navigation"}
+        aria-label={isOpen ? "Close navigation options" : "Explore Workspace Navigation"}
+        aria-expanded={isOpen}
+      >
+        <Sparkles size={22} />
+      </button>
 
-            {/* Circular Navigation Buttons Placed Generously Along the Sweeping Curve */}
-            <nav
-              className={`curved-arc-nav ${isOpen ? "is-open" : "is-hidden"}`}
-              aria-label="Curved Workspace Navigation"
-            >
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                const isActive =
-                  item.id === activeTab ||
-                  (item.id === "about" && activeTab === "profile");
+      {/* Floating Curved Dome Dish Overlay */}
+      <div
+        className={`floating-dome-dish ${isOpen ? "is-open" : "is-hidden"}`}
+        aria-hidden={!isOpen}
+      >
+        {/* Glowing Purple Sparkle Option Button inside dish to close */}
+        <button
+          type="button"
+          className="curved-sparkle-circle is-open"
+          onClick={() => setIsOpen(false)}
+          title="Close navigation options"
+          aria-label="Close navigation options"
+        >
+          <Sparkles size={22} />
+        </button>
 
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      item.action();
-                    }}
-                    onPointerUp={(e) => {
-                      e.preventDefault();
-                      item.action();
-                    }}
-                    aria-label={`Open ${item.label}`}
-                    title={`Open ${item.label}`}
-                  >
-                    <span className={`curved-arc-btn ${isActive ? "active" : ""}`}>
-                      <Icon size={20} />
-                    </span>
-                    <span className="curved-arc-label">{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
+        {/* Circular Navigation Buttons Placed Generously Along the Sweeping Curve */}
+        <nav
+          className={`curved-arc-nav ${isOpen ? "is-open" : "is-hidden"}`}
+          aria-label="Curved Workspace Navigation"
+        >
+          {navItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive =
+              item.id === activeTab ||
+              (item.id === "about" && activeTab === "profile");
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  item.action();
+                }}
+                onPointerUp={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  item.action();
+                }}
+                aria-label={`Open ${item.label}`}
+                title={`Open ${item.label}`}
+              >
+                <span className={`curved-arc-btn ${isActive ? "active" : ""}`}>
+                  <Icon size={20} />
+                </span>
+                <span className="curved-arc-label">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
-    </section>
+    </div>
   );
 }

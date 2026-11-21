@@ -60,22 +60,10 @@ export default function App() {
     refreshAll();
     setTimeout(() => {
       const workPane = document.querySelector(".work-pane");
-      if (nextTab === "home") {
-        const el = document.getElementById("dashboard-metrics-section");
-        if (workPane && el) {
-          workPane.scrollTo({ top: el.offsetTop - 16, behavior: "smooth" });
-        } else if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-        }
-      } else {
-        const targetScreen = document.querySelector(".screen-view, .customers-pane, .card");
-        if (workPane && targetScreen) {
-          workPane.scrollTo({ top: targetScreen.offsetTop - 16, behavior: "smooth" });
-        } else if (targetScreen) {
-          targetScreen.scrollIntoView({ behavior: "smooth" });
-        }
+      if (workPane) {
+        workPane.scrollTo({ top: 0, behavior: "smooth" });
       }
-    }, 60);
+    }, 50);
   }
   const [statusInfo, setStatusInfo] = useState(null);
   const [dashboard, setDashboard] = useState(null);
@@ -1084,23 +1072,12 @@ export default function App() {
               <LogOut size={14} />
               <span>Logout</span>
             </button>
+            <WorkspaceCurvedHero
+              activeTab={tab}
+              onSelectTab={navigateToTab}
+            />
           </div>
         </header>
-
-        <WorkspaceCurvedHero
-          activeTab={tab}
-          onSelectTab={navigateToTab}
-          onToggleDrawer={() => setDrawerOpen((prev) => !prev)}
-          onScrollToExplore={() => {
-            const el = document.getElementById("dashboard-metrics-section");
-            const workPane = document.querySelector(".work-pane");
-            if (workPane && el) {
-              workPane.scrollTo({ top: el.offsetTop - 16, behavior: "smooth" });
-            } else if (el) {
-              el.scrollIntoView({ behavior: "smooth" });
-            }
-          }}
-        />
 
         {!consentAccepted && (
           <ConsentBanner
