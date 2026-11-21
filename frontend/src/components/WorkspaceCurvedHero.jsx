@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BarChart3,
   Box,
@@ -13,7 +13,7 @@ import {
  * matching the reference design:
  * - Left: "Hello! ✨", "Innovate Today, Grow Tomorrow", subtitle, and scroll indicator
  * - Right: Sweeping circular radial dome with spacious neo-morphic arc navigation buttons
- * - Top-right: Glowing purple circular sparkle badge
+ * - Top-right: Glowing purple circular sparkle option badge that animates the arc options in/out
  */
 export function WorkspaceCurvedHero({
   activeTab = "home",
@@ -21,6 +21,7 @@ export function WorkspaceCurvedHero({
   onToggleDrawer,
   onScrollToExplore,
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const navItems = [
     {
       id: "home",
@@ -109,23 +110,24 @@ export function WorkspaceCurvedHero({
         {/* Right Column: Sweeping Grand Radial Curved Dome with Arc Navigation */}
         <div className="curved-hero-right">
           {/* Grand Curved Dome Dish */}
-          <div className="curved-dome-dish">
-            {/* Glowing Purple Sparkle Button in Top Right */}
+          <div className={`curved-dome-dish ${isOpen ? "is-open" : "is-hidden"}`}>
+            {/* Glowing Purple Sparkle Option Button in Top Right */}
             <button
               type="button"
-              className="curved-sparkle-circle"
-              onClick={() => {
-                if (onToggleDrawer) onToggleDrawer();
-                else if (onScrollToExplore) onScrollToExplore();
-              }}
-              title="Open dashboard drawer"
-              aria-label="Open dashboard drawer"
+              className={`curved-sparkle-circle ${isOpen ? "is-open" : ""}`}
+              onClick={() => setIsOpen((prev) => !prev)}
+              title={isOpen ? "Hide dashboard options" : "Show dashboard options"}
+              aria-label={isOpen ? "Hide dashboard options" : "Show dashboard options"}
+              aria-expanded={isOpen}
             >
               <Sparkles size={22} />
             </button>
 
             {/* Circular Navigation Buttons Placed Generously Along the Sweeping Curve */}
-            <nav className="curved-arc-nav" aria-label="Curved Workspace Navigation">
+            <nav
+              className={`curved-arc-nav ${isOpen ? "is-open" : "is-hidden"}`}
+              aria-label="Curved Workspace Navigation"
+            >
               {navItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive =

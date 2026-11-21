@@ -3739,10 +3739,24 @@ body {
   align-items: center;
   justify-content: center;
   overflow: visible;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Glowing Purple Sparkle Button (Top-Right inside dome dish) */
+.curved-dome-dish.is-hidden {
+  border-left-color: rgba(255, 255, 255, 0.7);
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+  box-shadow: -10px 12px 32px rgba(124, 58, 237, 0.07), inset 0 0 25px rgba(255, 255, 255, 0.6);
+  background: radial-gradient(circle at 82% 28%, rgba(255, 255, 255, 0.88) 0%, rgba(243, 238, 255, 0.55) 65%, rgba(237, 233, 254, 0.35) 100%);
+}
+
+.curved-dome-dish.is-open {
+  border-left-color: rgba(255, 255, 255, 0.98);
+  border-bottom-color: rgba(255, 255, 255, 0.9);
+  box-shadow: -22px 24px 60px rgba(124, 58, 237, 0.16), inset 0 0 45px rgba(255, 255, 255, 0.9);
+  background: radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.98) 0%, rgba(243, 238, 255, 0.82) 60%, rgba(237, 233, 254, 0.6) 100%);
+}
+
+/* Glowing Purple Sparkle Option Button (Top-Right inside dome dish) */
 .curved-sparkle-circle {
   position: absolute;
   top: 24px;
@@ -3758,13 +3772,24 @@ body {
   justify-content: center;
   box-shadow: 0 4px 22px rgba(167, 139, 250, 0.6), 0 0 0 8px rgba(167, 139, 250, 0.18);
   cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
   z-index: 25;
 }
 
 .curved-sparkle-circle:hover {
   transform: scale(1.12);
   box-shadow: 0 8px 30px rgba(167, 139, 250, 0.8), 0 0 0 12px rgba(167, 139, 250, 0.28);
+}
+
+.curved-sparkle-circle.is-open {
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  box-shadow: 0 6px 26px rgba(124, 58, 237, 0.7), 0 0 0 10px rgba(124, 58, 237, 0.22);
+  transform: rotate(45deg);
+}
+
+.curved-sparkle-circle.is-open:hover {
+  transform: rotate(45deg) scale(1.12);
+  box-shadow: 0 10px 32px rgba(124, 58, 237, 0.9), 0 0 0 14px rgba(124, 58, 237, 0.3);
 }
 
 /* Curved Arc Navigation Container */
@@ -3776,30 +3801,7 @@ body {
   display: block;
 }
 
-@media (max-width: 899px) {
-  .curved-dome-dish {
-    border-radius: 36px;
-    height: auto;
-    min-height: 200px;
-    padding: 24px 16px;
-  }
-
-  .curved-arc-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    height: auto;
-    min-height: auto;
-    padding-top: 50px;
-  }
-
-  .curved-arc-item {
-    position: static !important;
-  }
-}
-
-/* Arc Items Spaced Along the Sweeping Circular Arc */
+/* Arc Items Spaced Along the Sweeping Circular Arc with Spring Animation */
 .curved-arc-item {
   position: absolute;
   display: flex;
@@ -3808,12 +3810,42 @@ body {
   gap: 7px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 10;
+  transform-origin: 480px 40px;
 }
 
-.curved-arc-item:hover {
-  transform: translateY(-4px);
+/* HIDDEN STATE: Tucked into the option button, invisible */
+.curved-arc-nav.is-hidden .curved-arc-item {
+  opacity: 0;
+  transform: scale(0.1) translate(120px, -80px);
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.curved-arc-nav.is-hidden .curved-pos-5 { transition-delay: 0.02s; }
+.curved-arc-nav.is-hidden .curved-pos-4 { transition-delay: 0.05s; }
+.curved-arc-nav.is-hidden .curved-pos-3 { transition-delay: 0.08s; }
+.curved-arc-nav.is-hidden .curved-pos-2 { transition-delay: 0.11s; }
+.curved-arc-nav.is-hidden .curved-pos-1 { transition-delay: 0.14s; }
+
+/* OPEN STATE: Fans out gracefully along the arc curve with spring bounce */
+.curved-arc-nav.is-open .curved-arc-item {
+  opacity: 1;
+  transform: scale(1) translate(0, 0);
+  pointer-events: auto;
+  transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.curved-arc-nav.is-open .curved-pos-1 { transition-delay: 0.04s; }
+.curved-arc-nav.is-open .curved-pos-2 { transition-delay: 0.10s; }
+.curved-arc-nav.is-open .curved-pos-3 { transition-delay: 0.16s; }
+.curved-arc-nav.is-open .curved-pos-4 { transition-delay: 0.22s; }
+.curved-arc-nav.is-open .curved-pos-5 { transition-delay: 0.28s; }
+
+.curved-arc-nav.is-open .curved-arc-item:hover {
+  transform: scale(1.08) translateY(-4px);
 }
 
 /* 5 Positions Along the Grand Sweeping Arc */
@@ -3864,6 +3896,40 @@ body {
 .curved-arc-item.active .curved-arc-label {
   color: #7c3aed;
   font-weight: 850;
+}
+
+@media (max-width: 899px) {
+  .curved-dome-dish {
+    border-radius: 36px;
+    height: auto;
+    min-height: 200px;
+    padding: 24px 16px;
+  }
+
+  .curved-arc-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    height: auto;
+    min-height: auto;
+    padding-top: 50px;
+  }
+
+  .curved-arc-item {
+    position: static !important;
+    transform-origin: center;
+  }
+
+  .curved-arc-nav.is-hidden .curved-arc-item {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  .curved-arc-nav.is-open .curved-arc-item {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 
