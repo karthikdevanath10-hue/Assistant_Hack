@@ -1098,9 +1098,15 @@ export default function App() {
             activeTab={tab}
             onSelectTab={navigateToTab}
             onToggleDrawer={() => setDrawerOpen((prev) => !prev)}
-            onScrollToExplore={() => {
+            onScrollToExplore={(mode) => {
               setShowHero(false);
               setTab("home");
+              if (mode === "analytics") {
+                setTimeout(() => {
+                  const el = document.getElementById("dashboard-metrics-section");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }, 120);
+              }
             }}
           />
         ) : (

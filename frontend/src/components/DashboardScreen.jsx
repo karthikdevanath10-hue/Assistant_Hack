@@ -298,7 +298,7 @@ export function DashboardScreen({
           <form onSubmit={submitManual} style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 8 }}>
             <select className="text-input" value={custId} onChange={(e) => setCustId(e.target.value)} required>
               <option value="">{t("selectCustomer", language)}</option>
-              {customers.map((c) => (
+              {(customers || []).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   BarChart3,
   Box,
@@ -22,13 +22,21 @@ export function WorkspaceCurvedHero({
   onScrollToExplore,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const lastTriggerRef = useRef(0);
 
-  const handleSelectOption = (targetTab) => {
+  const handleSelectOption = (targetTab, itemId, e) => {
+    if (e) {
+      e.stopPropagation?.();
+    }
+    const now = Date.now();
+    if (now - lastTriggerRef.current < 280) return;
+    lastTriggerRef.current = now;
+
     if (typeof onSelectTab === "function") {
       onSelectTab(targetTab);
     }
-    if (targetTab === "home" && typeof onScrollToExplore === "function") {
-      onScrollToExplore();
+    if ((targetTab === "home" || itemId === "analytics") && typeof onScrollToExplore === "function") {
+      onScrollToExplore(itemId);
     }
   };
 
@@ -94,7 +102,7 @@ export function WorkspaceCurvedHero({
           <button
             type="button"
             className="curved-hero-scroll-btn"
-            onClick={onScrollToExplore}
+            onClick={() => handleSelectOption("home", "home")}
             title="Scroll down to inspect live khata metrics & ledgers"
           >
             <div className="curved-mouse-pill">
@@ -113,7 +121,10 @@ export function WorkspaceCurvedHero({
             <button
               type="button"
               className={`curved-sparkle-circle ${isOpen ? "is-open" : ""}`}
-              onClick={() => setIsOpen((prev) => !prev)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen((prev) => !prev);
+              }}
               title={isOpen ? "Hide dashboard options" : "Show dashboard options"}
               aria-label={isOpen ? "Hide dashboard options" : "Show dashboard options"}
               aria-expanded={isOpen}
@@ -133,38 +144,23 @@ export function WorkspaceCurvedHero({
                   (item.id === "tools" && (activeTab === "ledgers" || activeTab === "customers")) ||
                   (item.id === "about" && activeTab === "profile");
 
-                const handleItemClick = (e) => {
-                  e.stopPropagation();
-                  handleSelectOption(item.targetTab);
-                };
-
                 return (
-                  <div
+                  <button
                     key={item.id}
+                    type="button"
                     className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
-                    onClick={handleItemClick}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        handleSelectOption(item.targetTab);
-                      }
-                    }}
+                    onClick={(e) => handleSelectOption(item.targetTab, item.id, e)}
+                    onPointerUp={(e) => handleSelectOption(item.targetTab, item.id, e)}
+                    aria-label={item.label}
+                    title={`Open ${item.label} panel`}
                   >
-                    <button
-                      type="button"
-                      className={`curved-arc-btn ${isActive ? "active" : ""}`}
-                      onClick={handleItemClick}
-                      aria-label={item.label}
-                      title={`Go to ${item.label}`}
-                    >
+                    <span className={`curved-arc-btn ${isActive ? "active" : ""}`}>
                       <Icon size={20} />
-                    </button>
-                    <span className="curved-arc-label" onClick={handleItemClick}>
+                    </span>
+                    <span className="curved-arc-label">
                       {item.label}
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </nav>

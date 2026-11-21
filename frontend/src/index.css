@@ -3817,6 +3817,18 @@ body {
   z-index: 20;
   transform-origin: 480px 40px;
   touch-action: manipulation;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.curved-arc-item svg,
+.curved-arc-btn svg {
+  pointer-events: none;
 }
 
 /* HIDDEN STATE: Tucked into the option button, invisible */
@@ -3849,8 +3861,20 @@ body {
 .curved-arc-nav.is-open .curved-pos-4 { transition-delay: 0.22s; }
 .curved-arc-nav.is-open .curved-pos-5 { transition-delay: 0.28s; }
 
-.curved-arc-nav.is-open .curved-arc-item:hover {
-  transform: scale(1.08) translateY(-4px);
+@media (hover: hover) and (pointer: fine) {
+  .curved-arc-nav.is-open .curved-arc-item:hover {
+    transform: scale(1.08) translateY(-4px);
+  }
+
+  .curved-arc-btn:hover {
+    color: #7c3aed;
+    transform: scale(1.12);
+    box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
+  }
+}
+
+.curved-arc-item:active .curved-arc-btn {
+  transform: scale(0.92);
 }
 
 /* 5 Positions Along the Grand Sweeping Arc */
@@ -3875,12 +3899,6 @@ body {
   pointer-events: auto;
   touch-action: manipulation;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.curved-arc-btn:hover {
-  color: #7c3aed;
-  transform: scale(1.12);
-  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
 }
 
 .curved-arc-btn.active,
