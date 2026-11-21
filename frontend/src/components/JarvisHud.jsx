@@ -64,6 +64,15 @@ export function JarvisHud({
 
   return (
     <section className={`jarvis-hud ${modeClass}`} aria-label="Assistant Live Voice HUD">
+      {/* Top Notch Capsule Badge */}
+      <div className="jarvis-header-notch">
+        <div className="jarvis-header-pill">
+          <span className={`jarvis-notch-dot ${modeClass}`} />
+          <span className="jarvis-notch-brand">Voice Khata AI</span>
+          <span className="jarvis-notch-model">Gemini 3.8</span>
+        </div>
+      </div>
+
       <div className="jarvis-top">
         {/* Animated Frequency Visualizer & Mic Stage */}
         <div className={`jarvis-visualizer-wrap ${isListening ? "active" : "idle"}`}>
