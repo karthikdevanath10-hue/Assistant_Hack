@@ -124,39 +124,16 @@ export function WorkspaceCurvedHero({
         {/* Right Column: Sweeping Radial Curved Dome with Arc Navigation & Dashboard Options */}
         <div className="curved-hero-right">
           <div className={`curved-dome-dish ${isCurveOpen ? "is-open" : "is-closed"}`}>
-            {/* Top Right Sparkle Badge with "Open / Close" Drawer Callout */}
-            <div
-              className="curved-open-callout-wrap"
+            {/* Top Right Sparkle Icon Trigger */}
+            <button
+              type="button"
+              className="curved-sparkle-circle"
               onClick={toggleCurve}
               title={isCurveOpen ? "Close curved dashboard" : "Touch to open curved dashboard"}
-              role="button"
-              tabIndex={0}
+              aria-label={isCurveOpen ? "Close curved dashboard" : "Open curved dashboard"}
             >
-              <div className="curved-sparkle-circle">
-                {isCurveOpen ? <X size={20} /> : <Sparkles size={20} />}
-              </div>
-              {!isCurveOpen && (
-                <svg className="curved-callout-arrow-svg" viewBox="0 0 40 24" fill="none">
-                  <path
-                    d="M4 18 C14 22, 26 12, 36 6"
-                    stroke="#8b5cf6"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeDasharray="2 2"
-                  />
-                </svg>
-              )}
-              <button
-                type="button"
-                className={`curved-open-pill-btn ${isCurveOpen ? "active-close" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleCurve();
-                }}
-              >
-                {isCurveOpen ? "Close ✕" : "Open"}
-              </button>
-            </div>
+              {isCurveOpen ? <X size={20} /> : <Sparkles size={20} />}
+            </button>
 
             {/* The Curve & Dashboard Options Content */}
             <div className="curved-content-wrap">
