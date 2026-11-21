@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { BookOpen, LayoutGrid, LogOut, Settings, User, Users, X } from "lucide-react";
+import { BookOpen, History, LayoutGrid, LogOut, Settings, User, Users, X } from "lucide-react";
 import { t } from "../utils/i18n";
 
 export const NAV_SECTIONS = [
@@ -43,6 +43,7 @@ export function RightSlideDashboard({
   activeTab,
   currentUser = null,
   onSelectTab,
+  onOpenChatHistory,
   onLogout,
   onClose,
   language = "hi-IN",
@@ -131,6 +132,25 @@ export function RightSlideDashboard({
               </button>
             );
           })}
+
+          {onOpenChatHistory && (
+            <button
+              type="button"
+              className="nav-tab nav-drawer-item"
+              onClick={() => {
+                onClose();
+                onOpenChatHistory();
+              }}
+            >
+              <span className="nav-drawer-icon">
+                <History size={18} />
+              </span>
+              <span className="nav-drawer-text">
+                <strong>AI Chat History</strong>
+                <small>Past spoken &amp; typed commands</small>
+              </span>
+            </button>
+          )}
         </nav>
 
         {currentUser && (

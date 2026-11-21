@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronDown, Clock, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronDown, Clock, History, MessageCircle, Plus, Sparkles, Volume2 } from "lucide-react";
 import { api } from "../api/client";
 import { formatINR } from "../utils/numberNormalizer";
 import { playReplyAudio } from "../audio/recorder";
@@ -146,6 +146,7 @@ export function DashboardScreen({
   onManualTx,
   onSelectCustomerById,
   onOpenCustomersPage,
+  onOpenChatHistory,
 }) {
   const [openNotches, setOpenNotches] = useState({ credit: false, payment: false, due: false });
   const [showManual, setShowManual] = useState(false);
@@ -222,6 +223,16 @@ export function DashboardScreen({
               >
                 <Volume2 size={16} />
               </button>
+              {onOpenChatHistory && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={onOpenChatHistory}
+                  title="View full AI chat and voice history"
+                >
+                  <History size={15} />
+                </button>
+              )}
             </div>
           </div>
 
@@ -320,9 +331,21 @@ export function DashboardScreen({
               {t("quickVoiceSub", language)}
             </div>
           </div>
-          <button className="btn btn-secondary" onClick={() => setShowManual((v) => !v)}>
-            <Plus size={15} /> {t("manualEntry", language)}
-          </button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {onOpenChatHistory && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onOpenChatHistory}
+                title="View previous AI conversations and voice transcripts"
+              >
+                <History size={14} /> Chat History
+              </button>
+            )}
+            <button className="btn btn-secondary" onClick={() => setShowManual((v) => !v)}>
+              <Plus size={15} /> {t("manualEntry", language)}
+            </button>
+          </div>
         </div>
 
         <div className="demo-chips">

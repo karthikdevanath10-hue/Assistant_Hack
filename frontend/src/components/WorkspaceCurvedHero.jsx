@@ -7,6 +7,7 @@ import {
   Settings,
   Sparkles,
   Users,
+  MessageSquareText,
 } from "lucide-react";
 
 /**
@@ -25,6 +26,7 @@ import {
 export function WorkspaceCurvedHero({
   activeTab = "home",
   onSelectTab,
+  onOpenChatHistory,
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -63,6 +65,18 @@ export function WorkspaceCurvedHero({
         onSelectTab("ledgers");
       },
     },
+    ...(onOpenChatHistory
+      ? [
+          {
+            id: "chat-history",
+            label: "Chat History",
+            icon: MessageSquareText,
+            action: () => {
+              onOpenChatHistory();
+            },
+          },
+        ]
+      : []),
     {
       id: "settings",
       label: "Settings",

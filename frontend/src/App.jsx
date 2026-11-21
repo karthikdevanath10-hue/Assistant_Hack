@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LogOut, Mic, MicOff, PanelRightOpen, Radio, Send, User } from "lucide-react";
+import { History, LogOut, MessageSquareText, Mic, MicOff, PanelRightOpen, Radio, Send, User } from "lucide-react";
 import {
   api,
   clearAuthToken,
@@ -14,6 +14,7 @@ import { GeminiLiveClient } from "./audio/liveClient";
 import { ShopAudioRecorder, playReplyAudio } from "./audio/recorder";
 import { AuthGateway } from "./components/AuthPages";
 import { BottomNavBar } from "./components/BottomNavBar";
+import { ChatHistoryModal } from "./components/ChatHistoryModal";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { CustomerLedgerModal } from "./components/CustomerLedgerModal";
 import { CustomerLedgersScreen } from "./components/CustomerLedgersScreen";
@@ -50,6 +51,7 @@ export default function App() {
 
   const [tab, setTab] = useState("home");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chatHistoryOpen, setChatHistoryOpen] = useState(false);
 
   useEffect(() => {
     setDrawerOpen(false);
@@ -994,6 +996,7 @@ export default function App() {
           }}
           onQuickReply={runTextTurn}
           onReplayAudio={handleReplayAudio}
+          onOpenChatHistory={() => setChatHistoryOpen(true)}
         />
 
         <div className="ai-dock-card">
@@ -1074,6 +1077,16 @@ export default function App() {
             />
             <button
               type="button"
+              className="nav-drawer-trigger chat-history-topbar-btn"
+              onClick={() => setChatHistoryOpen(true)}
+              aria-label="AI Chat History"
+              title="View full AI chat and voice history"
+            >
+              <MessageSquareText size={14} />
+              <span>Chat History</span>
+            </button>
+            <button
+              type="button"
               className="nav-drawer-trigger"
               onClick={handleLogout}
               aria-label="Logout"
@@ -1085,6 +1098,7 @@ export default function App() {
             <WorkspaceCurvedHero
               activeTab={tab}
               onSelectTab={navigateToTab}
+              onOpenChatHistory={() => setChatHistoryOpen(true)}
             />
           </div>
         </header>
@@ -1134,6 +1148,15 @@ export default function App() {
           }}
         />
 
+        <ChatHistoryModal
+          isOpen={chatHistoryOpen}
+          onClose={() => setChatHistoryOpen(false)}
+          conversationFeed={conversationFeed}
+          onRunPhrase={runTextTurn}
+          onSelectCustomerById={(id) => openCustomerLedgerById(id)}
+          language={language}
+        />
+
         <ErrorBoundary onReset={() => setTab("home")} buttonText="Return to Dashboard">
           {tab === "home" && (
             <DashboardScreen
@@ -1147,6 +1170,7 @@ export default function App() {
               onManualTx={handleManualTx}
               onSelectCustomerById={(id) => openCustomerLedgerById(id)}
               onOpenCustomersPage={() => navigateToTab("customers")}
+              onOpenChatHistory={() => setChatHistoryOpen(true)}
             />
           )}
 
@@ -1259,6 +1283,7 @@ export default function App() {
         activeTab={tab}
         currentUser={currentUser}
         onSelectTab={navigateToTab}
+        onOpenChatHistory={() => setChatHistoryOpen(true)}
         onLogout={handleLogout}
         onClose={() => setDrawerOpen(false)}
         language={language}

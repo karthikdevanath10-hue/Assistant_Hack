@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Mic, MicOff, Radio, ShieldCheck, Sparkles, Volume2, X } from "lucide-react";
+import { Check, History, Mic, MicOff, Radio, ShieldCheck, Sparkles, Volume2, X } from "lucide-react";
 import { playReplyAudio } from "../audio/recorder";
 import { previewSpokenAmount } from "../utils/numberNormalizer";
 import { t } from "../utils/i18n";
@@ -31,6 +31,7 @@ export function JarvisHud({
   onToggleInteractiveConfirm,
   onQuickReply,
   onReplayAudio,
+  onOpenChatHistory,
 }) {
   const isListening = liveConnected || isRecording;
   const awaitingCustName =
@@ -70,6 +71,17 @@ export function JarvisHud({
           <span className={`jarvis-notch-dot ${modeClass}`} />
           <span className="jarvis-notch-brand">Voice Khata AI</span>
         </div>
+        {onOpenChatHistory && (
+          <button
+            type="button"
+            className="jarvis-notch-history-btn"
+            onClick={onOpenChatHistory}
+            title="Open AI Chat & Voice History"
+          >
+            <History size={12} />
+            <span>Chat History</span>
+          </button>
+        )}
       </div>
 
       <div className="jarvis-top">
@@ -202,6 +214,16 @@ export function JarvisHud({
           >
             <ShieldCheck size={13} /> {interactiveConfirm ? t("confirmRuleOn", language) : t("confirmRuleOff", language)}
           </button>
+          {onOpenChatHistory && (
+            <button
+              type="button"
+              className="jarvis-pill-btn chat-history-pill-btn"
+              onClick={onOpenChatHistory}
+              title="View past AI chat conversations and commands"
+            >
+              <History size={13} /> Chat History
+            </button>
+          )}
         </div>
       </div>
 
