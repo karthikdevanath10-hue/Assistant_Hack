@@ -139,7 +139,7 @@ export default function App() {
     if (!clean) return;
     setConversationFeed((prev) => {
       const next = [...prev, { id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, role, text: clean }];
-      return next.slice(-8);
+      return next.slice(-25);
     });
   }
 
@@ -972,7 +972,7 @@ export default function App() {
               currentLanguage={language}
               onChangeLanguage={(l) => handleUpdateSettings({ preferred_language: l })}
             />
-            <div className="topbar-user-pill" title={currentUser?.email || ""}>
+            <div className="topbar-user-pill" title={currentUser?.phone || currentUser?.email || ""}>
               <User size={14} />
               <span>{currentUser?.name || "Shopkeeper"}</span>
             </div>

@@ -471,11 +471,11 @@ def test_mongo_multi_account_database_and_collection_fallback_isolation():
         with TestClient(app) as client:
             u1 = client.post(
                 "/api/auth/signup",
-                json={"name": "Owner One", "email": "u1@example.com", "password": "pass-user-1"},
+                json={"name": "Owner One", "phone": "9876500051", "email": "u1@example.com", "password": "pass-user-1"},
             ).json()
             u2 = client.post(
                 "/api/auth/signup",
-                json={"name": "Owner Two", "email": "u2@example.com", "password": "pass-user-2"},
+                json={"name": "Owner Two", "phone": "9876500052", "email": "u2@example.com", "password": "pass-user-2"},
             ).json()
             h1 = {"Authorization": f"Bearer {u1['access_token']}"}
             h2 = {"Authorization": f"Bearer {u2['access_token']}"}

@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import re
 import sqlite3
 import threading
 from typing import Any, Iterator, Protocol
@@ -24,7 +25,17 @@ def normalize_name(name: str) -> str:
 
 def normalize_email(email: str) -> str:
     """Normalize user email addresses for case-insensitive account lookup."""
-    return email.strip().lower()
+    return email.strip().lower() if email else ""
+
+
+def normalize_phone(phone: str) -> str:
+    """Normalize Indian phone numbers to standard 10-digit format for account lookup."""
+    digits = re.sub(r"\D", "", phone or "")
+    if len(digits) == 12 and digits.startswith("91"):
+        digits = digits[2:]
+    elif len(digits) == 11 and digits.startswith("0"):
+        digits = digits[1:]
+    return digits or (phone or "").strip()
 
 
 def default_tenant_settings(preferred_language: str = "hi-IN") -> list[tuple[str, str]]:
@@ -182,15 +193,18 @@ class KhataStore(Protocol):
     def get_setting(self, key: str, default: str) -> str: ...
     def upsert_settings(self, updates: dict[str, str]) -> dict[str, str]: ...
     def wipe_demo_transcripts(self) -> int: ...
-    def get_user_by_email(self, email: str) -> dict | None: ...
+    def get_user_by_email(self, email: str | None) -> dict | None: ...
+    def get_user_by_phone(self, phone: str | None) -> dict | None: ...
+    def get_user_by_identifier(self, identifier: str | None) -> dict | None: ...
     def get_user_by_id(self, user_id: int) -> dict | None: ...
     def create_user(
         self,
         *,
         name: str,
         shop_name: str,
-        email: str,
-        phone_enc: str | None,
+        phone: str,
+        email: str | None = None,
+        phone_enc: str | None = None,
         password_hash: str,
         preferred_language: str = "hi-IN",
         created_at: str | None = None,
@@ -848,11 +862,35 @@ class SqliteKhataStore:
             conn.execute("UPDATE voice_sessions SET pending_action_json = NULL, last_committed_tx_ids_json = NULL")
             return deleted
 
-    def get_user_by_email(self, email: str) -> dict | None:
+    def get_user_by_email(self, email: str | None) -> dict | None:
+        if not email or not email.strip():
+            return None
         clean_email = normalize_email(email)
         with self._conn() as conn:
             row = conn.execute("SELECT * FROM users WHERE email = ?", (clean_email,)).fetchone()
             return dict(row) if row else None
+
+    def get_user_by_phone(self, phone: str | None) -> dict | None:
+        if not phone or not phone.strip():
+            return None
+        clean_phone = normalize_phone(phone)
+        with self._conn() as conn:
+            row = conn.execute(
+                "SELECT * FROM users WHERE phone = ? OR phone = ?",
+                (clean_phone, phone.strip()),
+            ).fetchone()
+            return dict(row) if row else None
+
+    def get_user_by_identifier(self, identifier: str | None) -> dict | None:
+        clean = (identifier or "").strip()
+        if not clean:
+            return None
+        if "@" in clean:
+            return self.get_user_by_email(clean)
+        user = self.get_user_by_phone(clean)
+        if user:
+            return user
+        return self.get_user_by_email(clean)
 
     def get_user_by_id(self, user_id: int) -> dict | None:
         with self._conn() as conn:
@@ -864,24 +902,27 @@ class SqliteKhataStore:
         *,
         name: str,
         shop_name: str,
-        email: str,
-        phone_enc: str | None,
+        phone: str,
+        email: str | None = None,
+        phone_enc: str | None = None,
         password_hash: str,
         preferred_language: str = "hi-IN",
         created_at: str | None = None,
     ) -> dict:
         now = created_at or _utc_now_iso()
-        clean_email = normalize_email(email)
+        clean_phone = normalize_phone(phone)
+        clean_email = normalize_email(email) if email and email.strip() else None
         try:
             with self._conn(write=True) as conn:
                 cur = conn.execute(
                     """
-                    INSERT INTO users (name, shop_name, email, phone_enc, password_hash, preferred_language, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO users (name, shop_name, phone, email, phone_enc, password_hash, preferred_language, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         name.strip(),
                         shop_name.strip(),
+                        clean_phone,
                         clean_email,
                         phone_enc,
                         password_hash,
@@ -893,7 +934,12 @@ class SqliteKhataStore:
                 row = conn.execute("SELECT * FROM users WHERE id = ?", (uid,)).fetchone()
                 return dict(row)
         except sqlite3.IntegrityError as exc:
-            raise ValueError("An account with this email already exists.") from exc
+            err_str = str(exc).lower()
+            if "phone" in err_str:
+                raise ValueError("An account with this mobile number already exists.") from exc
+            if "email" in err_str:
+                raise ValueError("An account with this email already exists.") from exc
+            raise ValueError("An account with these credentials already exists.") from exc
 
     def update_user_last_login(self, user_id: int, last_login_at: str) -> None:
         with self._conn(write=True) as conn:
@@ -1561,9 +1607,31 @@ class MongoKhataStore:
         )
         return int(res.deleted_count)
 
-    def get_user_by_email(self, email: str) -> dict | None:
+    def get_user_by_email(self, email: str | None) -> dict | None:
+        if not email or not email.strip():
+            return None
         clean_email = normalize_email(email)
         return _clean_doc(self.mongo_db["users"].find_one({"email": clean_email}, {"_id": 0}))
+
+    def get_user_by_phone(self, phone: str | None) -> dict | None:
+        if not phone or not phone.strip():
+            return None
+        clean_phone = normalize_phone(phone)
+        doc = self.mongo_db["users"].find_one({"phone": clean_phone}, {"_id": 0})
+        if not doc:
+            doc = self.mongo_db["users"].find_one({"phone": phone.strip()}, {"_id": 0})
+        return _clean_doc(doc)
+
+    def get_user_by_identifier(self, identifier: str | None) -> dict | None:
+        clean = (identifier or "").strip()
+        if not clean:
+            return None
+        if "@" in clean:
+            return self.get_user_by_email(clean)
+        user = self.get_user_by_phone(clean)
+        if user:
+            return user
+        return self.get_user_by_email(clean)
 
     def get_user_by_id(self, user_id: int) -> dict | None:
         return _clean_doc(self.mongo_db["users"].find_one({"id": int(user_id)}, {"_id": 0}))
@@ -1573,14 +1641,18 @@ class MongoKhataStore:
         *,
         name: str,
         shop_name: str,
-        email: str,
-        phone_enc: str | None,
+        phone: str,
+        email: str | None = None,
+        phone_enc: str | None = None,
         password_hash: str,
         preferred_language: str = "hi-IN",
         created_at: str | None = None,
     ) -> dict:
-        clean_email = normalize_email(email)
-        if self.get_user_by_email(clean_email):
+        clean_phone = normalize_phone(phone)
+        if self.get_user_by_phone(clean_phone):
+            raise ValueError("An account with this mobile number already exists.")
+        clean_email = normalize_email(email) if email and email.strip() else None
+        if clean_email and self.get_user_by_email(clean_email):
             raise ValueError("An account with this email already exists.")
         uid = self._next_id("users")
         now = created_at or _utc_now_iso()
@@ -1588,6 +1660,7 @@ class MongoKhataStore:
             "id": uid,
             "name": name.strip(),
             "shop_name": shop_name.strip(),
+            "phone": clean_phone,
             "email": clean_email,
             "phone_enc": phone_enc,
             "password_hash": password_hash,
@@ -1598,6 +1671,9 @@ class MongoKhataStore:
         try:
             self.mongo_db["users"].insert_one(dict(doc))
         except DuplicateKeyError as exc:
+            err_str = str(exc).lower()
+            if "phone" in err_str:
+                raise ValueError("An account with this mobile number already exists.") from exc
             raise ValueError("An account with this email already exists.") from exc
         return doc
 

@@ -370,7 +370,7 @@ def test_user_signup_login_session_and_encryption(api_client, isolated_container
     assert s_body["access_token"].startswith("vk1.")
     assert s_body["user"]["email"] == "karthik@example.com"
     assert s_body["user"]["shop_name"] == "Achar Kirana"
-    assert s_body["user"]["phone"] == "+91-9876500001"
+    assert s_body["user"]["phone"] == "9876500001"
     assert "password_hash" not in s_body["user"]
 
     raw_user = isolated_container.db.get_user_by_email("karthik@example.com")
@@ -383,6 +383,7 @@ def test_user_signup_login_session_and_encryption(api_client, isolated_container
         "/api/auth/signup",
         json={
             "name": "Other User",
+            "phone": "+91-9876500001",
             "email": "karthik@example.com",
             "password": "another-password",
         },
@@ -407,6 +408,36 @@ def test_user_signup_login_session_and_encryption(api_client, isolated_container
     )
     assert good_login.status_code == 200
     assert good_login.json()["user"]["id"] == s_body["user"]["id"]
+
+    # Test login using phone number instead of email
+    phone_login = api_client.post(
+        "/api/auth/login",
+        json={"identifier": "9876500001", "password": "secret-pass-123"},
+    )
+    assert phone_login.status_code == 200
+    assert phone_login.json()["user"]["id"] == s_body["user"]["id"]
+
+    # Test phone-only signup without email (Gmail optional)
+    phone_only_signup = api_client.post(
+        "/api/auth/signup",
+        json={
+            "name": "Ramesh Kumar",
+            "shop_name": "Ramesh Stores",
+            "phone": "9876500099",
+            "password": "password-ramesh-123",
+        },
+    )
+    assert phone_only_signup.status_code == 201
+    assert phone_only_signup.json()["user"]["email"] is None
+    assert phone_only_signup.json()["user"]["phone"] == "9876500099"
+
+    # Login with phone number for phone-only account
+    phone_only_login = api_client.post(
+        "/api/auth/login",
+        json={"phone": "9876500099", "password": "password-ramesh-123"},
+    )
+    assert phone_only_login.status_code == 200
+
     assert api_client.post("/api/auth/logout").json() == {"status": "logged_out"}
 
 
@@ -416,6 +447,7 @@ def test_two_accounts_have_isolated_databases_and_calculations(api_client):
         json={
             "name": "Shopkeeper One",
             "shop_name": "One Provisions",
+            "phone": "9876500010",
             "email": "one@example.com",
             "password": "password-one",
             "preferred_language": "hi-IN",
@@ -426,6 +458,7 @@ def test_two_accounts_have_isolated_databases_and_calculations(api_client):
         json={
             "name": "Shopkeeper Two",
             "shop_name": "Two Supermart",
+            "phone": "9876500020",
             "email": "two@example.com",
             "password": "password-two",
             "preferred_language": "kn-IN",

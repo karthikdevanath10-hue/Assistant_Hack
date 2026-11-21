@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, LogIn, Mic, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
+import { Eye, EyeOff, LogIn, Mic, Phone, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
 import { validateLoginForm, validateSignUpForm } from "../utils/authHelpers";
 
 const SIGNUP_LANGUAGES = [
@@ -43,19 +43,24 @@ function PasswordInput({ id, label, value, onChange, placeholder, autoComplete }
  * Login page rendered before entering the Voice Khata workspace.
  */
 export function LoginPage({ onSubmit, onSwitchToSignUp, loading = false, error = "" }) {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [localError, setLocalError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const validationErr = validateLoginForm({ email, password });
+    const validationErr = validateLoginForm({ identifier, password });
     if (validationErr) {
       setLocalError(validationErr);
       return;
     }
     setLocalError("");
-    await onSubmit({ email: email.trim(), password });
+    await onSubmit({
+      identifier: identifier.trim(),
+      phone: identifier.trim(),
+      email: identifier.trim(),
+      password,
+    });
   }
 
   const displayError = localError || error;
@@ -74,15 +79,15 @@ export function LoginPage({ onSubmit, onSwitchToSignUp, loading = false, error =
       )}
 
       <label className="auth-field">
-        <span>Email Address</span>
+        <span>Mobile Number (or Email) *</span>
         <input
-          id="login-email"
+          id="login-identifier"
           className="text-input"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          autoComplete="email"
+          type="text"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+          placeholder="Enter 10-digit mobile number or email"
+          autoComplete="username tel"
           required
         />
       </label>
@@ -116,8 +121,8 @@ export function LoginPage({ onSubmit, onSwitchToSignUp, loading = false, error =
 export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error = "" }) {
   const [name, setName] = useState("");
   const [shopName, setShopName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState("hi-IN");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -125,7 +130,7 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const validationErr = validateSignUpForm({ name, email, password, confirmPassword });
+    const validationErr = validateSignUpForm({ name, phone, email, password, confirmPassword });
     if (validationErr) {
       setLocalError(validationErr);
       return;
@@ -134,8 +139,8 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
     await onSubmit({
       name: name.trim(),
       shop_name: shopName.trim() || null,
-      email: email.trim(),
-      phone: phone.trim() || null,
+      phone: phone.trim(),
+      email: email.trim() || null,
       preferred_language: preferredLanguage,
       password,
     });
@@ -158,7 +163,7 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
 
       <div className="auth-two-col">
         <label className="auth-field">
-          <span>Full Name</span>
+          <span>Full Name *</span>
           <input
             id="signup-name"
             className="text-input"
@@ -185,50 +190,50 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
         </label>
       </div>
 
-      <label className="auth-field">
-        <span>Email Address</span>
-        <input
-          id="signup-email"
-          className="text-input"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          autoComplete="email"
-          required
-        />
-      </label>
-
       <div className="auth-two-col">
         <label className="auth-field">
-          <span>Phone (Optional, Encrypted)</span>
+          <span>Mobile Number * (Mandatory)</span>
           <input
             id="signup-phone"
             className="text-input"
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="+91-98..."
+            placeholder="10-digit mobile number (e.g. 9876543210)"
             autoComplete="tel"
+            required
           />
         </label>
 
         <label className="auth-field">
-          <span>Preferred Language</span>
-          <select
-            id="signup-language"
+          <span>Email Address (Optional)</span>
+          <input
+            id="signup-email"
             className="text-input"
-            value={preferredLanguage}
-            onChange={(e) => setPreferredLanguage(e.target.value)}
-          >
-            {SIGNUP_LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.label}
-              </option>
-            ))}
-          </select>
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@gmail.com (optional)"
+            autoComplete="email"
+          />
         </label>
       </div>
+
+      <label className="auth-field">
+        <span>Preferred Language</span>
+        <select
+          id="signup-language"
+          className="text-input"
+          value={preferredLanguage}
+          onChange={(e) => setPreferredLanguage(e.target.value)}
+        >
+          {SIGNUP_LANGUAGES.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.label}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <div className="auth-two-col">
         <PasswordInput

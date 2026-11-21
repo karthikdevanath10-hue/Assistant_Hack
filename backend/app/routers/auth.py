@@ -15,12 +15,13 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 def _user_to_out(row: dict, container: AppContainer) -> UserOut:
+    plain_phone = row.get("phone") or container.cipher.decrypt(row.get("phone_enc"))
     return UserOut(
         id=int(row["id"]),
         name=row["name"],
         shop_name=row.get("shop_name") or "",
-        email=row["email"],
-        phone=container.cipher.decrypt(row.get("phone_enc")),
+        phone=plain_phone,
+        email=row.get("email"),
         preferred_language=row.get("preferred_language") or "hi-IN",
         created_at=row["created_at"],
         last_login_at=row.get("last_login_at"),
@@ -78,21 +79,29 @@ def get_scoped_container(
 
 @router.post("/signup", response_model=AuthResponse, status_code=201)
 def signup_user(req: UserSignUpRequest, container: AppContainer = Depends(get_container)) -> AuthResponse:
-    existing = container.db.get_user_by_email(req.email)
-    if existing:
-        raise HTTPException(status_code=409, detail="An account with this email already exists.")
+    clean_phone = req.phone.strip()
+    existing_phone = container.db.get_user_by_phone(clean_phone)
+    if existing_phone:
+        raise HTTPException(status_code=409, detail="An account with this mobile number already exists.")
+
+    clean_email = req.email.strip() if req.email and req.email.strip() else None
+    if clean_email:
+        existing_email = container.db.get_user_by_email(clean_email)
+        if existing_email:
+            raise HTTPException(status_code=409, detail="An account with this email already exists.")
 
     now_iso = datetime.now(timezone.utc).isoformat()
     clean_name = req.name.strip()
     clean_shop = (req.shop_name or "").strip() or f"{clean_name}'s Khata"
-    phone_enc = container.cipher.encrypt(req.phone.strip()) if req.phone and req.phone.strip() else None
+    phone_enc = container.cipher.encrypt(clean_phone)
     pw_hash = hash_password(req.password)
 
     try:
         created = container.db.create_user(
             name=clean_name,
             shop_name=clean_shop,
-            email=req.email,
+            phone=clean_phone,
+            email=clean_email,
             phone_enc=phone_enc,
             password_hash=pw_hash,
             preferred_language=req.preferred_language,
@@ -104,21 +113,33 @@ def signup_user(req: UserSignUpRequest, container: AppContainer = Depends(get_co
     container.db.update_user_last_login(int(created["id"]), now_iso)
     created["last_login_at"] = now_iso
     container.for_user(created)
-    token = container.cipher.sign_token({"sub": int(created["id"]), "email": created["email"]})
+    token = container.cipher.sign_token({
+        "sub": int(created["id"]),
+        "phone": clean_phone,
+        "email": created.get("email"),
+    })
     return AuthResponse(access_token=token, user=_user_to_out(created, container))
 
 
 @router.post("/login", response_model=AuthResponse)
 def login_user(req: UserLoginRequest, container: AppContainer = Depends(get_container)) -> AuthResponse:
-    user = container.db.get_user_by_email(req.email)
+    login_id = req.login_identifier
+    if not login_id:
+        raise HTTPException(status_code=422, detail="Please enter your mobile number or email.")
+
+    user = container.db.get_user_by_identifier(login_id)
     if not user or not verify_password(req.password, user.get("password_hash") or ""):
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+        raise HTTPException(status_code=401, detail="Invalid mobile number/email or password.")
 
     now_iso = datetime.now(timezone.utc).isoformat()
     container.db.update_user_last_login(int(user["id"]), now_iso)
     user["last_login_at"] = now_iso
     container.for_user(user)
-    token = container.cipher.sign_token({"sub": int(user["id"]), "email": user["email"]})
+    token = container.cipher.sign_token({
+        "sub": int(user["id"]),
+        "phone": user.get("phone"),
+        "email": user.get("email"),
+    })
     return AuthResponse(access_token=token, user=_user_to_out(user, container))
 
 

@@ -42,8 +42,8 @@ export function SettingsScreen({
                 {currentUser.name} · {currentUser.shop_name}
               </div>
               <div style={{ fontSize: "0.8rem", color: "var(--muted)", marginTop: 2 }}>
-                {currentUser.email}
-                {currentUser.phone ? ` · Phone: ${currentUser.phone}` : ""}
+                {currentUser.phone ? `Mobile: ${currentUser.phone}` : ""}
+                {currentUser.email ? ` · Email: ${currentUser.email}` : ""}
               </div>
             </div>
             {onLogout && (

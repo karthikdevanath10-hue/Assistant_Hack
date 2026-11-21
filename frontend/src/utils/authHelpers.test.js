@@ -9,25 +9,50 @@ describe("authHelpers", () => {
     expect(resolveInitialAuthMode("/", "")).toBe("login");
   });
 
-  it("validates login credentials clearly", () => {
-    expect(validateLoginForm({ email: "bad-email", password: "abc" })).toMatch(/valid email/i);
-    expect(validateLoginForm({ email: "shop@example.com", password: "" })).toMatch(/password/i);
-    expect(validateLoginForm({ email: "shop@example.com", password: "secret" })).toBe("");
+  it("validates login credentials clearly with phone or email", () => {
+    expect(validateLoginForm({ identifier: "", password: "abc" })).toMatch(/mobile number or email/i);
+    expect(validateLoginForm({ identifier: "bad-email@", password: "abc" })).toMatch(/valid email/i);
+    expect(validateLoginForm({ identifier: "12345", password: "abc" })).toMatch(/10-digit mobile/i);
+    expect(validateLoginForm({ identifier: "9876543210", password: "" })).toMatch(/password/i);
+    expect(validateLoginForm({ identifier: "9876543210", password: "secret" })).toBe("");
+    expect(validateLoginForm({ identifier: "shop@example.com", password: "secret" })).toBe("");
   });
 
-  it("validates sign up fields including password length and confirmation match", () => {
+  it("validates sign up fields with mandatory phone and optional email", () => {
+    // Missing name
     expect(
-      validateSignUpForm({ name: "A", email: "shop@example.com", password: "secret", confirmPassword: "secret" })
+      validateSignUpForm({ name: "A", phone: "9876543210", email: "", password: "secret", confirmPassword: "secret" })
     ).toMatch(/2 characters/i);
+
+    // Missing phone (phone is mandatory!)
     expect(
-      validateSignUpForm({ name: "Karthik", email: "shop@example.com", password: "123", confirmPassword: "123" })
-    ).toMatch(/6 characters/i);
+      validateSignUpForm({ name: "Karthik", phone: "", email: "shop@example.com", password: "secret", confirmPassword: "secret" })
+    ).toMatch(/mandatory/i);
+
+    // Invalid phone
     expect(
-      validateSignUpForm({ name: "Karthik", email: "shop@example.com", password: "secret1", confirmPassword: "secret2" })
-    ).toMatch(/do not match/i);
+      validateSignUpForm({ name: "Karthik", phone: "123", email: "", password: "secret", confirmPassword: "secret" })
+    ).toMatch(/10-digit mobile number/i);
+
+    // Valid phone, empty email (email is optional!) -> should PASS!
     expect(
-      validateSignUpForm({ name: "Karthik", email: "shop@example.com", password: "secret1", confirmPassword: "secret1" })
+      validateSignUpForm({ name: "Karthik", phone: "9876543210", email: "", password: "secret", confirmPassword: "secret" })
     ).toBe("");
+
+    // Valid phone, invalid email format -> should fail
+    expect(
+      validateSignUpForm({ name: "Karthik", phone: "9876543210", email: "bad-email", password: "secret", confirmPassword: "secret" })
+    ).toMatch(/valid email/i);
+
+    // Short password
+    expect(
+      validateSignUpForm({ name: "Karthik", phone: "9876543210", email: "", password: "123", confirmPassword: "123" })
+    ).toMatch(/6 characters/i);
+
+    // Mismatched passwords
+    expect(
+      validateSignUpForm({ name: "Karthik", phone: "9876543210", email: "", password: "secret1", confirmPassword: "secret2" })
+    ).toMatch(/do not match/i);
   });
 });
 

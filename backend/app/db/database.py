@@ -92,7 +92,8 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     shop_name TEXT NOT NULL DEFAULT '',
-    email TEXT NOT NULL UNIQUE,
+    phone TEXT NOT NULL DEFAULT '',
+    email TEXT UNIQUE,
     phone_enc TEXT,
     password_hash TEXT NOT NULL,
     preferred_language TEXT NOT NULL DEFAULT 'hi-IN',
@@ -120,7 +121,17 @@ class Database:
 
     def init_schema(self) -> None:
         with self.connect() as conn:
+            user_table = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").fetchone()
+            if user_table:
+                cols = [r["name"] for r in conn.execute("PRAGMA table_info(users)").fetchall()]
+                if "phone" not in cols:
+                    conn.execute("ALTER TABLE users ADD COLUMN phone TEXT NOT NULL DEFAULT ''")
+                users_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+                email_info = next((r for r in conn.execute("PRAGMA table_info(users)").fetchall() if r["name"] == "email"), None)
+                if users_count == 0 and email_info and email_info["notnull"] == 1:
+                    conn.execute("DROP TABLE users")
             conn.executescript(SCHEMA_SQL)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_users_phone ON users (phone)")
             conn.commit()
 
     @contextmanager

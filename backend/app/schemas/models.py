@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
@@ -311,18 +312,33 @@ def _normalize_valid_email(value: str) -> str:
     return cleaned
 
 
+def _normalize_valid_phone(value: str) -> str:
+    cleaned = value.strip()
+    digits = re.sub(r"\D", "", cleaned)
+    if len(digits) < 10:
+        raise ValueError("Mobile number must have at least 10 digits.")
+    return cleaned
+
+
 class UserSignUpRequest(BaseModel):
     name: str = Field(min_length=2, max_length=80)
     shop_name: str | None = Field(default=None, max_length=100)
-    email: str = Field(min_length=5, max_length=160)
-    phone: str | None = Field(default=None, max_length=24)
+    phone: str = Field(min_length=10, max_length=24, description="Mandatory 10-digit mobile number")
+    email: str | None = Field(default=None, max_length=160, description="Optional email address")
     password: str = Field(min_length=6, max_length=128)
     preferred_language: LanguageCode = "hi-IN"
 
+    @field_validator("phone")
+    @classmethod
+    def _validate_phone(cls, value: str) -> str:
+        return _normalize_valid_phone(value)
+
     @field_validator("email")
     @classmethod
-    def _validate_email(cls, value: str) -> str:
-        return _normalize_valid_email(value)
+    def _validate_email(cls, value: str | None) -> str | None:
+        if not value or not str(value).strip():
+            return None
+        return _normalize_valid_email(str(value))
 
     @field_validator("name")
     @classmethod
@@ -334,21 +350,23 @@ class UserSignUpRequest(BaseModel):
 
 
 class UserLoginRequest(BaseModel):
-    email: str = Field(min_length=3, max_length=160)
+    identifier: str | None = Field(default=None, max_length=160)
+    email: str | None = Field(default=None, max_length=160)
+    phone: str | None = Field(default=None, max_length=24)
     password: str = Field(min_length=1, max_length=128)
 
-    @field_validator("email")
-    @classmethod
-    def _validate_email(cls, value: str) -> str:
-        return _normalize_valid_email(value)
+    @property
+    def login_identifier(self) -> str:
+        val = self.identifier or self.phone or self.email or ""
+        return val.strip()
 
 
 class UserOut(BaseModel):
     id: int
     name: str
     shop_name: str
-    email: str
     phone: str | None = None
+    email: str | None = None
     preferred_language: str
     created_at: str
     last_login_at: str | None = None
