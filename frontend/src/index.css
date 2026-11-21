@@ -3576,12 +3576,12 @@ body {
 
 .curved-hero-inner {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1fr 1.12fr;
   align-items: center;
   position: relative;
   z-index: 2;
-  gap: 28px;
-  min-height: 290px;
+  gap: 24px;
+  min-height: 450px;
 }
 
 @media (max-width: 1024px) {
@@ -3712,83 +3712,43 @@ body {
   color: inherit;
 }
 
-/* Right Column: Radial Arc Dish */
+/* Right Column: Sweeping Grand Radial Curved Dome with Arc Navigation */
 .curved-hero-right {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: flex-end;
   width: 100%;
   height: 100%;
-  min-height: 280px;
+  min-height: 440px;
 }
 
 .curved-dome-dish {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  height: 280px;
-  border-radius: 40px;
-  background: radial-gradient(circle at 80% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(243, 238, 255, 0.65) 80%);
-  border: 2px solid rgba(255, 255, 255, 0.95);
-  box-shadow: -10px 10px 32px rgba(124, 58, 237, 0.1), inset 0 0 24px rgba(255, 255, 255, 0.85);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  overflow: hidden;
-  transition: all 0.42s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.curved-dome-dish.is-closed {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  align-self: flex-start;
-  margin-left: auto;
-}
-
-.curved-dome-dish.is-open {
-  width: 100%;
   max-width: 580px;
-  min-height: 420px;
-  height: auto;
-  border-radius: 44px;
-  box-shadow: -12px 14px 44px rgba(124, 58, 237, 0.14), inset 0 0 30px rgba(255, 255, 255, 0.9);
-}
-
-.curved-content-wrap {
-  width: 100%;
-  height: 100%;
+  height: 440px;
+  border-radius: 65% 0 0 65% / 52% 0 0 52%;
+  background: radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.96) 0%, rgba(243, 238, 255, 0.75) 60%, rgba(237, 233, 254, 0.55) 100%);
+  border-left: 2px solid rgba(255, 255, 255, 0.95);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: -18px 20px 52px rgba(124, 58, 237, 0.12), inset 0 0 40px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   display: flex;
-  flex-direction: column;
-  transition: all 0.35s ease;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.curved-dome-dish.is-closed .curved-content-wrap {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.9) translate(15px, -15px);
-  height: 0;
-  overflow: hidden;
-}
-
-.curved-dome-dish.is-open .curved-content-wrap {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1) translate(0, 0);
-  padding-top: 10px;
-}
-
-/* Sparkle Trigger Icon Button */
+/* Glowing Purple Sparkle Button (Top-Right inside dome dish) */
 .curved-sparkle-circle {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 48px;
-  height: 48px;
+  top: 24px;
+  right: 28px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   border: none;
   background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
@@ -3796,85 +3756,92 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 18px rgba(167, 139, 250, 0.55), 0 0 0 6px rgba(167, 139, 250, 0.15);
+  box-shadow: 0 4px 22px rgba(167, 139, 250, 0.6), 0 0 0 8px rgba(167, 139, 250, 0.18);
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  z-index: 20;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  z-index: 25;
 }
 
 .curved-sparkle-circle:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 24px rgba(167, 139, 250, 0.75), 0 0 0 8px rgba(167, 139, 250, 0.25);
+  transform: scale(1.12);
+  box-shadow: 0 8px 30px rgba(167, 139, 250, 0.8), 0 0 0 12px rgba(167, 139, 250, 0.28);
 }
 
-.curved-open-pill-btn.active-close:hover {
-  background: #fee2e2;
-  border-color: #dc2626;
-  color: #b91c1c;
-}
-
-/* Curved Arc Buttons */
+/* Curved Arc Navigation Container */
 .curved-arc-nav {
   position: relative;
   width: 100%;
-  min-height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 44px 16px 8px;
-  box-sizing: border-box;
+  height: 100%;
+  min-height: 440px;
+  display: block;
 }
 
-@media (min-width: 900px) {
+@media (max-width: 899px) {
+  .curved-dome-dish {
+    border-radius: 36px;
+    height: auto;
+    min-height: 200px;
+    padding: 24px 16px;
+  }
+
   .curved-arc-nav {
-    display: block;
-    height: 220px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    height: auto;
+    min-height: auto;
+    padding-top: 50px;
   }
 
   .curved-arc-item {
-    position: absolute;
+    position: static !important;
   }
-
-  .curved-pos-1 { top: 12px;  left: 20px; }   /* Home */
-  .curved-pos-2 { top: 52px;  left: 95px; }   /* Analytics */
-  .curved-pos-3 { top: 96px;  left: 178px; }  /* Tools */
-  .curved-pos-4 { top: 130px; left: 268px; }  /* Settings */
-  .curved-pos-5 { top: 148px; left: 360px; }  /* About */
 }
 
+/* Arc Items Spaced Along the Sweeping Circular Arc */
 .curved-arc-item {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   cursor: pointer;
   user-select: none;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
 }
 
 .curved-arc-item:hover {
   transform: translateY(-4px);
 }
 
+/* 5 Positions Along the Grand Sweeping Arc */
+.curved-pos-1 { top: 24px;  left: 36px; }   /* Home */
+.curved-pos-2 { top: 104px; left: 130px; }  /* Analytics */
+.curved-pos-3 { top: 190px; left: 226px; }  /* Tools */
+.curved-pos-4 { top: 274px; left: 326px; }  /* Settings */
+.curved-pos-5 { top: 348px; left: 436px; }  /* About */
+
 .curved-arc-btn {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: #ffffff;
   border: 1.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 22px rgba(124, 58, 237, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #334155;
+  color: #1e1b4b;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.curved-arc-item:hover .curved-arc-btn {
+.curved-arc-btn:hover {
   color: #7c3aed;
-  transform: scale(1.08);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+  transform: scale(1.12);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
 }
 
 .curved-arc-btn.active,
@@ -3882,12 +3849,12 @@ body {
   background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
   color: #ffffff;
   border-color: transparent;
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
-  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+  transform: scale(1.1);
 }
 
 .curved-arc-label {
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   font-weight: 750;
   color: #475569;
   text-align: center;
@@ -3897,182 +3864,6 @@ body {
 .curved-arc-item.active .curved-arc-label {
   color: #7c3aed;
   font-weight: 850;
-}
-
-/* Embedded Curved Dashboard Panel */
-.curved-dashboard-panel {
-  margin: 10px 20px 20px;
-  padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
-  box-shadow: 0 8px 26px rgba(124, 58, 237, 0.08);
-  animation: curvedDashFade 0.35s ease-out;
-}
-
-@keyframes curvedDashFade {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.curved-dash-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  gap: 12px;
-}
-
-.curved-dash-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.curved-dash-badge {
-  background: rgba(124, 58, 237, 0.12);
-  color: #7c3aed;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.curved-dash-head h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 800;
-  color: #1e1b4b;
-}
-
-.curved-dash-drawer-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: #6d28d9;
-  font-size: 0.76rem;
-  font-weight: 750;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.curved-dash-drawer-btn:hover {
-  background: #7c3aed;
-  color: #ffffff;
-  border-color: #7c3aed;
-}
-
-.curved-dash-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-@media (max-width: 600px) {
-  .curved-dash-metrics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.curved-dash-metric {
-  background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.85);
-  border-radius: 14px;
-  padding: 7px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.curved-dash-metric:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.12);
-}
-
-.curved-dash-metric small {
-  font-size: 0.68rem;
-  font-weight: 650;
-  color: #64748b;
-}
-
-.curved-dash-metric strong {
-  font-size: 0.9rem;
-  font-weight: 850;
-  color: #0f172a;
-}
-
-.curved-dash-metric.credit strong {
-  color: #dc2626;
-}
-
-.curved-dash-metric.payment strong {
-  color: #16a34a;
-}
-
-.curved-dash-metric.due strong {
-  color: #ea580c;
-}
-
-.curved-dash-metric.cust strong {
-  color: #6366f1;
-}
-
-.curved-dash-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.curved-action-btn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 750;
-  border: 1px solid rgba(203, 213, 225, 0.8);
-  background: #ffffff;
-  color: #334155;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.curved-action-btn:hover {
-  border-color: #8b5cf6;
-  color: #7c3aed;
-  transform: translateY(-1px);
-}
-
-.curved-action-btn.primary {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3);
-}
-
-.curved-action-btn.primary:hover {
-  box-shadow: 0 5px 14px rgba(124, 58, 237, 0.45);
-  transform: translateY(-1px);
 }
 
 

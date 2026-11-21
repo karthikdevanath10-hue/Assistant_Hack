@@ -1058,32 +1058,6 @@ export default function App() {
             />
             <button
               type="button"
-              className="topbar-user-pill"
-              onClick={() => navigateToTab("profile")}
-              title="Click to edit shopkeeper name, contact, email & language"
-              style={{
-                cursor: "pointer",
-                background: tab === "profile" ? "rgba(249, 115, 22, 0.15)" : undefined,
-                borderColor: tab === "profile" ? "var(--accent)" : undefined,
-              }}
-            >
-              <User size={14} />
-              <span>{currentUser?.name || "Shopkeeper"}</span>
-            </button>
-            <button
-              type="button"
-              className={`nav-drawer-trigger ${drawerOpen ? "open" : ""}`}
-              onClick={() => setDrawerOpen((prev) => !prev)}
-              aria-expanded={drawerOpen}
-              aria-controls="right-sliding-dashboard"
-              aria-label="Open sliding dashboard"
-            >
-              <PanelRightOpen size={16} />
-              <span>{t("navDashboard", language)}</span>
-              <span className="nav-trigger-badge">{activeNavSection.label}</span>
-            </button>
-            <button
-              type="button"
               className="nav-drawer-trigger"
               onClick={handleLogout}
               aria-label="Logout"
@@ -1105,9 +1079,6 @@ export default function App() {
               el.scrollIntoView({ behavior: "smooth" });
             }
           }}
-          dashboard={dashboard}
-          currentUser={currentUser}
-          customers={customers}
         />
 
         {!consentAccepted && (
