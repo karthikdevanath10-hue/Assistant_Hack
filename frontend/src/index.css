@@ -1,17 +1,17 @@
 :root {
-  --bg: #faf7f0;
+  --bg: #f8fafc;
   --surface: #ffffff;
-  --surface-alt: #f3ede0;
-  --ink: #18181b;
-  --muted: #57534e;
-  --border: #e5dec9;
-  --accent: #d95d1e;
-  --accent-dark: #b44711;
+  --surface-alt: #f1f5f9;
+  --ink: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --accent: #ea580c;
+  --accent-dark: #c2410c;
   --credit: #dc2626;
   --credit-bg: #fef2f2;
-  --payment: #0d9488;
-  --payment-bg: #f0fdfa;
-  --shadow: 0 8px 24px rgba(24, 24, 27, 0.06);
+  --payment: #16a34a;
+  --payment-bg: #f0fdf4;
+  --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.07);
 }
 
 * {
@@ -1492,6 +1492,283 @@ body {
 .nav-drawer-user + .nav-drawer-footer {
   margin-top: 0;
 }
+
+/* --- TopBar Quick Language Selector --- */
+.lang-selector-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  color: #9a3412;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.lang-trigger-btn:hover {
+  background: #fff7ed;
+  border-color: #f97316;
+}
+
+.lang-flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lang-native-label {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.lang-code-sub {
+  font-size: 0.72rem;
+  color: #c2410c;
+  opacity: 0.85;
+}
+
+.lang-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.lang-menu-card {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+  padding: 6px;
+  min-width: 220px;
+  z-index: 100;
+  animation: slide-down 0.15s ease-out;
+}
+
+.lang-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.lang-option-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.86rem;
+  color: #1e293b;
+  transition: all 0.12s ease;
+}
+
+.lang-option-item:hover {
+  background: #f8fafc;
+}
+
+.lang-option-item.selected {
+  background: #fff7ed;
+  color: #c2410c;
+  font-weight: 700;
+}
+
+.lang-option-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-option-native {
+  font-size: 0.95rem;
+}
+
+.lang-option-en {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.lang-check-icon {
+  color: #ea580c;
+}
+
+/* --- Mobile Bottom Navigation Bar & FAB Mic --- */
+.bottom-nav-bar {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .work-pane {
+    padding-bottom: 100px;
+  }
+
+  .bottom-nav-bar {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 85;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .bottom-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    max-width: 540px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 5px 8px;
+    border-radius: 10px;
+    min-width: 58px;
+    font-family: inherit;
+    transition: all 0.15s ease;
+  }
+
+  .bottom-nav-item.active {
+    color: #ea580c;
+  }
+
+  .bottom-nav-item.active .bottom-nav-label {
+    font-weight: 800;
+    color: #c2410c;
+  }
+
+  .bottom-nav-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-top: 3px;
+  }
+
+  .bottom-nav-sub {
+    font-size: 0.62rem;
+    opacity: 0.75;
+    line-height: 1;
+  }
+
+  .bottom-nav-mic-wrap {
+    position: relative;
+    top: -18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 86;
+  }
+
+  .bottom-fab-mic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    color: #ffffff;
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.45);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .bottom-fab-mic:active {
+    transform: scale(0.92);
+  }
+
+  .bottom-fab-mic.listening {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0.22), 0 8px 24px rgba(220, 38, 38, 0.5);
+    animation: fab-listening-pulse 1.4s infinite;
+  }
+
+  .bottom-fab-mic.processing {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    animation: fab-listening-pulse 1s infinite;
+  }
+
+  .bottom-fab-caption {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 4px;
+    white-space: nowrap;
+    background: #ffffff;
+    padding: 1px 7px;
+    border-radius: 999px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@keyframes fab-listening-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45), 0 6px 20px rgba(220, 38, 38, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(220, 38, 38, 0), 0 6px 20px rgba(220, 38, 38, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0), 0 6px 20px rgba(220, 38, 38, 0.4);
+  }
+}
+
+/* --- Stat Cards Accent Highlights for Kirana Owners --- */
+.stat-card-credit {
+  border-top: 3px solid #dc2626;
+  background: linear-gradient(180deg, #fff5f5 0%, #ffffff 40px);
+}
+
+.stat-card-payment {
+  border-top: 3px solid #16a34a;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 40px);
+}
+
+.stat-card-due {
+  border-top: 3px solid #ea580c;
+  background: linear-gradient(180deg, #fff7ed 0%, #ffffff 40px);
+}
+
+.stat-card-cust {
+  border-top: 3px solid #6366f1;
+  background: linear-gradient(180deg, #eef2ff 0%, #ffffff 40px);
+}
+
 
 
 

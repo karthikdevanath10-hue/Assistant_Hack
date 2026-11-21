@@ -57,20 +57,20 @@ export function CustomersScreen({
   return (
     <div>
       <div className="stats-grid" style={{ marginBottom: 14 }}>
-        <div className="card">
-          <div className="stat-label">Total Customers</div>
+        <div className="card stat-card-cust">
+          <div className="stat-label">👥 कुल ग्राहक · Customers</div>
           <div className="stat-val">{customers.length}</div>
         </div>
-        <div className="card">
-          <div className="stat-label">All-Time Credit</div>
+        <div className="card stat-card-credit">
+          <div className="stat-label">🔴 कुल उधार दिया · Total Credit</div>
           <div className="stat-val credit">{formatINR(totalCreditAll)}</div>
         </div>
-        <div className="card">
-          <div className="stat-label">All-Time Paid</div>
+        <div className="card stat-card-payment">
+          <div className="stat-label">🟢 कुल जमा मिला · Total Paid</div>
           <div className="stat-val payment">{formatINR(totalPaidAll)}</div>
         </div>
-        <div className="card">
-          <div className="stat-label">Total Net Due</div>
+        <div className="card stat-card-due">
+          <div className="stat-label">📊 कुल बाज़ार बाकी · Net Due</div>
           <div className="stat-val accent">{formatINR(totalOutstandingAll)}</div>
         </div>
       </div>

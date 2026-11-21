@@ -98,23 +98,23 @@ export function CustomerLedgersScreen({
   return (
     <div>
       <div className="stats-grid" style={{ marginBottom: 14 }}>
-        <div className="card">
-          <div className="stat-label">Customer Blocks</div>
+        <div className="card stat-card-cust">
+          <div className="stat-label">👥 कुल खाते · Ledgers</div>
           <div className="stat-val">
             {filteredCustomers.length}
             {filteredCustomers.length !== customers.length ? ` / ${customers.length}` : ""}
           </div>
         </div>
-        <div className="card">
-          <div className="stat-label">Shown Transactions</div>
+        <div className="card stat-card-payment">
+          <div className="stat-label">🧾 कुल लेन-देन · Transactions</div>
           <div className="stat-val">{summary.totalTxCount}</div>
         </div>
-        <div className="card">
-          <div className="stat-label">All-Time Credit</div>
+        <div className="card stat-card-credit">
+          <div className="stat-label">🔴 कुल उधार · All-Time Credit</div>
           <div className="stat-val credit">{formatINR(summary.totalCredit)}</div>
         </div>
-        <div className="card">
-          <div className="stat-label">Total Net Due</div>
+        <div className="card stat-card-due">
+          <div className="stat-label">📊 कुल बाज़ार बाकी · Net Due</div>
           <div className="stat-val accent">{formatINR(summary.totalOutstanding)}</div>
         </div>
       </div>

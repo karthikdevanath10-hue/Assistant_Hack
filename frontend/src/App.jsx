@@ -13,12 +13,14 @@ import { EphemeralGeminiLiveClient } from "./audio/ephemeralLiveClient";
 import { GeminiLiveClient } from "./audio/liveClient";
 import { ShopAudioRecorder, playReplyAudio } from "./audio/recorder";
 import { AuthGateway } from "./components/AuthPages";
+import { BottomNavBar } from "./components/BottomNavBar";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { CustomerLedgerModal } from "./components/CustomerLedgerModal";
 import { CustomerLedgersScreen } from "./components/CustomerLedgersScreen";
 import { CustomersScreen } from "./components/CustomersScreen";
 import { DashboardScreen } from "./components/DashboardScreen";
 import { JarvisHud } from "./components/JarvisHud";
+import { LanguageSelector } from "./components/LanguageSelector";
 import { NAV_SECTIONS, RightSlideDashboard } from "./components/RightSlideDashboard";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { resolveInitialAuthMode } from "./utils/authHelpers";
@@ -966,6 +968,10 @@ export default function App() {
             </div>
           </div>
           <div className="topbar-right">
+            <LanguageSelector
+              currentLanguage={language}
+              onChangeLanguage={(l) => handleUpdateSettings({ preferred_language: l })}
+            />
             <div className="topbar-user-pill" title={currentUser?.email || ""}>
               <User size={14} />
               <span>{currentUser?.name || "Shopkeeper"}</span>
@@ -1123,6 +1129,17 @@ export default function App() {
             }}
           />
         )}
+
+        <BottomNavBar
+          activeTab={tab}
+          onSelectTab={navigateToTab}
+          isListening={liveConnected || isRecording}
+          isRecording={isRecording}
+          liveConnected={liveConnected}
+          useLiveStream={useLiveStream && canLiveStream}
+          isProcessing={isProcessing}
+          onToggleMic={toggleMic}
+        />
       </main>
 
       <RightSlideDashboard

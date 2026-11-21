@@ -163,8 +163,8 @@ export function DashboardScreen({
       )}
 
       <div className="stats-grid">
-        <div className="card">
-          <div className="stat-label">Credit Today (Udhaar)</div>
+        <div className="card stat-card-credit">
+          <div className="stat-label">🔴 आज का उधार · Credit Today</div>
           <div className="stat-val credit">{formatINR(dashboard?.today_credit)}</div>
           <BreakdownChips
             items={dashboard?.today_credit_customers}
@@ -173,8 +173,8 @@ export function DashboardScreen({
             onSelectCustomerById={onSelectCustomerById}
           />
         </div>
-        <div className="card">
-          <div className="stat-label">Payments Today</div>
+        <div className="card stat-card-payment">
+          <div className="stat-label">🟢 आज का जमा · Payments Today</div>
           <div className="stat-val payment">{formatINR(dashboard?.today_payment)}</div>
           <BreakdownChips
             items={dashboard?.today_payment_customers}
@@ -183,8 +183,8 @@ export function DashboardScreen({
             onSelectCustomerById={onSelectCustomerById}
           />
         </div>
-        <div className="card">
-          <div className="stat-label">Total Outstanding</div>
+        <div className="card stat-card-due">
+          <div className="stat-label">📊 कुल बाज़ार बाकी · Total Due</div>
           <div className="stat-val accent">{formatINR(dashboard?.total_outstanding)}</div>
           <BreakdownChips
             items={dashboard?.outstanding_customers}
@@ -193,8 +193,8 @@ export function DashboardScreen({
             onSelectCustomerById={onSelectCustomerById}
           />
         </div>
-        <div className="card">
-          <div className="stat-label">Total Customers</div>
+        <div className="card stat-card-cust">
+          <div className="stat-label">👥 कुल ग्राहक · Customers</div>
           <div className="stat-val">{dashboard?.total_customers ?? 0}</div>
         </div>
       </div>
@@ -296,9 +296,28 @@ export function DashboardScreen({
                   </div>
                 </div>
               </div>
-              <div className={`tx-amt ${tx.tx_type}`}>
-                {tx.tx_type === "credit" ? "+" : "-"}
-                {formatINR(tx.amount)}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div className={`tx-amt ${tx.tx_type}`}>
+                  {tx.tx_type === "credit" ? "+" : "-"}
+                  {formatINR(tx.amount)}
+                </div>
+                <button
+                  className="btn-icon-whatsapp"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const cust = customers?.find((c) => c.id === tx.customer_id) || {
+                      id: tx.customer_id,
+                      name: tx.customer_name,
+                      phone: "",
+                      outstanding_balance: 0,
+                    };
+                    shareViaWhatsApp({ customer: cust, tx });
+                  }}
+                  title={`Send WhatsApp receipt for ₹${tx.amount}`}
+                >
+                  <MessageCircle size={14} />
+                </button>
               </div>
             </div>
             );
