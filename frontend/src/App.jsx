@@ -1105,6 +1105,9 @@ export default function App() {
               el.scrollIntoView({ behavior: "smooth" });
             }
           }}
+          dashboard={dashboard}
+          currentUser={currentUser}
+          customers={customers}
         />
 
         {!consentAccepted && (
