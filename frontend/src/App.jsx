@@ -1103,10 +1103,10 @@ export default function App() {
 
         {tab !== "home" &&
           lastTurn &&
-          (lastTurn.status === "needs_confirmation" || liveHighlightTxIds.length > 0 || liveHighlightCustId != null) && (
+          (lastTurn?.status === "needs_confirmation" || (liveHighlightTxIds || []).length > 0 || liveHighlightCustId != null) && (
             <div className="reply-banner">
-              <strong>{lastTurn.status === "needs_confirmation" ? "Awaiting Confirmation:" : "Live Ledger Sync:"}</strong>{" "}
-              {lastTurn.spoken_reply}
+              <strong>{lastTurn?.status === "needs_confirmation" ? "Awaiting Confirmation:" : "Live Ledger Sync:"}</strong>{" "}
+              {lastTurn?.spoken_reply}
             </div>
           )}
 

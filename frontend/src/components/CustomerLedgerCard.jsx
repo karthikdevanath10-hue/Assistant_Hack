@@ -55,16 +55,17 @@ export function CustomerLedgerCard({
     setTxHistoryOpen(false);
   }, [customer?.id]);
 
-  if (!customer) return null;
-
-  const hiSet = new Set(highlightTxIds);
-  const hasFreshTx = transactions.some((tx) => hiSet.has(tx.id));
+  const safeTxs = Array.isArray(transactions) ? transactions : [];
+  const hiSet = new Set(highlightTxIds || []);
+  const hasFreshTx = safeTxs.some((tx) => hiSet.has(tx.id));
 
   useEffect(() => {
     if (hasFreshTx || isHighlighted) {
       setTxHistoryOpen(true);
     }
   }, [hasFreshTx, isHighlighted]);
+
+  if (!customer) return null;
   const outstanding = Number(customer.outstanding_balance || 0);
   const statusTag =
     outstanding > 0 ? "Balance Due" : outstanding < 0 ? "Advance Paid" : "Settled";
@@ -300,8 +301,8 @@ export function CustomerLedgerCard({
           </div>
           <div className="customer-balance-sub">
             Total Credit: {formatINR(customer.total_credit)} · Total Paid:{" "}
-            {formatINR(customer.total_payment)} · {transactions.length}{" "}
-            {transactions.length === 1 ? "transaction" : "transactions"}
+            {formatINR(customer.total_payment)} · {safeTxs.length}{" "}
+            {safeTxs.length === 1 ? "transaction" : "transactions"}
           </div>
         </div>
         <button
@@ -329,7 +330,7 @@ export function CustomerLedgerCard({
           className={`stat-drop-notch-btn customer-tx-notch-btn ${txHistoryOpen ? "open" : ""}`}
           onClick={() => setTxHistoryOpen((prev) => !prev)}
           title={
-            transactions.length > 0
+            safeTxs.length > 0
               ? txHistoryOpen
                 ? "Click drop notch to fold history"
                 : "Click drop notch to view transaction history"
@@ -338,7 +339,7 @@ export function CustomerLedgerCard({
         >
           <span className="notch-btn-label">
             <span className="notch-count-pill tx-pill">
-              {transactions.length}
+              {safeTxs.length}
             </span>
             <span style={{ fontWeight: 750, letterSpacing: "-0.01em" }}>
               Transaction History
@@ -365,17 +366,17 @@ export function CustomerLedgerCard({
               {customer.name} · History
             </span>
             <span className="header-badge">
-              {transactions.length} {transactions.length === 1 ? "Record" : "Records"}
+              {safeTxs.length} {safeTxs.length === 1 ? "Record" : "Records"}
             </span>
           </div>
 
           <div className="tx-list customer-tx-list-scroll">
-            {transactions.length === 0 ? (
+            {safeTxs.length === 0 ? (
               <div style={{ color: "var(--muted)", fontSize: "0.85rem", padding: "16px 8px", textAlign: "center" }}>
                 No transactions recorded yet. Tap "+ Entry" above to add one.
               </div>
             ) : (
-              transactions.map((tx) => {
+              safeTxs.map((tx) => {
                 const isFresh = hiSet.has(tx.id);
                 return (
                   <div key={tx.id} className={`tx-row ${isFresh ? "live-flash" : ""}`}>
