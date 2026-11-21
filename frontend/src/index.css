@@ -3684,6 +3684,12 @@ body {
   user-select: none;
   z-index: 10;
   transform-origin: 480px 40px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  color: inherit;
+  outline: none;
 }
 
 /* HIDDEN STATE: Tucked into the option button, invisible */
@@ -3721,9 +3727,9 @@ body {
 }
 
 /* 5 Positions Along the Grand Sweeping Arc */
-.curved-pos-1 { top: 24px;  left: 36px; }   /* Home */
-.curved-pos-2 { top: 104px; left: 130px; }  /* Analytics */
-.curved-pos-3 { top: 190px; left: 226px; }  /* Tools */
+.curved-pos-1 { top: 24px;  left: 36px; }   /* Dashboard */
+.curved-pos-2 { top: 104px; left: 130px; }  /* Customers */
+.curved-pos-3 { top: 190px; left: 226px; }  /* Customer Analytics */
 .curved-pos-4 { top: 274px; left: 326px; }  /* Settings */
 .curved-pos-5 { top: 348px; left: 436px; }  /* About */
 
@@ -3739,10 +3745,11 @@ body {
   justify-content: center;
   color: #1e1b4b;
   cursor: pointer;
+  pointer-events: none;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.curved-arc-btn:hover {
+.curved-arc-item:hover .curved-arc-btn {
   color: #7c3aed;
   transform: scale(1.12);
   box-shadow: 0 10px 28px rgba(124, 58, 237, 0.25);
@@ -3758,11 +3765,14 @@ body {
 }
 
 .curved-arc-label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 750;
   color: #475569;
   text-align: center;
+  line-height: 1.2;
+  max-width: 96px;
   transition: color 0.2s ease;
+  pointer-events: none;
 }
 
 .curved-arc-item.active .curved-arc-label {

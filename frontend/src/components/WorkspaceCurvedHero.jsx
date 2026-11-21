@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import {
   BarChart3,
-  Box,
   Home,
   Info,
+  LayoutDashboard,
   Settings,
   Sparkles,
+  Users,
 } from "lucide-react";
 
 /**
  * WorkspaceCurvedHero provides the grand 75% workspace hero canvas
  * matching the reference design:
- * - Left: "Hello! ✨", "Innovate Today, Grow Tomorrow", subtitle, and scroll indicator
- * - Right: Sweeping circular radial dome with spacious neo-morphic arc navigation buttons
+ * - Sweeping circular radial dome with spacious neo-morphic arc navigation buttons:
+ *   1. Dashboard (opens home / dashboard metrics)
+ *   2. Customers (opens customers tab)
+ *   3. Customer Analytics (opens ledgers / customer analytics tab)
+ *   4. Settings (opens settings tab)
+ *   5. About (opens profile tab)
  * - Top-right: Glowing purple circular sparkle option badge that animates the arc options in/out
  */
 export function WorkspaceCurvedHero({
@@ -25,26 +30,25 @@ export function WorkspaceCurvedHero({
   const navItems = [
     {
       id: "home",
-      label: "Home",
-      icon: Home,
+      label: "Dashboard",
+      icon: LayoutDashboard,
       action: () => {
         onSelectTab("home");
         if (onScrollToExplore) onScrollToExplore();
       },
     },
     {
-      id: "analytics",
-      label: "Analytics",
+      id: "customers",
+      label: "Customers",
+      icon: Users,
+      action: () => {
+        onSelectTab("customers");
+      },
+    },
+    {
+      id: "ledgers",
+      label: "Customer Analytics",
       icon: BarChart3,
-      action: () => {
-        onSelectTab("home");
-        if (onScrollToExplore) onScrollToExplore();
-      },
-    },
-    {
-      id: "tools",
-      label: "Tools",
-      icon: Box,
       action: () => {
         onSelectTab("ledgers");
       },
@@ -100,25 +104,30 @@ export function WorkspaceCurvedHero({
                 const Icon = item.icon;
                 const isActive =
                   item.id === activeTab ||
-                  (item.id === "tools" && (activeTab === "ledgers" || activeTab === "customers")) ||
                   (item.id === "about" && activeTab === "profile");
 
                 return (
-                  <div
+                  <button
                     key={item.id}
+                    type="button"
                     className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
-                    onClick={item.action}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      item.action();
+                    }}
+                    onPointerUp={(e) => {
+                      e.preventDefault();
+                      item.action();
+                    }}
+                    aria-label={`Open ${item.label}`}
+                    title={`Open ${item.label}`}
                   >
-                    <button
-                      type="button"
-                      className={`curved-arc-btn ${isActive ? "active" : ""}`}
-                      aria-label={item.label}
-                      title={`Go to ${item.label}`}
-                    >
+                    <span className={`curved-arc-btn ${isActive ? "active" : ""}`}>
                       <Icon size={20} />
-                    </button>
+                    </span>
                     <span className="curved-arc-label">{item.label}</span>
-                  </div>
+                  </button>
                 );
               })}
             </nav>
