@@ -75,39 +75,7 @@ export function WorkspaceCurvedHero({
 
       {/* Main Content Layout */}
       <div className="curved-hero-inner">
-        {/* Left Column: Greeting, Big Typography, Subtitle & Scroll */}
-        <div className="curved-hero-left">
-          <div className="curved-hero-badge">
-            <span>Hello!</span>
-            <Sparkles size={14} className="curved-badge-sparkle" />
-          </div>
-
-          <h1 className="curved-hero-title">
-            <span className="curved-title-line1">Innovate Today,</span>
-            <span className="curved-title-line2">Grow Tomorrow</span>
-          </h1>
-
-          <p className="curved-hero-sub">
-            A modern platform to build, explore and achieve more.
-          </p>
-
-          <div className="curved-hero-divider" />
-
-          <button
-            type="button"
-            className="curved-hero-scroll-btn"
-            onClick={onScrollToExplore}
-            title="Scroll down to inspect live khata metrics & ledgers"
-          >
-            <div className="curved-mouse-pill">
-              <div className="curved-mouse-wheel" />
-            </div>
-            <span className="curved-mouse-line" />
-            <span className="curved-mouse-label">Scroll to explore</span>
-          </button>
-        </div>
-
-        {/* Right Column: Sweeping Grand Radial Curved Dome with Arc Navigation */}
+        {/* Sweeping Grand Radial Curved Dome with Arc Navigation */}
         <div className="curved-hero-right">
           {/* Grand Curved Dome Dish */}
           <div className={`curved-dome-dish ${isOpen ? "is-open" : "is-hidden"}`}>
