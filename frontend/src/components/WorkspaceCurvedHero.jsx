@@ -22,48 +22,46 @@ export function WorkspaceCurvedHero({
   onScrollToExplore,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelectOption = (targetTab) => {
+    if (typeof onSelectTab === "function") {
+      onSelectTab(targetTab);
+    }
+    if (targetTab === "home" && typeof onScrollToExplore === "function") {
+      onScrollToExplore();
+    }
+  };
+
   const navItems = [
     {
       id: "home",
       label: "Home",
+      targetTab: "home",
       icon: Home,
-      action: () => {
-        onSelectTab("home");
-        if (onScrollToExplore) onScrollToExplore();
-      },
     },
     {
       id: "analytics",
       label: "Analytics",
+      targetTab: "home",
       icon: BarChart3,
-      action: () => {
-        onSelectTab("home");
-        if (onScrollToExplore) onScrollToExplore();
-      },
     },
     {
       id: "tools",
       label: "Tools",
+      targetTab: "ledgers",
       icon: Box,
-      action: () => {
-        onSelectTab("ledgers");
-      },
     },
     {
       id: "settings",
       label: "Settings",
+      targetTab: "settings",
       icon: Settings,
-      action: () => {
-        onSelectTab("settings");
-      },
     },
     {
       id: "about",
       label: "About",
+      targetTab: "profile",
       icon: Info,
-      action: () => {
-        onSelectTab("profile");
-      },
     },
   ];
 
@@ -135,21 +133,37 @@ export function WorkspaceCurvedHero({
                   (item.id === "tools" && (activeTab === "ledgers" || activeTab === "customers")) ||
                   (item.id === "about" && activeTab === "profile");
 
+                const handleItemClick = (e) => {
+                  e.stopPropagation();
+                  handleSelectOption(item.targetTab);
+                };
+
                 return (
                   <div
                     key={item.id}
                     className={`curved-arc-item curved-pos-${index + 1} ${isActive ? "active" : ""}`}
-                    onClick={item.action}
+                    onClick={handleItemClick}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleSelectOption(item.targetTab);
+                      }
+                    }}
                   >
                     <button
                       type="button"
                       className={`curved-arc-btn ${isActive ? "active" : ""}`}
+                      onClick={handleItemClick}
                       aria-label={item.label}
                       title={`Go to ${item.label}`}
                     >
                       <Icon size={20} />
                     </button>
-                    <span className="curved-arc-label">{item.label}</span>
+                    <span className="curved-arc-label" onClick={handleItemClick}>
+                      {item.label}
+                    </span>
                   </div>
                 );
               })}

@@ -64,7 +64,11 @@ export default function App() {
     setShowHero(false);
     setTab(nextTab);
     setDrawerOpen(false);
-    refreshAll();
+    try {
+      refreshAll().catch(() => {});
+    } catch {
+      // ignore
+    }
   }
   const [statusInfo, setStatusInfo] = useState(null);
   const [dashboard, setDashboard] = useState(null);
@@ -1027,8 +1031,8 @@ export default function App() {
                     liveConnected
                       ? `Live (${Math.round(micLevel * 100)}%) ${t("hudListening", language)}`
                       : isRecording
-                      ? `${t("hudListening", language)} (${Math.round(micLevel * 100)}%)...`
-                      : t("inputPlaceholder", language)
+                        ? `${t("hudListening", language)} (${Math.round(micLevel * 100)}%)...`
+                        : t("inputPlaceholder", language)
                   }
                 />
                 {detectedPreview !== null && (
