@@ -380,6 +380,7 @@ class UserLoginRequest(BaseModel):
     email: str | None = Field(default=None, max_length=160)
     phone: str | None = Field(default=None, max_length=24)
     password: str = Field(min_length=1, max_length=128)
+    face_data: str | None = None
 
     @property
     def login_identifier(self) -> str:

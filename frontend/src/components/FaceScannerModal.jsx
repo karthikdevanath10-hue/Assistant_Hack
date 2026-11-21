@@ -162,12 +162,12 @@ export function FaceScannerModal({
             <ScanFace className="face-scanner-icon" size={24} />
             <div>
               <h3 id="face-scanner-title">
-                {mode === "register" ? "Face ID Registration" : "Face ID Verification"}
+                {mode === "register" ? "Face ID Registration (Mandatory)" : "Face ID Verification (Mandatory)"}
               </h3>
               <p>
                 {mode === "register"
-                  ? "Enroll your facial biometric template for instantaneous passwordless access."
-                  : "Verify your face to instantly sign in to your Voice Khata ledger."}
+                  ? "Face ID registration is mandatory. Your biometric face template will be required every time you sign in."
+                  : "Face ID verification is mandatory to unlock and sign in to your Voice Khata ledger."}
               </p>
             </div>
           </div>
@@ -261,7 +261,7 @@ export function FaceScannerModal({
                   <Camera size={16} /> Capture Face ID
                 </button>
                 <button type="button" className="btn btn-outline" onClick={onClose}>
-                  Skip for Now
+                  Cancel
                 </button>
               </>
             ) : (
@@ -297,12 +297,12 @@ export function FaceScannerModal({
                   </>
                 ) : (
                   <>
-                    <ScanFace size={16} /> Scan &amp; Sign In with Face ID
+                    <ScanFace size={16} /> Verify &amp; Sign In with Face ID
                   </>
                 )}
               </button>
               <button type="button" className="btn btn-outline" onClick={onClose}>
-                Use Password Instead
+                Cancel
               </button>
             </>
           )}

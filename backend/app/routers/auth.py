@@ -143,6 +143,20 @@ def login_user(req: UserLoginRequest, container: AppContainer = Depends(get_cont
     if not user or not verify_password(req.password, user.get("password_hash") or ""):
         raise HTTPException(status_code=401, detail="Invalid mobile number/email or password.")
 
+    # Face ID is mandatory to sign in for all accounts with registered Face ID
+    if user.get("face_id_data"):
+        if not req.face_data or not req.face_data.strip():
+            raise HTTPException(
+                status_code=403,
+                detail="Face ID verification is mandatory to sign in. Please verify your face.",
+            )
+        is_match, score = verify_face_match(user["face_id_data"], req.face_data)
+        if not is_match:
+            raise HTTPException(
+                status_code=401,
+                detail="Face verification failed. Candidate face did not match enrolled Face ID.",
+            )
+
     now_iso = datetime.now(timezone.utc).isoformat()
     container.db.update_user_last_login(int(user["id"]), now_iso)
     user["last_login_at"] = now_iso

@@ -35,6 +35,7 @@ function PasswordInput({ id, label, value, onChange, placeholder, autoComplete }
 
 /**
  * Login page rendered before entering the Voice Khata workspace.
+ * Face ID verification is strictly mandatory to sign in.
  */
 export function LoginPage({
   onSubmit,
@@ -45,22 +46,33 @@ export function LoginPage({
 }) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [verifiedFace, setVerifiedFace] = useState(null);
   const [localError, setLocalError] = useState("");
   const [faceModalOpen, setFaceModalOpen] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const validationErr = validateLoginForm({ identifier, password });
-    if (validationErr) {
-      setLocalError(validationErr);
+    const loginId = identifier.trim();
+    if (!loginId) {
+      setLocalError("Please enter your mobile number or email.");
+      return;
+    }
+    if (!password) {
+      setLocalError("Please enter your password.");
+      return;
+    }
+    if (!verifiedFace) {
+      setLocalError("Face ID verification is mandatory to sign in. Please look into the camera.");
+      setFaceModalOpen(true);
       return;
     }
     setLocalError("");
     await onSubmit({
-      identifier: identifier.trim(),
-      phone: identifier.trim(),
-      email: identifier.trim(),
+      identifier: loginId,
+      phone: loginId,
+      email: loginId,
       password,
+      face_data: typeof verifiedFace === "string" ? verifiedFace : JSON.stringify(verifiedFace),
     });
   }
 
@@ -71,7 +83,7 @@ export function LoginPage({
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <div className="auth-card-head">
           <h2>Welcome back</h2>
-          <p>Sign in to open your Voice Khata dashboard and customer ledgers.</p>
+          <p>Face ID biometric verification is mandatory to sign in to your Voice Khata ledger.</p>
         </div>
 
         {displayError && (
@@ -79,6 +91,36 @@ export function LoginPage({
             {displayError}
           </div>
         )}
+
+        {/* Mandatory Face ID Notice & 1-Tap Trigger */}
+        <div className="face-mandatory-card">
+          <div className="face-mandatory-left">
+            <ScanFace size={22} style={{ color: "var(--accent)" }} />
+            <div>
+              <div className="face-mandatory-title">
+                <span>Biometric Face ID Required</span>
+                <span className="face-mandatory-badge">* Mandatory</span>
+              </div>
+              <p>Face verification is strictly required to unlock your ledger.</p>
+            </div>
+          </div>
+        </div>
+
+        {onFaceLogin && (
+          <button
+            type="button"
+            className="btn btn-primary face-instant-hero-btn"
+            onClick={() => setFaceModalOpen(true)}
+            disabled={loading}
+          >
+            <ScanFace size={18} />
+            <span>Scan Face ID to Sign In Instantly</span>
+          </button>
+        )}
+
+        <div className="auth-divider">
+          <span>OR SIGN IN WITH MOBILE &amp; FACE</span>
+        </div>
 
         <label className="auth-field">
           <span>Mobile Number (or Email) *</span>
@@ -96,34 +138,58 @@ export function LoginPage({
 
         <PasswordInput
           id="login-password"
-          label="Password"
+          label="Password *"
           value={password}
           onChange={setPassword}
           placeholder="Enter your password"
           autoComplete="current-password"
         />
 
-        <button className="btn btn-primary auth-submit-btn" type="submit" disabled={loading}>
-          <LogIn size={16} /> {loading ? "Signing in..." : "Sign In to Dashboard"}
-        </button>
-
-        {onFaceLogin && (
-          <div className="auth-biometric-section">
-            <div className="auth-divider">
-              <span>OR BIOMETRIC</span>
+        {/* Mandatory Face ID Status Box */}
+        <div className="auth-field">
+          <span>Face ID Verification * (Mandatory)</span>
+          {verifiedFace ? (
+            <div className="face-id-enrolled-row">
+              {verifiedFace.photo && (
+                <img
+                  src={verifiedFace.photo}
+                  alt="Verified face thumbnail"
+                  className="face-id-thumbnail"
+                />
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="face-id-enrolled-badge">
+                  <CheckCircle2 size={14} /> Face ID Ready for Sign In
+                </div>
+                <small style={{ color: "var(--muted)", fontSize: "0.74rem" }}>
+                  Face biometric captured. Ready to unlock.
+                </small>
+              </div>
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ padding: "4px 8px", fontSize: "0.78rem" }}
+                onClick={() => setFaceModalOpen(true)}
+              >
+                Re-scan
+              </button>
             </div>
+          ) : (
             <button
               type="button"
-              className="btn btn-outline face-login-trigger-btn"
+              className="btn btn-outline face-enroll-trigger-btn"
+              style={{ width: "100%", justifyContent: "center", padding: "10px 14px" }}
               onClick={() => setFaceModalOpen(true)}
               disabled={loading}
-              title="Fast passwordless login via camera face verification"
             >
-              <ScanFace size={18} style={{ color: "var(--accent)" }} />
-              <span>Sign in with Face ID</span>
+              <Camera size={16} /> Scan &amp; Verify Face ID (Mandatory)
             </button>
-          </div>
-        )}
+          )}
+        </div>
+
+        <button className="btn btn-primary auth-submit-btn" type="submit" disabled={loading}>
+          <ScanFace size={16} /> {loading ? "Signing in..." : "Sign In with Face ID"}
+        </button>
 
         <div className="auth-switch-row">
           <span>New to Voice Khata?</span>
@@ -142,6 +208,9 @@ export function LoginPage({
             await onFaceLogin({ identifier: idVal, faceData });
             setFaceModalOpen(false);
           }}
+          onCapture={(data) => {
+            setVerifiedFace(data);
+          }}
           onClose={() => setFaceModalOpen(false)}
           loading={loading}
           error={error}
@@ -153,6 +222,7 @@ export function LoginPage({
 
 /**
  * Sign Up page creating a shopkeeper account before entering the dashboard.
+ * Face ID registration is strictly mandatory.
  */
 export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error = "" }) {
   const [name, setName] = useState("");
@@ -179,6 +249,11 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
       setLocalError(validationErr);
       return;
     }
+    if (!enrolledFace) {
+      setLocalError("Face ID registration is mandatory. Please click 'Register Face ID with Camera' to register your face.");
+      setFaceModalOpen(true);
+      return;
+    }
     setLocalError("");
     await onSubmit({
       name: name.trim(),
@@ -187,13 +262,11 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
       email: email.trim() || null,
       preferred_language: preferredLanguage,
       password,
-      face_data: enrolledFace
-        ? JSON.stringify({
-            descriptor: enrolledFace.descriptor,
-            photo: enrolledFace.photo,
-            timestamp: enrolledFace.timestamp,
-          })
-        : null,
+      face_data: JSON.stringify({
+        descriptor: enrolledFace.descriptor,
+        photo: enrolledFace.photo,
+        timestamp: enrolledFace.timestamp,
+      }),
     });
   }
 
@@ -293,15 +366,16 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
           </small>
         </label>
 
-        {/* Biometric Face ID Registration Section */}
+        {/* Biometric Face ID Registration Section (Mandatory) */}
         <div className="face-id-signup-card">
           <div className="face-id-signup-info">
             <div className="face-id-signup-title">
               <ScanFace size={18} style={{ color: "var(--accent)" }} />
-              <strong>Biometric Face ID Setup</strong>
+              <strong>Biometric Face ID Registration *</strong>
+              <span className="face-mandatory-badge">* Mandatory</span>
             </div>
             <p>
-              Register your face now to sign in effortlessly without typing passwords.
+              Face ID registration is strictly mandatory. You will be required to verify your face every time you sign in.
             </p>
           </div>
 
@@ -316,10 +390,10 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="face-id-enrolled-badge">
-                  <CheckCircle2 size={14} /> Face ID Registered
+                  <CheckCircle2 size={14} /> Face ID Registered (Verified)
                 </div>
                 <small style={{ color: "var(--muted)", fontSize: "0.74rem" }}>
-                  Face biometric template enrolled successfully.
+                  Face biometric template ready to protect your account.
                 </small>
               </div>
               <button
@@ -330,25 +404,17 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
               >
                 Re-scan
               </button>
-              <button
-                type="button"
-                className="btn btn-outline"
-                style={{ padding: "4px 8px", fontSize: "0.78rem", color: "#dc2626" }}
-                onClick={() => setEnrolledFace(null)}
-              >
-                Remove
-              </button>
             </div>
           ) : (
             <div className="face-id-prompt-row">
               <button
                 type="button"
-                className="btn btn-outline face-enroll-trigger-btn"
+                className="btn btn-primary face-enroll-trigger-btn"
                 onClick={() => setFaceModalOpen(true)}
               >
-                <Camera size={16} /> Register Face ID with Camera
+                <Camera size={16} /> Register Face ID with Camera (Required)
               </button>
-              <span className="face-id-optional-tag">Optional · Can be skipped</span>
+              <span className="face-id-required-tag">* Face registration required to sign up</span>
             </div>
           )}
         </div>
@@ -356,7 +422,7 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
         <div className="auth-two-col">
           <PasswordInput
             id="signup-password"
-            label="Password (min 6 chars)"
+            label="Password (min 6 chars) *"
             value={password}
             onChange={setPassword}
             placeholder="Create password"
@@ -365,7 +431,7 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
 
           <PasswordInput
             id="signup-confirm-password"
-            label="Confirm Password"
+            label="Confirm Password *"
             value={confirmPassword}
             onChange={setConfirmPassword}
             placeholder="Re-enter password"
