@@ -83,7 +83,7 @@ export function LoginPage({
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <div className="auth-card-head">
           <h2>Welcome back</h2>
-          <p>Face ID biometric verification is mandatory to sign in to your Voice Khata ledger.</p>
+          <p>Sign in to open your Voice Khata dashboard and customer ledgers.</p>
         </div>
 
         {displayError && (
@@ -91,36 +91,6 @@ export function LoginPage({
             {displayError}
           </div>
         )}
-
-        {/* Mandatory Face ID Notice & 1-Tap Trigger */}
-        <div className="face-mandatory-card">
-          <div className="face-mandatory-left">
-            <ScanFace size={22} style={{ color: "var(--accent)" }} />
-            <div>
-              <div className="face-mandatory-title">
-                <span>Biometric Face ID Required</span>
-                <span className="face-mandatory-badge">* Mandatory</span>
-              </div>
-              <p>Face verification is strictly required to unlock your ledger.</p>
-            </div>
-          </div>
-        </div>
-
-        {onFaceLogin && (
-          <button
-            type="button"
-            className="btn btn-primary face-instant-hero-btn"
-            onClick={() => setFaceModalOpen(true)}
-            disabled={loading}
-          >
-            <ScanFace size={18} />
-            <span>Scan Face ID to Sign In Instantly</span>
-          </button>
-        )}
-
-        <div className="auth-divider">
-          <span>OR SIGN IN WITH MOBILE &amp; FACE</span>
-        </div>
 
         <label className="auth-field">
           <span>Mobile Number (or Email) *</span>
