@@ -1191,9 +1191,14 @@ body {
 
 @media (min-width: 900px) {
   html, body {
+    min-height: 100vh;
+    background: #eef2f6;
+  }
+
+  body:has(.split-shell),
+  html:has(.split-shell) {
     height: 100vh;
     overflow: hidden;
-    background: #eef2f6;
   }
 
   .split-shell {
@@ -1734,14 +1739,60 @@ body {
 
 .auth-shell {
   min-height: 100vh;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr;
   background: var(--bg);
+  box-sizing: border-box;
 }
 
 @media (min-width: 900px) {
   .auth-shell {
-    grid-template-columns: minmax(320px, 42%) 1fr;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    grid-template-columns: minmax(320px, 40%) 1fr;
+  }
+
+  .auth-hero {
+    height: 100%;
+    overflow-y: auto;
+    padding: 44px 38px;
+    border-bottom: 0;
+    border-right: 1px solid rgba(56, 189, 248, 0.25);
+    box-sizing: border-box;
+  }
+
+  .auth-main {
+    height: 100%;
+    max-height: 100vh;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 32px 24px 80px;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 899px) {
+  .auth-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+  .auth-hero {
+    flex-shrink: 0;
+  }
+  .auth-main {
+    flex: 1 1 auto;
+    overflow-y: auto !important;
+    padding: 24px 16px 80px;
+    box-sizing: border-box;
   }
 }
 
@@ -1755,14 +1806,6 @@ body {
   justify-content: space-between;
   gap: 24px;
   border-bottom: 1px solid rgba(56, 189, 248, 0.25);
-}
-
-@media (min-width: 900px) {
-  .auth-hero {
-    padding: 44px 38px;
-    border-bottom: 0;
-    border-right: 1px solid rgba(56, 189, 248, 0.25);
-  }
 }
 
 .auth-hero-title {
@@ -1802,16 +1845,30 @@ body {
   margin-top: 2px;
 }
 
-.auth-main {
-  display: grid;
-  place-items: center;
-  padding: 24px 18px;
+.auth-main::-webkit-scrollbar {
+  width: 7px;
+}
+
+.auth-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auth-main::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.auth-main::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 500px;
-  padding: 24px;
+  max-width: 520px;
+  padding: 28px 24px 32px;
+  flex-shrink: 0;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .auth-mode-tabs {
