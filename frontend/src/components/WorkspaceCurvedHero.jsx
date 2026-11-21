@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   BarChart3,
+  ChevronDown,
   Info,
   LayoutDashboard,
   Settings,
@@ -91,16 +92,23 @@ export function WorkspaceCurvedHero({
         />
       )}
 
-      {/* Floating Sparkle Tapper Trigger Button in Topbar */}
+      {/* Floating Workspace Explorer Button in Topbar */}
       <button
         type="button"
         className={`floating-tapper-btn ${isOpen ? "is-open" : ""}`}
         onClick={() => setIsOpen((prev) => !prev)}
-        title={isOpen ? "Close navigation options" : "Explore Workspace Navigation"}
-        aria-label={isOpen ? "Close navigation options" : "Explore Workspace Navigation"}
+        title={isOpen ? "Close Workspace Explorer" : "Open Workspace Explorer (Dashboard, Customers, Analytics, Settings)"}
+        aria-label="Workspace Explorer"
         aria-expanded={isOpen}
       >
-        <Sparkles size={22} />
+        <span className="tapper-sparkle-icon">
+          <Sparkles size={15} />
+        </span>
+        <span className="tapper-label">Workspace Explorer</span>
+        <ChevronDown
+          size={14}
+          className={`tapper-chevron ${isOpen ? "is-open" : ""}`}
+        />
       </button>
 
       {/* Floating Curved Arc Navigation Overlay (no white background dish) */}
@@ -108,6 +116,11 @@ export function WorkspaceCurvedHero({
         className={`floating-dome-dish ${isOpen ? "is-open" : "is-hidden"}`}
         aria-hidden={!isOpen}
       >
+        <div className="workspace-explorer-header">
+          <Sparkles size={13} />
+          <span>Workspace Explorer</span>
+        </div>
+
         {/* Circular Navigation Buttons Placed Generously Along the Sweeping Curve */}
         <nav
           className={`curved-arc-nav ${isOpen ? "is-open" : "is-hidden"}`}
