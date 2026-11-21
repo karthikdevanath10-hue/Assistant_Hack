@@ -7,6 +7,11 @@
  */
 
 import { getAuthToken } from "../api/client";
+import {
+  getNoiseCancellationConstraints,
+  createNoiseCancellationChain,
+  AdaptiveNoiseGate,
+} from "./noiseFilter";
 
 const WORKLET_PROCESSOR_CODE = `
 class PcmCaptureProcessor extends AudioWorkletProcessor {
@@ -102,7 +107,7 @@ export class GeminiLiveClient {
   /**
    * Must be called inside the click gesture so AudioContext capture & playback start unlocked.
    */
-  async prepareMic({ onLevel, onMicInfo } = {}) {
+  async prepareMic({ noiseCancellation = true, onLevel, onMicInfo } = {}) {
     if (onLevel) this.callbacks.onLevel = onLevel;
     if (onMicInfo) this.callbacks.onMicInfo = onMicInfo;
 
@@ -131,12 +136,7 @@ export class GeminiLiveClient {
     }
 
     this.stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        channelCount: 1,
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      },
+      audio: getNoiseCancellationConstraints(noiseCancellation),
     });
     if (this.captureCtx.state === "suspended") {
       await this.captureCtx.resume().catch(() => {});
@@ -160,28 +160,14 @@ export class GeminiLiveClient {
 
     const src = this.captureCtx.createMediaStreamSource(this.stream);
 
-    // 85Hz high-pass filter cuts street traffic rumble & shop motor hum
-    const highPass = this.captureCtx.createBiquadFilter();
-    highPass.type = "highpass";
-    highPass.frequency.value = 85;
-
-    // Soft 2.2x pre-gain + gentle compressor lifts quiet laptop mics without clipping loud shop noise
-    const preGain = this.captureCtx.createGain();
-    preGain.gain.value = 2.2;
-
-    const compressor = this.captureCtx.createDynamicsCompressor();
-    compressor.threshold.value = -30;
-    compressor.knee.value = 24;
-    compressor.ratio.value = 6;
-    compressor.attack.value = 0.004;
-    compressor.release.value = 0.15;
+    // Multi-stage noise cancellation & speech clarity DSP chain
+    this.dspChain = createNoiseCancellationChain(this.captureCtx, { enabled: noiseCancellation });
+    this.noiseGate = new AdaptiveNoiseGate({ enabled: noiseCancellation });
 
     this.muteGain = this.captureCtx.createGain();
     this.muteGain.gain.value = 0.0;
 
-    src.connect(highPass);
-    highPass.connect(preGain);
-    preGain.connect(compressor);
+    src.connect(this.dspChain.input);
 
     let usingWorklet = false;
     if (this.captureCtx.audioWorklet) {
@@ -198,7 +184,7 @@ export class GeminiLiveClient {
         worklet.port.onmessage = (evt) => {
           if (evt.data) this._handleAudioFrame(evt.data);
         };
-        compressor.connect(worklet);
+        this.dspChain.output.connect(worklet);
         worklet.connect(this.muteGain);
         this.workletNode = worklet;
         usingWorklet = true;
@@ -212,7 +198,7 @@ export class GeminiLiveClient {
       processor.onaudioprocess = (e) => {
         this._handleAudioFrame(e.inputBuffer.getChannelData(0));
       };
-      compressor.connect(processor);
+      this.dspChain.output.connect(processor);
       processor.connect(this.muteGain);
       this.processor = processor;
     }
@@ -220,8 +206,17 @@ export class GeminiLiveClient {
     this.muteGain.connect(this.captureCtx.destination);
   }
 
+  setNoiseCancellation(enabled) {
+    if (this.dspChain) this.dspChain.setEnabled(enabled);
+    if (this.noiseGate) this.noiseGate.setEnabled(enabled);
+  }
+
   _handleAudioFrame(f32) {
     if (!this.micActive || !this.captureCtx) return;
+
+    if (this.noiseGate) {
+      this.noiseGate.process(f32);
+    }
 
     let sum = 0;
     for (let i = 0; i < f32.length; i += 1) sum += f32[i] * f32[i];

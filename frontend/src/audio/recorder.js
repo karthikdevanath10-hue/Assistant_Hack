@@ -1,3 +1,9 @@
+import {
+  getNoiseCancellationConstraints,
+  createNoiseCancellationChain,
+  AdaptiveNoiseGate,
+} from "./noiseFilter";
+
 /**
  * Noise-filtered 16kHz mono WAV recorder + Web Speech API concurrent STT helper.
  * Applies browser echoCancellation/noiseSuppression + an 85Hz Biquad high-pass filter
@@ -162,9 +168,10 @@ export class ShopAudioRecorder {
     this.liveTranscript = "";
   }
 
-  async start({ language = "hi-IN", onLevel, onInterimTranscript } = {}) {
+  async start({ language = "hi-IN", noiseCancellation = true, onLevel, onInterimTranscript } = {}) {
     this.chunks = [];
     this.liveTranscript = "";
+    this.noiseGate = new AdaptiveNoiseGate({ enabled: noiseCancellation });
 
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     this.ctx = new AudioCtx();
@@ -173,12 +180,7 @@ export class ShopAudioRecorder {
     }
 
     this.stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        channelCount: 1,
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      },
+      audio: getNoiseCancellationConstraints(noiseCancellation),
     });
     if (this.ctx.state === "suspended") {
       await this.ctx.resume().catch(() => {});
@@ -186,10 +188,8 @@ export class ShopAudioRecorder {
 
     const source = this.ctx.createMediaStreamSource(this.stream);
 
-    // 85Hz high-pass filter cuts street traffic rumble & fan/motor hum
-    const highPass = this.ctx.createBiquadFilter();
-    highPass.type = "highpass";
-    highPass.frequency.value = 85;
+    // Multi-stage noise cancellation DSP chain
+    this.dspChain = createNoiseCancellationChain(this.ctx, { enabled: noiseCancellation });
 
     const processor = this.ctx.createScriptProcessor(4096, 1, 1);
     this.processor = processor;
@@ -198,16 +198,16 @@ export class ShopAudioRecorder {
 
     processor.onaudioprocess = (e) => {
       const input = e.inputBuffer.getChannelData(0);
-      this.chunks.push(new Float32Array(input));
+      const cleanInput = new Float32Array(input);
+      const gateRes = this.noiseGate.process(cleanInput);
+      this.chunks.push(cleanInput);
       if (onLevel) {
-        let sum = 0;
-        for (let i = 0; i < input.length; i += 1) sum += input[i] * input[i];
-        onLevel(Math.min(1, Math.sqrt(sum / input.length) * 10));
+        onLevel(Math.min(1, gateRes.rms * 10));
       }
     };
 
-    source.connect(highPass);
-    highPass.connect(processor);
+    source.connect(this.dspChain.input);
+    this.dspChain.output.connect(processor);
     processor.connect(this.muteGain);
     this.muteGain.connect(this.ctx.destination);
 

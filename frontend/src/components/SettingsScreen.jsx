@@ -23,10 +23,12 @@ export function SettingsScreen({
   liveEphemeralSupported = false,
   canLiveStream = liveWsSupported || liveEphemeralSupported,
   interactiveConfirm,
+  noiseCancellation = true,
   onUpdateSetting,
   onToggleDirectAudio,
   onToggleLiveStream,
   onToggleInteractiveConfirm,
+  onToggleNoiseCancellation,
   onWipeTranscripts,
 }) {
   return (
@@ -102,6 +104,11 @@ export function SettingsScreen({
               <option value="gnani">Gnani Prisma v3.0 STT &amp; Timbre v3.0 TTS</option>
               <option value="browser">Browser Web Speech (Zero-cost on-device)</option>
             </select>
+          </label>
+
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.86rem" }}>
+            <input type="checkbox" checked={noiseCancellation} onChange={(e) => onToggleNoiseCancellation?.(e.target.checked)} />
+            Active AI Noise Cancellation (Multi-stage 90Hz rumble cut + 50Hz hum notch + 7.5kHz de-hiss + Adaptive Noise Gate)
           </label>
 
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.86rem" }}>

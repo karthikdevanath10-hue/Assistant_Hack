@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Mic, MicOff, Radio, ShieldCheck, Sparkles, Volume2, X } from "lucide-react";
+import { Check, Mic, MicOff, Radio, ShieldCheck, SlidersHorizontal, Sparkles, Volume2, X } from "lucide-react";
 import { playReplyAudio } from "../audio/recorder";
 import { previewSpokenAmount } from "../utils/numberNormalizer";
 import { t } from "../utils/i18n";
@@ -15,6 +15,7 @@ export function JarvisHud({
   isProcessing,
   useLiveStream,
   interactiveConfirm,
+  noiseCancellation = true,
   geminiConfigured,
   liveWsSupported = true,
   canLiveStream = liveWsSupported,
@@ -29,6 +30,7 @@ export function JarvisHud({
   onToggleMic,
   onToggleLiveStream,
   onToggleInteractiveConfirm,
+  onToggleNoiseCancellation,
   onQuickReply,
   onReplayAudio,
 }) {
@@ -201,6 +203,14 @@ export function JarvisHud({
             title="Ask 'Sure, sir. Shall I confirm?' before saving credits or payments"
           >
             <ShieldCheck size={13} /> {interactiveConfirm ? t("confirmRuleOn", language) : t("confirmRuleOff", language)}
+          </button>
+          <button
+            type="button"
+            className={`jarvis-pill-btn ${noiseCancellation ? "active" : ""}`}
+            onClick={() => onToggleNoiseCancellation?.(!noiseCancellation)}
+            title="Active AI noise cancellation: 90Hz rumble cut + 50Hz hum notch + 7.5kHz de-hiss + Adaptive Noise Gate"
+          >
+            <SlidersHorizontal size={13} /> {noiseCancellation ? t("noiseCancelOn", language) : t("noiseCancelOff", language)}
           </button>
         </div>
       </div>
