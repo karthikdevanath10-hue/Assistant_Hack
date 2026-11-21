@@ -1,14 +1,7 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, LogIn, Mic, Phone, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
+import { Eye, EyeOff, Globe, LogIn, Mic, Phone, ShieldCheck, Store, UserPlus, Users } from "lucide-react";
 import { validateLoginForm, validateSignUpForm } from "../utils/authHelpers";
-
-const SIGNUP_LANGUAGES = [
-  { code: "hi-IN", label: "Hindi / Hinglish (hi-IN)" },
-  { code: "kn-IN", label: "Kannada (kn-IN)" },
-  { code: "ta-IN", label: "Tamil / Tanglish (ta-IN)" },
-  { code: "te-IN", label: "Telugu / Tenglish (te-IN)" },
-  { code: "en-IN", label: "Indian English (en-IN)" },
-];
+import { SUPPORTED_LANGUAGES } from "../utils/i18n";
 
 function PasswordInput({ id, label, value, onChange, placeholder, autoComplete }) {
   const [visible, setVisible] = useState(false);
@@ -123,7 +116,13 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
   const [shopName, setShopName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [preferredLanguage, setPreferredLanguage] = useState("hi-IN");
+  const [preferredLanguage, setPreferredLanguage] = useState(() => {
+    try {
+      return localStorage.getItem("preferred_language") || "hi-IN";
+    } catch {
+      return "hi-IN";
+    }
+  });
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
@@ -219,20 +218,26 @@ export function SignUpPage({ onSubmit, onSwitchToLogin, loading = false, error =
         </label>
       </div>
 
-      <label className="auth-field">
-        <span>Preferred Language</span>
+      <label className="auth-field" style={{ gridColumn: "1 / -1" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 700 }}>
+          <Globe size={15} style={{ color: "var(--accent)" }} /> Default Account Language * (डिफ़ॉल्ट भाषा)
+        </span>
         <select
           id="signup-language"
           className="text-input"
           value={preferredLanguage}
           onChange={(e) => setPreferredLanguage(e.target.value)}
+          style={{ fontWeight: 600 }}
         >
-          {SIGNUP_LANGUAGES.map((l) => (
+          {SUPPORTED_LANGUAGES.map((l) => (
             <option key={l.code} value={l.code}>
-              {l.label}
+              {l.flag} {l.native} · {l.en} ({l.code})
             </option>
           ))}
         </select>
+        <small style={{ color: "var(--muted)", fontSize: "0.76rem", marginTop: 4 }}>
+          This will be your default voice assistant, ledger, and workspace language whenever you log in.
+        </small>
       </label>
 
       <div className="auth-two-col">

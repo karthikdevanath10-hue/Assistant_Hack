@@ -267,6 +267,14 @@ export default function App() {
         if (!active) return;
         currentUserRef.current = me;
         setCurrentUser(me);
+        if (me?.preferred_language) {
+          setLanguage(me.preferred_language);
+          try {
+            localStorage.setItem("preferred_language", me.preferred_language);
+          } catch {
+            // ignore
+          }
+        }
         setOfflineCount(getOfflineQueue(me?.id).length);
         await refreshAll();
       } catch (err) {
@@ -329,10 +337,12 @@ export default function App() {
     setAuthToken(res.access_token);
     currentUserRef.current = res.user;
     setCurrentUser(res.user);
-    if (preferredLanguage) {
-      setLanguage(preferredLanguage);
+    const userLang = preferredLanguage || res.user?.preferred_language;
+    if (userLang) {
+      setLanguage(userLang);
       try {
-        await api.updateSettings({ preferred_language: preferredLanguage });
+        localStorage.setItem("preferred_language", userLang);
+        await api.updateSettings({ preferred_language: userLang });
       } catch {
         // non-fatal if settings update fails
       }
@@ -348,7 +358,7 @@ export default function App() {
     setAuthError("");
     try {
       const res = await api.authLogin(payload);
-      await completeAuthSuccess(res);
+      await completeAuthSuccess(res, res.user?.preferred_language);
     } catch (err) {
       setAuthError(err.message || "Unable to sign in.");
     } finally {
