@@ -72,9 +72,15 @@ class _FakeCollection:
         self.docs: list[dict] = []
         self.indexes: list = []
 
-    def create_index(self, keys, unique: bool = False):
-        self.indexes.append((list(keys), unique))
+    def create_index(self, keys, unique: bool = False, **kwargs):
+        self.indexes.append((list(keys), unique, kwargs))
         return "ok"
+
+    def index_information(self):
+        return {}
+
+    def drop_index(self, name):
+        pass
 
     def count_documents(self, filt: dict) -> int:
         return sum(1 for d in self.docs if _matches_filter(d, filt))
@@ -98,6 +104,9 @@ class _FakeCollection:
     def _apply_update(self, doc: dict, update: dict, inserted: bool = False) -> None:
         if "$set" in update:
             doc.update(deepcopy(update["$set"]))
+        if "$unset" in update:
+            for k in update["$unset"]:
+                doc.pop(k, None)
         if "$inc" in update:
             for k, delta in update["$inc"].items():
                 doc[k] = doc.get(k, 0) + delta
@@ -510,3 +519,42 @@ def test_mongo_multi_account_database_and_collection_fallback_isolation():
     t1.create_customer(name="Alpha", phone_enc=None, reminder_opt_in=False, preferred_language="hi-IN")
     assert t1.count_customers() == 1
     assert t2.count_customers() == 0
+
+
+def test_mongodb_multiple_users_with_optional_email_none():
+    fake_client = _FakeMongoClient()
+    store = MongoKhataStore(mongo_url="mongodb://localhost:27017", db_name="mongo_optional_email", client=fake_client)
+
+    # User 1 with email=None
+    u1 = store.create_user(
+        name="User A",
+        shop_name="Shop A",
+        phone="9876500001",
+        email=None,
+        password_hash="pw1",
+    )
+    assert u1["id"] == 1
+    assert u1.get("email") is None
+
+    # User 2 with email="" (optional omitted) must succeed without duplicate error
+    u2 = store.create_user(
+        name="User B",
+        shop_name="Shop B",
+        phone="9876500002",
+        email="",
+        password_hash="pw2",
+    )
+    assert u2["id"] == 2
+    assert u2.get("email") is None
+
+    # User 3 with a real email
+    u3 = store.create_user(
+        name="User C",
+        shop_name="Shop C",
+        phone="9876500003",
+        email="user_c@example.com",
+        password_hash="pw3",
+    )
+    assert u3["id"] == 3
+    assert u3["email"] == "user_c@example.com"
+

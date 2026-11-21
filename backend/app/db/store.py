@@ -953,7 +953,7 @@ class SqliteKhataStore:
             err_str = str(exc).lower()
             if "phone" in err_str:
                 raise ValueError("An account with this mobile number already exists.") from exc
-            if "email" in err_str:
+            if "email" in err_str and clean_email:
                 raise ValueError("An account with this email already exists.") from exc
             raise ValueError("An account with these credentials already exists.") from exc
 
@@ -1132,7 +1132,41 @@ class MongoKhataStore:
         settings_col.create_index([("key", ASCENDING)], unique=True)
         if not self._is_tenant:
             users_col.create_index([("id", ASCENDING)], unique=True)
-            users_col.create_index([("email", ASCENDING)], unique=True)
+            try:
+                # Remove any existing null or empty email keys to prevent unique collision
+                users_col.update_many(
+                    {"$or": [{"email": None}, {"email": ""}, {"email": {"$type": "null"}}]},
+                    {"$unset": {"email": ""}},
+                )
+            except Exception:
+                pass
+
+            try:
+                # If an existing non-partial email index exists, drop it to recreate with partialFilterExpression
+                idx_info = users_col.index_information()
+                if "email_1" in idx_info:
+                    opts = idx_info["email_1"]
+                    if not opts.get("partialFilterExpression"):
+                        users_col.drop_index("email_1")
+            except Exception:
+                pass
+
+            try:
+                users_col.create_index(
+                    [("email", ASCENDING)],
+                    unique=True,
+                    partialFilterExpression={"email": {"$type": "string"}},
+                )
+            except Exception:
+                try:
+                    users_col.create_index([("email", ASCENDING)], unique=True, sparse=True)
+                except Exception:
+                    pass
+
+            try:
+                users_col.create_index([("phone", ASCENDING)], unique=True, sparse=True)
+            except Exception:
+                pass
 
     def close(self) -> None:
         if self._owns_client and hasattr(self.client, "close"):
@@ -1731,7 +1765,6 @@ class MongoKhataStore:
             "name": name.strip(),
             "shop_name": shop_name.strip(),
             "phone": clean_phone,
-            "email": clean_email,
             "phone_enc": phone_enc,
             "password_hash": password_hash,
             "preferred_language": preferred_language,
@@ -1739,13 +1772,38 @@ class MongoKhataStore:
             "created_at": now,
             "last_login_at": None,
         }
+        # CRITICAL: Only store email key when a valid non-empty email string is provided!
+        # When email is omitted/optional, omitting the key prevents MongoDB unique index collision on null.
+        if clean_email:
+            doc["email"] = clean_email
+
         try:
             self.mongo_db["users"].insert_one(dict(doc))
         except DuplicateKeyError as exc:
             err_str = str(exc).lower()
             if "phone" in err_str:
                 raise ValueError("An account with this mobile number already exists.") from exc
-            raise ValueError("An account with this email already exists.") from exc
+            if "email" in err_str and clean_email:
+                raise ValueError("An account with this email already exists.") from exc
+            # Auto-repair legacy Atlas non-partial email index when email is omitted/None
+            if "email" in err_str and not clean_email:
+                try:
+                    self.mongo_db["users"].drop_index("email_1")
+                    self.mongo_db["users"].update_many(
+                        {"$or": [{"email": None}, {"email": ""}, {"email": {"$type": "null"}}]},
+                        {"$unset": {"email": ""}},
+                    )
+                    self.mongo_db["users"].create_index(
+                        [("email", ASCENDING)],
+                        unique=True,
+                        partialFilterExpression={"email": {"$type": "string"}},
+                    )
+                    retry_doc = {k: v for k, v in doc.items() if k != "email"}
+                    self.mongo_db["users"].insert_one(dict(retry_doc))
+                    return retry_doc
+                except Exception:
+                    pass
+            raise ValueError("An account with these credentials already exists.") from exc
         return doc
 
     def update_user_last_login(self, user_id: int, last_login_at: str) -> None:
@@ -1783,7 +1841,12 @@ class MongoKhataStore:
                 existing_email = self.get_user_by_email(clean_email)
                 if existing_email and int(existing_email["id"]) != int(user_id):
                     raise ValueError("An account with this email already exists.")
-            updates["email"] = clean_email
+                updates["email"] = clean_email
+            else:
+                self.mongo_db["users"].update_one(
+                    {"id": int(user_id)},
+                    {"$unset": {"email": ""}},
+                )
         if preferred_language is not None:
             updates["preferred_language"] = preferred_language
         if password_hash is not None:

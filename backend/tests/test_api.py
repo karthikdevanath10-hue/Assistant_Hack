@@ -647,6 +647,66 @@ def test_serverless_cross_container_token_and_fallback_503(monkeypatch, tmp_path
         config_mod.get_settings.cache_clear()
 
 
+def test_signup_multiple_users_with_optional_email_omitted(api_client):
+    # User 1 registers with NO email
+    r1 = api_client.post(
+        "/api/auth/signup",
+        json={
+            "name": "Karthik First",
+            "phone": "9876543210",
+            "email": None,
+            "password": "password123",
+            "preferred_language": "hi-IN",
+        },
+    )
+    assert r1.status_code == 201
+    assert r1.json()["user"]["phone"] == "9876543210"
+    assert r1.json()["user"]["email"] is None
+
+    # User 2 registers with NO email (MUST SUCCEED without duplicate email error!)
+    r2 = api_client.post(
+        "/api/auth/signup",
+        json={
+            "name": "Karthik Second",
+            "phone": "9742427203",
+            "email": "",
+            "password": "password456",
+            "preferred_language": "en-IN",
+        },
+    )
+    assert r2.status_code == 201
+    assert r2.json()["user"]["phone"] == "9742427203"
+    assert r2.json()["user"]["email"] is None
+
+    # User 3 registers with a unique email
+    r3 = api_client.post(
+        "/api/auth/signup",
+        json={
+            "name": "User Three",
+            "phone": "9123456780",
+            "email": "user3@example.com",
+            "password": "password789",
+            "preferred_language": "ta-IN",
+        },
+    )
+    assert r3.status_code == 201
+    assert r3.json()["user"]["email"] == "user3@example.com"
+
+    # User 4 tries to register with duplicate email
+    r4 = api_client.post(
+        "/api/auth/signup",
+        json={
+            "name": "User Four",
+            "phone": "9998887771",
+            "email": "user3@example.com",
+            "password": "password999",
+        },
+    )
+    assert r4.status_code == 409
+    assert "email already exists" in r4.json()["detail"].lower()
+
+
+
 
 
 
