@@ -114,7 +114,7 @@ export function CustomerLedgerCard({
 
         <div className="customer-block-actions">
           <button
-            className="btn btn-whatsapp btn-sm"
+            className="btn btn-whatsapp btn-sm btn-cust-whatsapp"
             type="button"
             onClick={() => shareViaWhatsApp({ customer, transactions, currentUser })}
             title="Send WhatsApp Khata statement"
@@ -123,7 +123,7 @@ export function CustomerLedgerCard({
           </button>
           {onAddTransaction && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm btn-cust-entry"
               type="button"
               onClick={() => {
                 setEditing(false);
@@ -137,7 +137,7 @@ export function CustomerLedgerCard({
           )}
           {onToggleOptIn && (
             <button
-              className="btn btn-secondary btn-sm"
+              className={`btn btn-secondary btn-sm btn-cust-optin ${customer.reminder_opt_in ? "opt-active" : ""}`}
               type="button"
               onClick={() => onToggleOptIn(customer)}
               title={
@@ -155,7 +155,7 @@ export function CustomerLedgerCard({
           )}
           {onSendReminder && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm btn-cust-remind"
               type="button"
               disabled={!customer.reminder_opt_in || outstanding <= 0}
               onClick={() => onSendReminder(customer)}
@@ -166,7 +166,7 @@ export function CustomerLedgerCard({
           )}
           {onOpenInLedgers && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm btn-cust-ledgers"
               type="button"
               onClick={() => onOpenInLedgers(customer)}
               title="Open in All Customer Ledgers page"
@@ -176,7 +176,7 @@ export function CustomerLedgerCard({
           )}
           {onUpdateCustomer && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm btn-cust-edit"
               type="button"
               onClick={() => {
                 setConfirmDelete(false);
@@ -190,7 +190,7 @@ export function CustomerLedgerCard({
           )}
           {onDeleteCustomer && !confirmDelete && (
             <button
-              className="btn btn-danger btn-sm"
+              className="btn btn-danger btn-sm btn-cust-delete"
               type="button"
               onClick={() => {
                 setEditing(false);

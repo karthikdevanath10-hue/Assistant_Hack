@@ -1843,7 +1843,7 @@ select.text-input option {
 
 .customer-block-title {
   min-width: 0;
-  flex: 1 1 180px;
+  flex: 0 0 auto;
 }
 
 .customer-block-eyebrow {
@@ -4919,26 +4919,68 @@ select.text-input option {
 
   .topbar .topbar-actions-row {
     grid-area: actions;
-    display: flex !important;
-    align-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
     gap: 8px !important;
     width: 100% !important;
     margin: 0 !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
   }
 
-  .topbar .topbar-actions-row > * {
-    flex: 1 1 0%;
-    min-width: 0;
-    justify-content: center;
-    text-align: center;
-    padding: 7px 8px !important;
-    font-size: 0.76rem !important;
+  .topbar .topbar-actions-row .lang-selector-dropdown {
+    width: 100% !important;
+    min-width: 0 !important;
+    position: relative !important;
+    display: flex !important;
+    padding: 0 !important;
+  }
+
+  .topbar .topbar-actions-row .lang-trigger-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 7px 6px !important;
+    font-size: 0.74rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    gap: 4px !important;
+    margin: 0 !important;
+  }
+
+  .topbar .topbar-actions-row .lang-code-sub {
+    display: none !important;
+  }
+
+  .topbar .topbar-actions-row .chat-history-topbar-btn,
+  .topbar .topbar-actions-row .topbar-logout-btn,
+  .topbar .topbar-actions-row .nav-drawer-trigger {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 7px 6px !important;
+    font-size: 0.74rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    gap: 4px !important;
+    margin: 0 !important;
+  }
+
+  .topbar .topbar-actions-row .topbar-btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .topbar .topbar-actions-row .lang-trigger {
-    width: 100%;
-    justify-content: center;
   }
 }
 
@@ -5035,27 +5077,56 @@ select.text-input option {
 /* Customer Block Actions in All Ledgers on Mobile */
 @media (max-width: 680px) {
   .customer-block-head {
+    display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .customer-block-title {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    margin-bottom: 0 !important;
   }
 
   .customer-block-actions {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
     gap: 6px !important;
     width: 100% !important;
+    align-items: center !important;
   }
 
-  .customer-block-actions .btn-whatsapp {
-    grid-column: span 2 !important;
+  .customer-block-actions .btn-cust-whatsapp,
+  .customer-block-actions .btn-cust-entry {
+    flex: 1 1 calc(50% - 4px) !important;
+    justify-content: center !important;
+    padding: 7px 10px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .customer-block-actions .btn-cust-optin {
+    flex: 0 0 36px !important;
+    width: 36px !important;
+    justify-content: center !important;
+    padding: 7px 0 !important;
+  }
+
+  .customer-block-actions .btn-cust-remind,
+  .customer-block-actions .btn-cust-edit,
+  .customer-block-actions .btn-cust-delete,
+  .customer-block-actions .btn-cust-ledgers {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+    padding: 7px 6px !important;
+    font-size: 0.76rem !important;
+    white-space: nowrap !important;
   }
 
   .customer-block-actions .btn {
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 7px 8px !important;
-    font-size: 0.76rem !important;
+    border-radius: 10px !important;
   }
 }
 

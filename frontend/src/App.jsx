@@ -1092,17 +1092,17 @@ export default function App() {
               title="View full AI chat and voice history"
             >
               <MessageSquareText size={14} />
-              <span>Chat History</span>
+              <span className="topbar-btn-text">Chat History</span>
             </button>
             <button
               type="button"
-              className="nav-drawer-trigger"
+              className="nav-drawer-trigger topbar-logout-btn"
               onClick={handleLogout}
               aria-label="Logout"
               title="Sign out"
             >
               <LogOut size={14} />
-              <span>Logout</span>
+              <span className="topbar-btn-text">Logout</span>
             </button>
           </div>
         </header>
