@@ -9,11 +9,11 @@ from app.schemas.models import LanguageCode
 
 
 AI_DISCLOSURES: dict[str, str] = {
-    "hi-IN": "Namaste! Main Voice Khata AI assistant hoon, jo aapki dukaan ke udhaar aur payment hisaab mein madad karta hai.",
-    "kn-IN": "ನಮಸ್ಕಾರ! ನಾನು Voice Khata AI ಅಸಿಸ್ಟೆಂಟ್. ನಿಮ್ಮ ಅಂಗಡಿಯ ಉದಾರ್ ಮತ್ತು ಪೇಮೆಂಟ್ ಲೆಕ್ಕಗಳನ್ನು ದಾಖಲಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.",
-    "ta-IN": "Vanakkam! Naan Voice Khata AI assistant. Ungal kadaiyin kadan matrum varavu kanakku parkka udhavuven.",
-    "te-IN": "Namaskaram! Nenu Voice Khata AI assistant. Mee dukanam udhaar mariyu payment lekhalu record cheyadaniki sahayam chestanu.",
-    "en-IN": "Hello! I am the Voice Khata AI assistant, here to help record your shop credit and payment ledger.",
+    "hi-IN": "Namaste! Main SmartKhata AI assistant hoon, jo aapki dukaan ke udhaar aur payment hisaab mein madad karta hai.",
+    "kn-IN": "ನಮಸ್ಕಾರ! ನಾನು SmartKhata AI ಅಸಿಸ್ಟೆಂಟ್. ನಿಮ್ಮ ಅಂಗಡಿಯ ಉದಾರ್ ಮತ್ತು ಪೇಮೆಂಟ್ ಲೆಕ್ಕಗಳನ್ನು ದಾಖಲಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.",
+    "ta-IN": "Vanakkam! Naan SmartKhata AI assistant. Ungal kadaiyin kadan matrum varavu kanakku parkka udhavuven.",
+    "te-IN": "Namaskaram! Nenu SmartKhata AI assistant. Mee dukanam udhaar mariyu payment lekhalu record cheyadaniki sahayam chestanu.",
+    "en-IN": "Hello! I am the SmartKhata AI assistant, here to help record your shop credit and payment ledger.",
 }
 
 # Coercive, pressure, or lending terms forbidden in customer reminders

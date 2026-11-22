@@ -43,7 +43,7 @@ export class ErrorBoundary extends React.Component {
               Display Recovered
             </h3>
             <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: "0 0 16px", lineHeight: 1.5 }}>
-              Voice Khata captured an interface rendering event. Your ledger balances and transactions remain completely safe and encrypted.
+              SmartKhata captured an interface rendering event. Your ledger balances and transactions remain completely safe and encrypted.
             </p>
             {this.state.error?.message && (
               <pre

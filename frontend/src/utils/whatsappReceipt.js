@@ -151,7 +151,7 @@ export function buildReceiptMessage({
   let effectiveShopName = "";
   if (shopName && shopName.trim()) {
     effectiveShopName = shopName.trim();
-  } else if (loggedIn?.shop_name && loggedIn.shop_name.trim() !== "Voice Khata") {
+  } else if (loggedIn?.shop_name && loggedIn.shop_name.trim() !== "Voice Khata" && loggedIn.shop_name.trim() !== "SmartKhata") {
     effectiveShopName = loggedIn.shop_name.trim();
   }
 

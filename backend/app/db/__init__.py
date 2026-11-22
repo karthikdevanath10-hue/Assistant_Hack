@@ -1,2 +1,2 @@
-"""Database layer for Voice Khata."""
+"""Database layer for SmartKhata."""
 

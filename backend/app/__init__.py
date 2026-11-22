@@ -1,2 +1,2 @@
-"""Voice Khata backend package."""
+"""SmartKhata backend package."""
 

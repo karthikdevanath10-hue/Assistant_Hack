@@ -195,7 +195,7 @@ export function DashboardScreen({
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
             <div>
               <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase" }}>
-                Voice Khata AI · {String(lastTurn?.status || "AI Reply").replace(/_/g, " ")}
+                SmartKhata AI · {String(lastTurn?.status || "AI Reply").replace(/_/g, " ")}
               </div>
               <div style={{ fontSize: "0.84rem", color: "var(--muted)", marginTop: 2 }}>
                 You: &ldquo;{lastTurn.transcript}&rdquo;

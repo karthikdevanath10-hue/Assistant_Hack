@@ -1,2 +1,2 @@
-"""Core domain services for Voice Khata."""
+"""Core domain services for SmartKhata."""
 

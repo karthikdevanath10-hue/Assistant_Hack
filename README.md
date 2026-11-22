@@ -1,6 +1,6 @@
-# Voice Khata — Multilingual AI Voice Ledger for Kirana Stores (PS2)
+# SmartKhata — Multilingual AI Voice Ledger for Kirana Stores (PS2)
 
-> **Voice-first digital khata (udhaar ledger)** built for noisy Indian kirana shops. Optimized with a **3-tier cascaded Gemini AI pipeline** via the modern **Interactions API** (`gemini-3.8-flash` → `gemini-4-argon` / `gemini-4-carbon` + `gemini-3.8-live` + `gemini-3.8-flash-lite-tts`), deterministic sub-20ms fast-path parsing, and a pluggable **Gnani AI (`gnani-vachana` Prisma STT & Timbre TTS)** adapter.
+> **SmartKhata** is a **voice-first digital khata (udhaar ledger)** built for noisy Indian kirana shops. Optimized with a **3-tier cascaded Gemini AI pipeline** via the modern **Interactions API** (`gemini-3.8-flash` → `gemini-4-argon` / `gemini-4-carbon` + `gemini-3.8-live` + `gemini-3.8-flash-lite-tts`), deterministic sub-20ms fast-path parsing, and a pluggable **Gnani AI (`gnani-vachana` Prisma STT & Timbre TTS)** adapter.
 
 ---
 

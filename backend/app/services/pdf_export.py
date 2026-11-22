@@ -1,5 +1,5 @@
 """
-Voice Khata - PDF Ledger Statement Generator
+SmartKhata - PDF Ledger Statement Generator
 Generates high-fidelity, professional PDF reports for individual customers and store-wide ledgers.
 """
 from __future__ import annotations
@@ -48,7 +48,7 @@ def generate_ledger_pdf(
     *,
     transactions: list[dict[str, Any]],
     customer: dict[str, Any] | None = None,
-    shop_name: str = "Voice Khata",
+    shop_name: str = "SmartKhata",
     merchant_name: str = "Merchant",
     merchant_phone: str = "",
 ) -> bytes:
@@ -294,7 +294,7 @@ def generate_ledger_pdf(
 
     # 4. Verification Footer & Sign-off
     footer_text = Paragraph(
-        "<i>This digital khata statement was cryptographically verified and exported from Voice Khata AI Digital Accountant.<br/>"
+        "<i>This digital khata statement was cryptographically verified and exported from SmartKhata AI Digital Accountant.<br/>"
         "Compliant with Digital Personal Data Protection (DPDP) Act 2023. For any billing queries, please contact the merchant.</i>",
         sub_style,
     )

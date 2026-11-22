@@ -158,8 +158,8 @@ export function SettingsScreen({
           Database:{" "}
           <strong>
             {statusInfo?.database_backend === "mongodb"
-              ? `MongoDB (${statusInfo?.database_name || "voice_khata"})`
-              : `SQLite (${statusInfo?.database_name || "voice_khata.db"})`}
+              ? `MongoDB (${statusInfo?.database_name || "smartkhata"})`
+              : `SQLite (${statusInfo?.database_name || "smartkhata.db"})`}
           </strong>{" "}
           · Storage Encryption: <strong>{statusInfo?.encryption_at_rest || "AES-256-GCM"}</strong> · Gemini API:{" "}
           <strong>{statusInfo?.gemini_configured ? "Connected" : "Offline/Fallback"}</strong> · Gnani API:{" "}

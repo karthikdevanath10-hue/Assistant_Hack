@@ -1,2 +1,2 @@
-"""Pydantic API & AI extraction schemas for Voice Khata."""
+"""Pydantic API & AI extraction schemas for SmartKhata."""
 

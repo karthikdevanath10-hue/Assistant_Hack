@@ -1,6 +1,6 @@
 {
-  "name": "Voice Khata - Kirana AI Ledger",
-  "short_name": "Voice Khata",
+  "name": "SmartKhata - Kirana AI Ledger",
+  "short_name": "SmartKhata",
   "description": "Multilingual AI voice ledger for kirana stores powered by Gemini AI and Gnani Speech adapters.",
   "start_url": "/",
   "display": "standalone",

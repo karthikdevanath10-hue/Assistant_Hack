@@ -1,4 +1,4 @@
-"""Tests for core Voice Khata ledger logic, corrections, disambiguation, and queries."""
+"""Tests for core SmartKhata ledger logic, corrections, disambiguation, and queries."""
 
 from datetime import date, timedelta
 

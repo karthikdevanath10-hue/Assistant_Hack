@@ -1,4 +1,4 @@
-"""Synthetic demo data seeder for Voice Khata (DPDP-compliant fictional store)."""
+"""Synthetic demo data seeder for SmartKhata (DPDP-compliant fictional store)."""
 
 from __future__ import annotations
 

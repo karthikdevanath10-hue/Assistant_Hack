@@ -218,7 +218,7 @@ def export_ledger_csv(customer_id: int | None = None, container: AppContainer = 
         writer.writerow([r["id"], r["customer_name"], r["transaction_date"], r["tx_type"], r["amount"], r["status"], r["note"] or "", r["created_at"]])
 
     buf.seek(0)
-    filename = f"voice_khata_{customer_id or 'all'}.csv"
+    filename = f"smartkhata_{customer_id or 'all'}.csv"
     return StreamingResponse(
         iter([buf.getvalue()]),
         media_type="text/csv",
@@ -233,11 +233,11 @@ def export_ledger_pdf(customer_id: int | None = None, container: AppContainer = 
     if customer_id is not None:
         cust = container.db.get_customer_by_id(customer_id)
 
-    shop_name = "Voice Khata"
+    shop_name = "SmartKhata"
     merchant_name = "Merchant"
     merchant_phone = ""
     if hasattr(container, "user") and container.user:
-        shop_name = container.user.get("shop_name") or container.user.get("name") or "Voice Khata"
+        shop_name = container.user.get("shop_name") or container.user.get("name") or "SmartKhata"
         merchant_name = container.user.get("name") or "Merchant"
         merchant_phone = container.user.get("phone") or ""
 
@@ -250,7 +250,7 @@ def export_ledger_pdf(customer_id: int | None = None, container: AppContainer = 
     )
 
     cust_clean = cust["name"].replace(" ", "_") if cust and cust.get("name") else "all_customers"
-    filename = f"voice_khata_{cust_clean}.pdf"
+    filename = f"smartkhata_{cust_clean}.pdf"
     clean_filename = "".join(c for c in filename if c.isalnum() or c in "._- ")
 
     return StreamingResponse(

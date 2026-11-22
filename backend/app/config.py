@@ -16,7 +16,7 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
-    """Typed runtime configuration for Voice Khata."""
+    """Typed runtime configuration for SmartKhata."""
 
     model_config = SettingsConfigDict(
         env_file=str(ROOT_DIR / ".env"),

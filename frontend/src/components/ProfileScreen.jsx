@@ -129,7 +129,7 @@ export function ProfileScreen({
           <ArrowLeft size={15} /> Back to Dashboard
         </button>
         <span style={{ fontSize: "0.8rem", color: "var(--muted)", fontWeight: 600 }}>
-          Account ID: #{currentUser?.id || "1"} · Voice Khata Store Owner
+          Account ID: #{currentUser?.id || "1"} · SmartKhata Store Owner
         </span>
       </div>
 
@@ -339,7 +339,7 @@ export function ProfileScreen({
               <Globe size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }} />
             </div>
             <small style={{ color: "var(--muted)", fontSize: "0.72rem" }}>
-              Voice Khata will speak and display in this language by default every time you log in.
+              SmartKhata will speak and display in this language by default every time you log in.
             </small>
           </div>
 

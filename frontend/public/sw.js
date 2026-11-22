@@ -1,4 +1,4 @@
-const CACHE_NAME = "voice-khata-shell-v1";
+const CACHE_NAME = "smartkhata-shell-v1";
 const SHELL_URLS = ["/", "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (event) => {

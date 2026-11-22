@@ -34,7 +34,7 @@ function PasswordInput({ id, label, value, onChange, placeholder, autoComplete }
 }
 
 /**
- * Login page rendered before entering the Voice Khata workspace.
+ * Login page rendered before entering the SmartKhata workspace.
  * Face ID verification is strictly mandatory to sign in.
  */
 export function LoginPage({
@@ -83,7 +83,7 @@ export function LoginPage({
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <div className="auth-card-head">
           <h2>Welcome back</h2>
-          <p>Sign in to open your Voice Khata dashboard and customer ledgers.</p>
+          <p>Sign in to open your SmartKhata dashboard and customer ledgers.</p>
         </div>
 
         {displayError && (
@@ -162,7 +162,7 @@ export function LoginPage({
         </button>
 
         <div className="auth-switch-row">
-          <span>New to Voice Khata?</span>
+          <span>New to SmartKhata?</span>
           <button type="button" className="auth-link-btn" onClick={onSwitchToSignUp}>
             Create an account
           </button>
@@ -462,8 +462,8 @@ export function AuthGateway({
       {/* Top Navbar */}
       <header className="kaura-navbar">
         <div className="kaura-nav-brand" onClick={() => onChangeMode("landing")}>
-          <img src="/kaura-logo.png" alt="Voice Khata" className="kaura-nav-logo" />
-          <span className="kaura-nav-title">Voice Khata</span>
+          <img src="/kaura-logo.png" alt="SmartKhata" className="kaura-nav-logo" />
+          <span className="kaura-nav-title">SmartKhata</span>
         </div>
         <div className="kaura-nav-actions">
           <button
@@ -490,7 +490,7 @@ export function AuthGateway({
           <div className="kaura-hero-left">
             <h1 className="kaura-hero-heading">
               <span className="kaura-welcome">Welcome to</span>
-              <span className="kaura-brand-highlight">Voice Khata</span>
+              <span className="kaura-brand-highlight">SmartKhata</span>
             </h1>
             <p className="kaura-hero-tagline">
               Your voice-first kirana ledger, protected before you open the register.
@@ -510,7 +510,7 @@ export function AuthGateway({
             <div className="kaura-glass-card-wrapper">
               <img
                 src="/kaura-3d-symbol.png"
-                alt="Voice Khata 3D Emblem"
+                alt="SmartKhata 3D Emblem"
                 className="kaura-3d-card-img"
               />
             </div>

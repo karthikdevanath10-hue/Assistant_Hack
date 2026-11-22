@@ -936,7 +936,7 @@ export default function App() {
           <div className="brand-mark" style={{ margin: "0 auto 12px" }}>
             ₹
           </div>
-          <div style={{ fontWeight: 700 }}>Checking your Voice Khata session...</div>
+          <div style={{ fontWeight: 700 }}>Checking your SmartKhata session...</div>
         </div>
       </div>
     );
@@ -959,7 +959,7 @@ export default function App() {
 
   return (
     <div className="split-shell">
-      <aside className="ai-pane" aria-label="Voice Khata AI Assistant">
+      <aside className="ai-pane" aria-label="SmartKhata AI Assistant">
         <JarvisHud
           liveConnected={liveConnected}
           liveConnecting={liveConnecting}
@@ -1066,7 +1066,7 @@ export default function App() {
           >
             <div className="brand-mark">₹</div>
             <div className="brand-text">
-              <h1>{currentUser?.shop_name || "Voice Khata"}</h1>
+              <h1>{currentUser?.shop_name || "SmartKhata"}</h1>
               <small>{t("storeSubtitle", language)}</small>
             </div>
           </div>
@@ -1109,7 +1109,7 @@ export default function App() {
 
         {!consentAccepted && (
           <ConsentBanner
-            disclosurePreview={statusInfo?.ai_disclosure_preview || "Voice Khata AI Assistant"}
+            disclosurePreview={statusInfo?.ai_disclosure_preview || "SmartKhata AI Assistant"}
             onAccept={() => handleUpdateSettings({ dpdp_consent_accepted: true })}
           />
         )}

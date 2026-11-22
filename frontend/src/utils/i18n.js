@@ -1,5 +1,5 @@
 /**
- * Bilingual & Multilingual Localization Utility for Voice Khata Kirana Assistant.
+ * Bilingual & Multilingual Localization Utility for SmartKhata Kirana Assistant.
  * Supports Hindi (hi-IN), Indian English (en-IN), Kannada (kn-IN), Tamil (ta-IN), Telugu (te-IN).
  */
 
@@ -19,7 +19,7 @@ export const TRANSLATIONS = {
     navLedgers: "Customer Ledgers",
     navSettings: "Settings",
     logout: "Logout",
-    storeSubtitle: "Voice Khata · Kirana AI Digital Accountant",
+    storeSubtitle: "SmartKhata · Kirana AI Digital Accountant",
     viewAll: "View All",
 
     // Stat Cards
@@ -87,7 +87,7 @@ export const TRANSLATIONS = {
     navLedgers: "खाते",
     navSettings: "सेटिंग्स",
     logout: "लॉग आउट",
-    storeSubtitle: "वॉयस खाता · किराना एआई डिजिटल मुनीम",
+    storeSubtitle: "स्मार्टखाता · किराना एआई डिजिटल मुनीम",
     viewAll: "सभी देखें",
 
     // Stat Cards
@@ -155,7 +155,7 @@ export const TRANSLATIONS = {
     navLedgers: "ಖಾತೆ ಲೆಡ್ಜರ್",
     navSettings: "ಸೆಟ್ಟಿಂಗ್ಸ್",
     logout: "ಲಾಗ್‌ಔಟ್",
-    storeSubtitle: "ವಾಯ್ಸ್ ಖಾತೆ · ಕಿರಾಣಿ ಎಐ ಡಿಜಿಟಲ್ ಲೆಕ್ಕಿಗ",
+    storeSubtitle: "ಸ್ಮಾರ್ಟ್ ಖಾತೆ · ಕಿರಾಣಿ ಎಐ ಡಿಜಿಟಲ್ ಲೆಕ್ಕಿಗ",
     viewAll: "ಎಲ್ಲವನ್ನೂ ನೋಡಿ",
 
     // Stat Cards
@@ -223,7 +223,7 @@ export const TRANSLATIONS = {
     navLedgers: "பேரேடு",
     navSettings: "அமைப்புகள்",
     logout: "வெளியேறு",
-    storeSubtitle: "வாய்ஸ் கணக்கு · கிரானா ஏஐ டிஜிட்டல் கணக்காளர்",
+    storeSubtitle: "ஸ்மார்ட் கணக்கு · கிரானா ஏஐ டிஜிட்டல் கணக்காளர்",
     viewAll: "அனைத்தையும் பார்",
 
     // Stat Cards
@@ -291,7 +291,7 @@ export const TRANSLATIONS = {
     navLedgers: "లెడ్జర్లు",
     navSettings: "సెట్టింగ్‌లు",
     logout: "లాగ్ అవుట్",
-    storeSubtitle: "వాయిస్ ఖాతా · కిరాణా ఏఐ డిజిటల్ అకౌంటెంట్",
+    storeSubtitle: "స్మార్ట్ ఖాతా · కిరాణా ఏఐ డిజిటల్ అకౌంటెంట్",
     viewAll: "అన్నీ చూడండి",
 
     // Stat Cards

@@ -1,4 +1,4 @@
-"""FastAPI application entrypoint for Voice Khata."""
+"""FastAPI application entrypoint for SmartKhata."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ async def lifespan(_app: FastAPI):
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
-        title="Voice Khata API (PS2)",
-        description="Multilingual Kirana Voice Ledger powered by Gemini 3.8 Flash / 4 Argon / 3.8 Live + Gnani Adapter",
+        title="SmartKhata API (PS2)",
+        description="Multilingual Kirana SmartKhata Voice Ledger powered by Gemini 3.8 Flash / 4 Argon / 3.8 Live + Gnani Adapter",
         version="1.0.0",
         lifespan=lifespan,
     )

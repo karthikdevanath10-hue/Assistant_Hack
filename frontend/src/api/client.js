@@ -192,7 +192,7 @@ export const api = {
       const objectUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = objectUrl;
-      link.download = `voice_khata_${customerId ?? "statement"}.pdf`;
+      link.download = `smartkhata_${customerId ?? "statement"}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -227,7 +227,7 @@ export const api = {
     const objectUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = objectUrl;
-    link.download = `voice_khata_${customerId ?? "all"}.csv`;
+    link.download = `smartkhata_${customerId ?? "all"}.csv`;
     document.body.appendChild(link);
     link.click();
     link.remove();

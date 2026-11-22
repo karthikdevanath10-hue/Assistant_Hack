@@ -98,7 +98,7 @@ export function ChatHistoryModal({
           utterance,
           reply,
           parsed: row.parsed || null,
-          modelUsed: row.model_used || "Voice Khata AI",
+          modelUsed: row.model_used || "SmartKhata AI",
           latencyMs: row.latency_ms || 0,
           createdAt: row.created_at || "",
         });
@@ -319,7 +319,7 @@ export function ChatHistoryModal({
               <p>
                 {searchQuery
                   ? "Try searching for a different customer name or transaction amount."
-                  : "Start chatting with Voice Khata AI by tapping the mic button or typing commands in the assistant dock."}
+                  : "Start chatting with SmartKhata AI by tapping the mic button or typing commands in the assistant dock."}
               </p>
               {!searchQuery && (
                 <div className="sample-prompts-wrap">
@@ -405,7 +405,7 @@ export function ChatHistoryModal({
                     </div>
                     <div className="bubble-content">
                       <div className="bubble-author-row">
-                        <span className="bubble-author">Voice Khata AI</span>
+                        <span className="bubble-author">SmartKhata AI</span>
                         {item.modelUsed && (
                           <span className="model-chip">
                             <Sparkles size={10} /> {item.modelUsed}

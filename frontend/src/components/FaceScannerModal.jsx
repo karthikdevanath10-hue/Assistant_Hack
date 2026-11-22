@@ -167,7 +167,7 @@ export function FaceScannerModal({
               <p>
                 {mode === "register"
                   ? "Face ID registration is mandatory. Your biometric face template will be required every time you sign in."
-                  : "Face ID verification is mandatory to unlock and sign in to your Voice Khata ledger."}
+                  : "Face ID verification is mandatory to unlock and sign in to your SmartKhata ledger."}
               </p>
             </div>
           </div>
