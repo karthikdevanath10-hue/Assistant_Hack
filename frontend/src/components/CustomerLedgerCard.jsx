@@ -29,6 +29,8 @@ export function CustomerLedgerCard({
   highlightTxIds = [],
   isHighlighted = false,
   inline = false,
+  isModal = false,
+  initialTxOpen = false,
   currentUser = null,
   onUpdateCustomer,
   onDeleteCustomer,
@@ -45,7 +47,7 @@ export function CustomerLedgerCard({
   const [txType, setTxType] = useState("credit");
   const [note, setNote] = useState("");
   const [savingTx, setSavingTx] = useState(false);
-  const [txHistoryOpen, setTxHistoryOpen] = useState(false);
+  const [txHistoryOpen, setTxHistoryOpen] = useState(isModal || initialTxOpen);
 
   useEffect(() => {
     setEditing(false);
@@ -53,8 +55,8 @@ export function CustomerLedgerCard({
     setAddingTx(false);
     setAmount("");
     setNote("");
-    setTxHistoryOpen(false);
-  }, [customer?.id]);
+    setTxHistoryOpen(isModal || initialTxOpen);
+  }, [customer?.id, isModal, initialTxOpen]);
 
   const safeTxs = Array.isArray(transactions) ? transactions : [];
   const hiSet = new Set(highlightTxIds || []);
@@ -225,12 +227,13 @@ export function CustomerLedgerCard({
           )}
           {onClose && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm btn-cust-close"
               type="button"
               onClick={onClose}
               title="Close customer details"
+              aria-label="Close customer ledger"
             >
-              <X size={16} />
+              <X size={15} /> Close
             </button>
           )}
         </div>
@@ -324,8 +327,8 @@ export function CustomerLedgerCard({
 
       {/* Interactive Drop Notch for Transaction History */}
       <div className={`customer-tx-drop-notch ${txHistoryOpen ? "is-open" : ""}`}>
-        {/* Transparent backdrop to dismiss floating drawer on tap outside */}
-        {txHistoryOpen && (
+        {/* Transparent backdrop to dismiss floating drawer on tap outside (non-modal only) */}
+        {txHistoryOpen && !isModal && (
           <div
             className="dropnotch-backdrop"
             onClick={() => setTxHistoryOpen(false)}

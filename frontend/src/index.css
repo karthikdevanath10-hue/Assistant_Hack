@@ -5349,6 +5349,137 @@ select.text-input option {
   }
 }
 
+/* ==========================================================================
+   Dedicated Customer Ledger Full View & Sheet (No Empty Top/Bottom Space)
+   ========================================================================== */
+.customer-ledger-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 4, 24, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.customer-ledger-modal-card {
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(168deg, rgba(28, 14, 58, 0.98) 0%, rgba(16, 7, 36, 0.99) 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.38);
+  border-radius: 24px;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.88), 0 0 60px rgba(168, 85, 247, 0.28);
+  padding: 24px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: modalPop 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.customer-ledger-modal-card .customer-block-head {
+  position: sticky;
+  top: -24px;
+  z-index: 30;
+  background: rgba(24, 11, 50, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px 0 12px 0;
+  margin: -24px 0 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-cust-close {
+  background: rgba(244, 63, 94, 0.18) !important;
+  border: 1px solid rgba(244, 63, 94, 0.45) !important;
+  color: #fda4af !important;
+  font-weight: 700 !important;
+  margin-left: auto;
+  gap: 5px;
+}
+
+.btn-cust-close:hover {
+  background: rgba(244, 63, 94, 0.34) !important;
+  border-color: rgba(251, 113, 133, 0.7) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.35) !important;
+}
+
+.customer-ledger-modal-card .customer-tx-drop-notch {
+  position: static !important;
+  margin-top: 14px !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+.customer-ledger-modal-card .customer-tx-notch-drawer {
+  position: static !important;
+  min-width: 100% !important;
+  margin-top: 10px !important;
+  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+}
+
+.customer-ledger-modal-card .customer-tx-notch-drawer.open {
+  max-height: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 14px !important;
+}
+
+.customer-ledger-modal-card .customer-tx-list-scroll {
+  max-height: 48vh;
+  min-height: 180px;
+  overflow-y: auto;
+}
+
+/* Mobile responsive view: No empty gaps at top or bottom */
+@media (max-width: 768px) {
+  .customer-ledger-backdrop {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+
+  .customer-ledger-modal-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 14px 14px 24px 14px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .customer-ledger-modal-card .customer-block-head {
+    top: -14px !important;
+    margin: -14px -14px 12px -14px !important;
+    padding: 14px 14px 10px 14px !important;
+  }
+
+  .customer-ledger-modal-card .customer-tx-list-scroll {
+    max-height: 46vh !important;
+    min-height: 150px;
+  }
+}
+
+
 
 
 

@@ -7,6 +7,9 @@ export function CustomerLedgerModal({
   highlightTxIds = [],
   inline = false,
   currentUser = null,
+  onAddTransaction,
+  onToggleOptIn,
+  onSendReminder,
   onUpdateCustomer,
   onDeleteCustomer,
   onOpenInLedgers,
@@ -29,9 +32,14 @@ export function CustomerLedgerModal({
       transactions={transactions}
       highlightTxIds={highlightTxIds}
       inline={inline}
+      isModal={!inline}
+      initialTxOpen={true}
       currentUser={currentUser}
       onUpdateCustomer={onUpdateCustomer}
       onDeleteCustomer={onDeleteCustomer}
+      onAddTransaction={onAddTransaction}
+      onToggleOptIn={onToggleOptIn}
+      onSendReminder={onSendReminder}
       onOpenInLedgers={onOpenInLedgers}
       onClose={onClose}
     />
@@ -42,12 +50,12 @@ export function CustomerLedgerModal({
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop customer-ledger-backdrop" onClick={onClose}>
       <div
-        className="modal-card"
+        className="modal-card customer-ledger-modal-card"
         role="dialog"
         aria-modal="true"
-        aria-label={`${customer.name} details`}
+        aria-label={`${customer.name} digital khata ledger`}
         onClick={(e) => e.stopPropagation()}
       >
         {content}

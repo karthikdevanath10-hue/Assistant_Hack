@@ -1134,6 +1134,9 @@ export default function App() {
           transactions={selectedCustomerTxs}
           highlightTxIds={liveHighlightTxIds}
           currentUser={currentUser}
+          onAddTransaction={handleManualTx}
+          onToggleOptIn={handleToggleOptIn}
+          onSendReminder={(c) => api.sendReminder(c.id, language)}
           onUpdateCustomer={handleUpdateCustomer}
           onDeleteCustomer={handleDeleteCustomer}
           onOpenInLedgers={(cust) => {
